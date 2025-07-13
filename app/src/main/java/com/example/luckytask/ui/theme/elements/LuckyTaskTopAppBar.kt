@@ -27,15 +27,23 @@ fun LuckyTaskTopAppBar(
     /*** Use the title for 'naming' the top bar ***/
     title: String,
     background_color: Color = colorResource(R.color.lilac),
-    content_color:Color = colorResource(R.color.header_color)
+    content_color: Color = colorResource(R.color.header_color),
 
-) {
+    ) {
     TopAppBar(
         title = {
-            Text(
-                text = title,
-                fontSize = 35.sp
-            )
+            Box(
+                /*** This is necessary, otherwise the 'Box' only is as big as the text ***/
+                modifier = Modifier
+                    .fillMaxWidth(),
+                /*** Align the 'Box' content (aka the text) centrally ***/
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 35.sp
+                )
+            }
         },
         colors = TopAppBarColors(
             containerColor = background_color,
