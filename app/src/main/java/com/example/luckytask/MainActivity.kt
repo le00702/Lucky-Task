@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -12,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
+import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
 import com.example.luckytask.ui.theme.elements.Task
 
@@ -43,10 +47,17 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         text = "Hello $name!",
         modifier = modifier
     )*/
-    Task(
-        "This is a task",
-        modifier = modifier
-    )
+    Column(modifier = modifier.padding(10.dp))
+    {
+        Task(
+            "This is a task",
+            modifier = modifier
+        )
+        AddTaskButton(
+            "Add task",
+            modifier = modifier
+        )
+    }
 }
 
 @Preview(showBackground = true)
