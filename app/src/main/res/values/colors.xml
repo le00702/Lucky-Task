@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="lilac">#B29ADB</color>
+    <color name="app_color">#B29ADB</color>
     <color name="header_color">#000000</color>
+    <color name="task_color">#E12F2F2F</color>
 </resources>

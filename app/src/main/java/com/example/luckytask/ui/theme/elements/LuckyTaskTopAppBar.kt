@@ -22,7 +22,7 @@ import com.example.luckytask.R
 fun LuckyTaskTopAppBar(
     /*** Use the title for 'naming' the top bar ***/
     title: String,
-    backgroundColor: Color = colorResource(R.color.lilac),
+    backgroundColor: Color = colorResource(R.color.app_color),
     contentColor: Color = colorResource(R.color.header_color),
 
     ) {
