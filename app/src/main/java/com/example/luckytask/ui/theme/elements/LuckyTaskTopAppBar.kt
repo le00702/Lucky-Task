@@ -44,11 +44,22 @@ fun LuckyTaskTopAppBar(
                 )
             }
         },
+        /*** Left side of the app bar ***/
         navigationIcon = {
             IconButton(onClick = {}) {
                 Icon(
                     painter = painterResource(R.drawable.hamburger_menu),
                     contentDescription = "Menu",
+                    tint = contentColor
+                )
+            }
+        },
+        /*** Right side of the app bar ***/
+        actions = {
+            IconButton(onClick = {}) {
+                Icon(
+                    painter = painterResource(id = R.drawable.user_account),
+                    contentDescription = "User Account",
                     tint = contentColor
                 )
             }
