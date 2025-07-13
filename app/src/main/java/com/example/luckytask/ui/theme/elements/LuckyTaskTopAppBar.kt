@@ -1,23 +1,16 @@
 package com.example.luckytask.ui.theme.elements
 
-import android.text.Layout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.R
 
@@ -26,8 +19,8 @@ import com.example.luckytask.R
 fun LuckyTaskTopAppBar(
     /*** Use the title for 'naming' the top bar ***/
     title: String,
-    background_color: Color = colorResource(R.color.lilac),
-    content_color: Color = colorResource(R.color.header_color),
+    backgroundColor: Color = colorResource(R.color.lilac),
+    contentColor: Color = colorResource(R.color.header_color),
 
     ) {
     TopAppBar(
@@ -46,11 +39,11 @@ fun LuckyTaskTopAppBar(
             }
         },
         colors = TopAppBarColors(
-            containerColor = background_color,
-            scrolledContainerColor = background_color,
-            navigationIconContentColor = background_color,
-            titleContentColor = content_color,
-            actionIconContentColor = background_color
+            containerColor = backgroundColor,
+            scrolledContainerColor = backgroundColor,
+            navigationIconContentColor = backgroundColor,
+            titleContentColor = contentColor,
+            actionIconContentColor = backgroundColor
         )
     )
 }
