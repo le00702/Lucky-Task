@@ -27,22 +27,22 @@ fun AddTaskButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        color = colorResource(R.color.app_color),
-        shape = RoundedCornerShape(10.dp)
+        color = colorResource(R.color.add_task_color),
+        shape = RoundedCornerShape(30.dp)
     ) {
         /*** Align all elements in a row, to organize them horizontally ***/
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 /*** Add some padding, so the text is not that close to the border ***/
-                .padding(horizontal = 15.dp, vertical = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = title,
                 fontSize = 25.sp,
-                color = colorResource(R.color.task_color),
+                color = colorResource(R.color.white),
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             )
@@ -50,7 +50,7 @@ fun AddTaskButton(
                 Icon(
                     painter = painterResource(R.drawable.info),
                     contentDescription = "Info",
-                    tint = colorResource(R.color.task_color)
+                    tint = colorResource(R.color.white)
                 )
             }
         }
