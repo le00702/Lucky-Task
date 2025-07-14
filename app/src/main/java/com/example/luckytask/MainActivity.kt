@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -19,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
@@ -47,9 +50,11 @@ class MainActivity : ComponentActivity() {
 fun LuckyTaskApp(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
             onClick = {
@@ -63,6 +68,21 @@ fun LuckyTaskApp(modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = "Go to MockActivity",
+                fontSize = 30.sp
+            )
+        }
+        Button(
+            onClick = {
+                val intent = Intent(context, MockActivity::class.java)
+                context.startActivity(intent)
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.add_task_color), // Background color
+                contentColor = colorResource(R.color.white) // Text color
+            )
+        ) {
+            Text(
+                text = "Go to Dice",
                 fontSize = 30.sp
             )
         }
