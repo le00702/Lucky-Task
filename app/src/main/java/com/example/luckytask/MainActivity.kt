@@ -14,12 +14,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
+import com.example.luckytask.ui.theme.elements.ProgressCircle
 import com.example.luckytask.ui.theme.elements.Task
 
 class MainActivity : ComponentActivity() {
@@ -62,6 +64,7 @@ fun LuckyTaskApp(name: String, modifier: Modifier = Modifier) {
         AddTaskButton(
             modifier = modifier
         )
+        ProgressCircle(7, 10, colorResource(R.color.purple_500))
     }
 }
 
