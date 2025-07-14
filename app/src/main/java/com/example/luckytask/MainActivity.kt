@@ -1,6 +1,5 @@
 package com.example.luckytask
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,20 +8,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
+import com.example.luckytask.ui.theme.elements.MockButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +49,7 @@ fun LuckyTaskApp(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Button(
+        /*Button(
             onClick = {
                 val intent = Intent(context, MockActivity::class.java)
                 context.startActivity(intent)
@@ -83,7 +78,9 @@ fun LuckyTaskApp(modifier: Modifier = Modifier) {
                 text = "Go to Dice",
                 fontSize = 30.sp
             )
-        }
+        } */
+        MockButton(context, MockActivity::class.java, "Go to MockActivity")
+        MockButton(context, MockDiceActivity::class.java, "Go to Dice")
     }
 }
 
