@@ -36,7 +36,7 @@ fun ProgressCircle(done: Int, total: Int, color: Color) {
             strokeCap = StrokeCap.Square
         )
         Text(
-            text = "${(progress * 100)}%",
+            text = "${(String.format("%.2f", progress * 100))}%",
             color = color,
             fontSize = 30.sp,
             textAlign = TextAlign.Center

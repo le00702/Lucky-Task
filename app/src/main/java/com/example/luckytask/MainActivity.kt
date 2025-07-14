@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +35,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }) { innerPadding ->
                     LuckyTaskApp(
-                        name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -46,25 +44,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LuckyTaskApp(name: String, modifier: Modifier = Modifier) {
-    /*Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )*/
+fun LuckyTaskApp(modifier: Modifier = Modifier) {
 
     /*** Organize elements in column ***/
-    Column(modifier = modifier.padding(10.dp),
+    Column(modifier = modifier.padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center)
     {
         Task(
             "This is a task",
-            modifier = modifier
+            modifier = Modifier
         )
         AddTaskButton(
-            modifier = modifier
+            modifier = Modifier
         )
         ProgressCircle(7, 10, colorResource(R.color.purple_500))
+        Spacer(modifier = Modifier.padding(10.dp))
+        ProgressCircle(6, 27, colorResource(R.color.teal_700))
     }
 }
 
@@ -72,6 +68,6 @@ fun LuckyTaskApp(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun LuckyTaskAppPreview() {
     LuckyTaskTheme {
-        LuckyTaskApp("Android")
+        LuckyTaskApp()
     }
 }
