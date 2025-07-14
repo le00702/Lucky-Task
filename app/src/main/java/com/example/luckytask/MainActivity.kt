@@ -1,27 +1,27 @@
 package com.example.luckytask
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
-import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
-import com.example.luckytask.ui.theme.elements.ProgressCircle
-import com.example.luckytask.ui.theme.elements.Task
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,22 +45,27 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LuckyTaskApp(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
 
-    /*** Organize elements in column ***/
-    Column(modifier = modifier.padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center)
-    {
-        Task(
-            "This is a task",
-            modifier = Modifier
-        )
-        AddTaskButton(
-            modifier = Modifier
-        )
-        ProgressCircle(7, 10, colorResource(R.color.purple_500))
-        Spacer(modifier = Modifier.padding(10.dp))
-        ProgressCircle(6, 27, colorResource(R.color.teal_700))
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Button(
+            onClick = {
+                val intent = Intent(context, MockActivity::class.java)
+                context.startActivity(intent)
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.add_task_color), // Background color
+                contentColor = colorResource(R.color.white) // Text color
+            )
+        ) {
+            Text(
+                text = "Go to MockActivity",
+                fontSize = 30.sp
+            )
+        }
     }
 }
 
