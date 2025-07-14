@@ -49,36 +49,6 @@ fun LuckyTaskApp(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        /*Button(
-            onClick = {
-                val intent = Intent(context, MockActivity::class.java)
-                context.startActivity(intent)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(R.color.add_task_color), // Background color
-                contentColor = colorResource(R.color.white) // Text color
-            )
-        ) {
-            Text(
-                text = "Go to MockActivity",
-                fontSize = 30.sp
-            )
-        }
-        Button(
-            onClick = {
-                val intent = Intent(context, MockDiceActivity::class.java)
-                context.startActivity(intent)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(R.color.add_task_color), // Background color
-                contentColor = colorResource(R.color.white) // Text color
-            )
-        ) {
-            Text(
-                text = "Go to Dice",
-                fontSize = 30.sp
-            )
-        } */
         MockButton(context, MockActivity::class.java, "Go to MockActivity")
         MockButton(context, MockDiceActivity::class.java, "Go to Dice")
     }
