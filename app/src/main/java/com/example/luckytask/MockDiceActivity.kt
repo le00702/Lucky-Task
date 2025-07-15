@@ -58,6 +58,9 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
 
     val context = LocalContext.current
     var zoomed by remember { mutableStateOf(false) }
+
+    /*** Upscale the image when it is zoomed to 1.5 of original size
+     *   --> if it is not zoomed, it should stay at its original size ***/
     val zoomFactor by animateFloatAsState(if (zoomed) 1.5f else 1.0f)
 
     /*** Organize elements in column ***/
@@ -81,6 +84,7 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
                 .size(200.dp)
                 .clickable {
                     zoomed = showAnimation(context, zoomed) }
+                /*** Scale image size based on current zoom factor ***/
                 .graphicsLayer {
                     scaleX = zoomFactor
                     scaleY = zoomFactor
