@@ -62,6 +62,7 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
     /*** Upscale the image when it is zoomed to 1.5 of original size
      *   --> if it is not zoomed, it should stay at its original size ***/
     val zoomFactor by animateFloatAsState(if (zoomed) 1.5f else 1.0f)
+    val rotation by animateFloatAsState(if(zoomed) 360f else 0f)
 
     /*** Organize elements in column ***/
     Column(
@@ -88,6 +89,7 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
                 .graphicsLayer {
                     scaleX = zoomFactor
                     scaleY = zoomFactor
+                    rotationZ = rotation
                 }
         )
     }
