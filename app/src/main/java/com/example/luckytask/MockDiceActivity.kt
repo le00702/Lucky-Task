@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -70,11 +71,14 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
     )
     /*** Rotate image only, when it is zoomed
      *   --> set the animation time for rotating to 500ms
-     *   --> using tween for time-based animation***/
+     *   --> using tween for time-based animation
+     *   --> use easing for more natural acceleration of animation
+     *   --> not moving at constant speed!
+     *   --> LinearOutSlowIn: Start normal, then slow down***/
     val rotation by animateFloatAsState(
-        targetValue = if(zoomed) 360f else 0f,
-        animationSpec = tween(500)
-    )
+        targetValue = if(zoomed) 2 * 360f else 0f,
+        animationSpec = tween(500, easing = LinearOutSlowInEasing)
+        )
 
     /*** Organize elements in column ***/
     Column(
