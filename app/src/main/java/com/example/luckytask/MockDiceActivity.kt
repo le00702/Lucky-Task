@@ -1,6 +1,7 @@
 package com.example.luckytask
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,11 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
+
 class MockDiceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +49,8 @@ class MockDiceActivity : ComponentActivity() {
 @Composable
 fun MockDiceApp(modifier: Modifier = Modifier) {
 
+    val context = LocalContext.current
+
     /*** Organize elements in column ***/
     Column(
         modifier = modifier
@@ -62,7 +68,9 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
         Image(
             painter = painterResource(R.drawable.dice),
             contentDescription = "Dice Image",
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier
+                .size(200.dp)
+                .clickable { Toast.makeText(context, "Dice clicked!", Toast.LENGTH_SHORT).show() }
         )
     }
 }
