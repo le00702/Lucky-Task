@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,9 +61,20 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
     var zoomed by remember { mutableStateOf(false) }
 
     /*** Upscale the image when it is zoomed to 1.5 of original size
-     *   --> if it is not zoomed, it should stay at its original size ***/
-    val zoomFactor by animateFloatAsState(if (zoomed) 1.5f else 1.0f)
-    val rotation by animateFloatAsState(if(zoomed) 360f else 0f)
+     *   --> if it is not zoomed, it should stay at its original size
+     *   --> set the animation time for zooming to 250ms
+     *   --> using tween for time-based animation ***/
+    val zoomFactor by animateFloatAsState(
+        targetValue = if (zoomed) 1.5f else 1.0f,
+        animationSpec = tween(250)
+    )
+    /*** Rotate image only, when it is zoomed
+     *   --> set the animation time for rotating to 500ms
+     *   --> using tween for time-based animation***/
+    val rotation by animateFloatAsState(
+        targetValue = if(zoomed) 360f else 0f,
+        animationSpec = tween(500)
+    )
 
     /*** Organize elements in column ***/
     Column(
