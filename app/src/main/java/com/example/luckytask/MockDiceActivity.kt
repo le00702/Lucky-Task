@@ -2,6 +2,7 @@ package com.example.luckytask
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,10 +35,17 @@ import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.graphicsLayer
+import com.example.luckytask.sensor.ShakeListener
 
 class MockDiceActivity : ComponentActivity() {
+    private lateinit var shakeListener: ShakeListener
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        shakeListener = ShakeListener(this) {
+            Log.d("[SENSOR]", "Test message")
+        }
+
         enableEdgeToEdge()
         setContent {
             LuckyTaskTheme {
@@ -53,6 +61,17 @@ class MockDiceActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        shakeListener.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        shakeListener.stop()
+    }
+
 }
 
 @Composable
@@ -115,3 +134,4 @@ private fun showAnimation(context: Context, zoomed: Boolean): Boolean{
     Toast.makeText(context, "Dice clicked!", Toast.LENGTH_SHORT).show()
     return !zoomed
 }
+
