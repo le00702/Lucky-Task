@@ -39,11 +39,12 @@ import com.example.luckytask.sensor.ShakeListener
 
 class MockDiceActivity : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
+    private val TAG = "[SENSOR]"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         shakeListener = ShakeListener(this) {
-            Log.d("[SENSOR]", "Test message")
+            Log.d(TAG, "Shake detected!")
         }
 
         enableEdgeToEdge()

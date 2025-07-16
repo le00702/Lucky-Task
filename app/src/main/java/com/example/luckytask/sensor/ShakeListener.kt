@@ -6,6 +6,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
+import androidx.compose.ui.res.stringResource
+import com.example.luckytask.R
 import kotlin.math.sqrt
 
 /*** Add constructor taking context and onShake function --> extend SensorEventListener
@@ -16,7 +18,8 @@ class ShakeListener(
 ) : SensorEventListener {
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager?
     private val accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-    
+    private val TAG = "[SENSOR]"
+
     /*** The value of 15 was chosen based on experiments on a physical device
      *   --> emulator did not work for this. We started at 2, got to 5, 10, and then went
      *   up to 15. 15 provides a strong protection against recognizing random/slower movements
@@ -25,12 +28,12 @@ class ShakeListener(
 
     fun start() {
         sensorManager?.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
-        Log.d("[SENSOR]", "Registered sensor")
+        Log.d(TAG, "Registered sensor")
     }
 
     fun stop() {
         sensorManager?.unregisterListener(this)
-        Log.d("[SENSOR]", "Unregistered sensor")
+        Log.d(TAG, "Unregistered sensor")
     }
 
     /*** Calculate acceleration for shake detection --> used this StackOverflow post
@@ -43,9 +46,9 @@ class ShakeListener(
         /*** Removing the gravitational force of the earth is necessary as it influences
          *   the values --> around 9.81 for z (straight down, when laying flat) ***/
         val acceleration = sqrt(x * x + y * y + z * z) - SensorManager.GRAVITY_EARTH
-        /*Log.d("[SENSOR]", "x: $x, y: $y, z: $z")*/
+        /*Log.d(TAG, "x: $x, y: $y, z: $z")*/
         if (acceleration > threshold) {
-            Log.d("[SENSOR]", "Acc: $acceleration, Thr: $threshold")
+            Log.d(TAG, "Acc: $acceleration, Thr: $threshold")
             onShake()
         }
     }
@@ -53,7 +56,7 @@ class ShakeListener(
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         /*** Change later maybe --> TODOs result in crash ***/
-        Log.d("[SENSOR]", "Accuracy of sensor ${sensor?.name} changed to $accuracy")
+        Log.d(TAG, "Accuracy of sensor ${sensor?.name} changed to $accuracy")
     }
 
 }
