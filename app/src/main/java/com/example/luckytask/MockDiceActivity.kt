@@ -24,6 +24,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.graphicsLayer
 import com.example.luckytask.sensor.ShakeListener
+import kotlinx.coroutines.delay
 
 class MockDiceActivity : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
@@ -89,6 +91,7 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
         targetValue = if (zoomed) 1.5f else 1.0f,
         animationSpec = tween(250)
     )
+
     /*** Rotate image only, when it is zoomed
      *   --> set the animation time for rotating to 500ms
      *   --> using tween for time-based animation
@@ -96,9 +99,21 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
      *   --> not moving at constant speed!
      *   --> LinearOutSlowIn: Start normal, then slow down***/
     val rotation by animateFloatAsState(
-        targetValue = if(zoomed) 2 * 360f else 0f,
+        targetValue = if (zoomed) 2 * 360f else 0f,
         animationSpec = tween(500, easing = LinearOutSlowInEasing)
-        )
+    )
+
+    /*** As soon as the animation is started (if zoomed = true, after
+     *   clicking (for now)) --> start it +  add delays, and revert back
+     *   to original size ***/
+    LaunchedEffect(zoomed) {
+        if (zoomed) {
+            delay(250)
+            zoomed = false
+            delay(250)
+        }
+    }
+
 
     /*** Organize elements in column ***/
     Column(
@@ -120,7 +135,12 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(200.dp)
                 .clickable {
-                    zoomed = showAnimation(context, zoomed) }
+                    /*** Upon next clicking (after setting it to false in LaunchedEffect)
+                     *   --> call function to revert the value back to true
+                     *   --> which again calls the LaunchedEffect code ***/
+                    zoomed = showAnimation(context, zoomed)
+                    Log.d("[DICE]", "Call animation")
+                }
                 /*** Scale image size based on current zoom factor ***/
                 .graphicsLayer {
                     scaleX = zoomFactor
@@ -131,8 +151,8 @@ fun MockDiceApp(modifier: Modifier = Modifier) {
     }
 }
 
-private fun showAnimation(context: Context, zoomed: Boolean): Boolean{
-    Toast.makeText(context, "Dice clicked!", Toast.LENGTH_SHORT).show()
+private fun showAnimation(context: Context, zoomed: Boolean): Boolean {
+    Toast.makeText(context, "Dice zoomed: $zoomed", Toast.LENGTH_SHORT).show()
     return !zoomed
 }
 
