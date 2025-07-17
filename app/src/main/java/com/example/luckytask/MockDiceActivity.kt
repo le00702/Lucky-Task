@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.luckytask.ui.theme.LuckyTaskTheme
@@ -19,10 +20,15 @@ class MockDiceActivity : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
     private val TAG = "[SENSOR]"
 
+
+    private var triggerAnimation = mutableStateOf(false)
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         shakeListener = ShakeListener(this) {
             Log.d(TAG, "Shake detected!")
+            triggerAnimation.value = true
         }
 
         enableEdgeToEdge()
@@ -34,7 +40,8 @@ class MockDiceActivity : ComponentActivity() {
                     )
                 }) { innerPadding ->
                     Dice(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        triggerAnimation = triggerAnimation
                     )
                 }
             }

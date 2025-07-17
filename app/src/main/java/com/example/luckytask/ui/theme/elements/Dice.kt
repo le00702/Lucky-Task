@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,16 +30,14 @@ import com.example.luckytask.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun Dice(modifier: Modifier = Modifier) {
-
-    var zoomed by remember { mutableStateOf(false) }
+fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>) {
 
     /*** Upscale the image when it is zoomed to 1.5 of original size
      *   --> if it is not zoomed, it should stay at its original size
      *   --> set the animation time for zooming to 250ms
      *   --> using tween for time-based animation ***/
     val zoomFactor by animateFloatAsState(
-        targetValue = if (zoomed) 1.5f else 1.0f,
+        targetValue = if (triggerAnimation.value) 1.5f else 1.0f,
         animationSpec = tween(250)
     )
 
@@ -49,7 +48,7 @@ fun Dice(modifier: Modifier = Modifier) {
      *   --> not moving at constant speed!
      *   --> LinearOutSlowIn: Start normal, then slow down***/
     val rotation by animateFloatAsState(
-        targetValue = if (zoomed) 2 * 360f else 0f,
+        targetValue = if (triggerAnimation.value) 2 * 360f else 0f,
         animationSpec = tween(500, easing = LinearOutSlowInEasing)
     )
 
@@ -57,17 +56,17 @@ fun Dice(modifier: Modifier = Modifier) {
      *   --> call function to revert the value back to true
      *   --> which again calls the LaunchedEffect code ***/
     fun triggerAnimation() {
-        zoomed = !zoomed
+        triggerAnimation.value = !triggerAnimation.value
         Log.d("[DICE]", "Call animation")
     }
 
     /*** As soon as the animation is started (if zoomed = true, after
      *   clicking (for now)) --> start it +  add delays, and revert back
      *   to original size ***/
-    LaunchedEffect(zoomed) {
-        if (zoomed) {
+    LaunchedEffect(triggerAnimation.value) {
+        if (triggerAnimation.value) {
             delay(250)
-            zoomed = false
+            triggerAnimation.value = false
             delay(250)
         }
     }
