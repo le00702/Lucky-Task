@@ -1,11 +1,9 @@
 package com.example.luckytask.ui.theme.elements
 
-import android.util.Log
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,9 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -46,23 +41,14 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>)
      *   --> using tween for time-based animation
      *   --> use easing for more natural acceleration of animation
      *   --> not moving at constant speed!
-     *   --> LinearOutSlowIn: Start normal, then slow down***/
+     *   --> LinearOutSlowIn: Start normal, then slow down ***/
     val rotation by animateFloatAsState(
         targetValue = if (triggerAnimation.value) 2 * 360f else 0f,
         animationSpec = tween(500, easing = LinearOutSlowInEasing)
     )
 
-    /*** Upon next clicking (after setting triggerAnimation.value to false in LaunchedEffect)
-     *   --> call function to revert the value back to true
-     *   --> which again calls the LaunchedEffect code ***/
-    fun triggerAnimation() {
-        triggerAnimation.value = !triggerAnimation.value
-        Log.d("[DICE]", "Call animation")
-    }
-
-    /*** As soon as the animation is started (if triggerAnimation.value = true, after
-     *   clicking (for now)) --> start it +  add delays, and revert back
-     *   to original size ***/
+    /*** As soon as the animation is started (if triggerAnimation.value = true)
+     * --> start it + add delays, and revert back to original size ***/
     LaunchedEffect(triggerAnimation.value) {
         if (triggerAnimation.value) {
             delay(250)
@@ -70,7 +56,6 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>)
             delay(250)
         }
     }
-
 
     /*** Organize elements in column ***/
     Column(
@@ -91,9 +76,6 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>)
             contentDescription = "Dice Image",
             modifier = Modifier
                 .size(200.dp)
-                .clickable {
-                    triggerAnimation()
-                }
 
                 /*** Scale image size based on current zoom factor + rotate ***/
                 .graphicsLayer {
