@@ -6,8 +6,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import androidx.compose.ui.res.stringResource
-import com.example.luckytask.R
 import kotlin.math.sqrt
 
 /*** Add constructor taking context and onShake function --> extend SensorEventListener
