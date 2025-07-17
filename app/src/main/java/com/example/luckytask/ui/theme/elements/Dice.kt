@@ -52,7 +52,7 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>)
         animationSpec = tween(500, easing = LinearOutSlowInEasing)
     )
 
-    /*** Upon next clicking (after setting zoomed to false in LaunchedEffect)
+    /*** Upon next clicking (after setting triggerAnimation.value to false in LaunchedEffect)
      *   --> call function to revert the value back to true
      *   --> which again calls the LaunchedEffect code ***/
     fun triggerAnimation() {
@@ -60,7 +60,7 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>)
         Log.d("[DICE]", "Call animation")
     }
 
-    /*** As soon as the animation is started (if zoomed = true, after
+    /*** As soon as the animation is started (if triggerAnimation.value = true, after
      *   clicking (for now)) --> start it +  add delays, and revert back
      *   to original size ***/
     LaunchedEffect(triggerAnimation.value) {

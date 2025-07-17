@@ -20,12 +20,14 @@ class MockDiceActivity : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
     private val TAG = "[SENSOR]"
 
-
+    /*** Use this variable to keep track of animation ***/
     private var triggerAnimation = mutableStateOf(false)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /*** Pass the code for onShake() for shakeListener --> trigger animation ***/
         shakeListener = ShakeListener(this) {
             Log.d(TAG, "Shake detected!")
             triggerAnimation.value = true
@@ -41,6 +43,8 @@ class MockDiceActivity : ComponentActivity() {
                 }) { innerPadding ->
                     Dice(
                         modifier = Modifier.padding(innerPadding),
+
+                        /*** Pass value of triggerAnimation to Dice for the actual animation ***/
                         triggerAnimation = triggerAnimation
                     )
                 }
