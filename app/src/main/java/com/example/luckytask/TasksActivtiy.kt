@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -108,21 +107,23 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         }
 
         item {
+            Text(
+                text = "My TODO List",
+                fontSize = 30.sp
+            )
+        }
+
+        item {
             AddTaskButton(
                 modifier = Modifier
             )
         }
 
         item {
-            ProgressCircle(7, 10, colorResource(R.color.purple_500))
-        }
-
-        item {
-            Spacer(modifier = Modifier.padding(10.dp))
-        }
-
-        item{
-            ProgressCircle(6, 27, colorResource(R.color.teal_700))
+            Task(
+                "This is a TODO item",
+                modifier = Modifier
+            )
         }
     }
 }
