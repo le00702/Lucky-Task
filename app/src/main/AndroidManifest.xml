@@ -24,6 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".MockActivity" />
+        <activity android:name=".MockDiceActivity" />
     </application>
 
 </manifest>
