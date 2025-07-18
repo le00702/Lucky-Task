@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,32 +78,51 @@ class TasksActivity : ComponentActivity() {
 fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>) {
 
     /*** Organize elements in column ***/
-    Column(
+    LazyColumn(
         modifier = modifier.padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     )
     {
-        Text(
-            text = "My Active Tasks",
-            fontSize = 30.sp
-        )
+        item {
+            Text(
+                text = "My Active Tasks",
+                fontSize = 30.sp
+            )
+        }
 
-        Task(
-            "This is a task",
-            modifier = Modifier
-        )
-        Dice(
-            modifier = modifier,
+        item {
+            Task(
+                "This is a task",
+                modifier = Modifier
+            )
+        }
 
-            /*** Pass value of triggerAnimation to Dice for the actual animation ***/
-            triggerAnimation = triggerAnimation
-        )
-        AddTaskButton(
-            modifier = Modifier
-        )
-        ProgressCircle(7, 10, colorResource(R.color.purple_500))
-        Spacer(modifier = Modifier.padding(10.dp))
-        ProgressCircle(6, 27, colorResource(R.color.teal_700))
+        item {
+            Dice(
+                modifier = modifier,
+
+                /*** Pass value of triggerAnimation to Dice for the actual animation ***/
+                triggerAnimation = triggerAnimation
+            )
+        }
+
+        item {
+            AddTaskButton(
+                modifier = Modifier
+            )
+        }
+
+        item {
+            ProgressCircle(7, 10, colorResource(R.color.purple_500))
+        }
+
+        item {
+            Spacer(modifier = Modifier.padding(10.dp))
+        }
+
+        item{
+            ProgressCircle(6, 27, colorResource(R.color.teal_700))
+        }
     }
 }
