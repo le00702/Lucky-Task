@@ -84,6 +84,12 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     /*** ENABLE WHEN CHECKING FOR ACTIVE TASKS DISPLAY ***/
     activeTasks = listOf<String>("Task 1", "Task 2", "Task 3")
 
+    /*** Use this roommate-task-list for mocking purposes for now ***/
+    var roommateTasks = listOf<String>()
+
+    /*** ENABLE WHEN CHECKING FOR ROOMMATE TASKS DISPLAY ***/
+   // roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
+
     /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
@@ -137,6 +143,40 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
         item {
             Spacer(modifier = Modifier.height(50.dp))
+        }
+
+        item {
+            Text(
+                text = "My Roommates' Group Tasks",
+                fontSize = HEADER_SIZE
+            )
+        }
+
+        /*** If there are no active tasks, display the following message
+         *   --> user is asked to roll dice
+         *   --> align text centered ***/
+        if(roommateTasks.isEmpty()) {
+            item {
+                Text(
+                    "Your roommates haven’t drawn a task yet.",
+                    color = colorResource(R.color.task_text_color),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            /*** If there ARE roommate tasks, display them all ***/
+            items(roommateTasks.size) { index ->
+                Task(
+                    title = roommateTasks[index],
+                    modifier = Modifier,
+                    active = true
+                )
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
         }
 
         item {
