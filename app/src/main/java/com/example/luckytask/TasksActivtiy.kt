@@ -121,7 +121,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
 
         item {
             Task(
-                "This is a TODO item",
+                "This is a TODO item TEST LONG LINE",
                 modifier = Modifier
             )
         }

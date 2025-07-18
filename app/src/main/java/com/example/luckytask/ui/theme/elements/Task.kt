@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.R
@@ -43,10 +45,17 @@ fun Task(
                 text = title,
                 fontSize = 25.sp,
                 color = colorResource(R.color.task_color),
+                maxLines = 1,
+                /*** If text is too long, shorten it by using '...' at the end ***/
+                overflow = TextOverflow.Ellipsis,
+                /*** Use weight to allow the text element to take up part of the row
+                 *   --> but not so much, that the icon below does not fit anymore
+                 *   --> Icon uses 25.dp, therefore text can have the rest (1 "unit")
+                 *   --> units are distributed amongst child elements of this row ***/
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .weight(1f)
             )
-            IconButton(onClick = {}) {
+            IconButton(onClick = {}, Modifier.size(25.dp)) {
                 Icon(
                     painter = painterResource(R.drawable.info),
                     contentDescription = "Info",
