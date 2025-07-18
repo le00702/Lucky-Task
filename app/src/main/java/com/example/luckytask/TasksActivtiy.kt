@@ -6,20 +6,23 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
+import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
-import com.example.luckytask.ui.theme.elements.MockButton
+import com.example.luckytask.ui.theme.elements.ProgressCircle
+import com.example.luckytask.ui.theme.elements.Task
 
-class MainActivity : ComponentActivity() {
+class TasksActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,7 +33,7 @@ class MainActivity : ComponentActivity() {
                         stringResource(id = R.string.app_name)
                     )
                 }) { innerPadding ->
-                    LuckyTaskApp(
+                    TasksScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -40,25 +43,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LuckyTaskApp(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+fun TasksScreen(modifier: Modifier = Modifier) {
 
+    /*** Organize elements in column ***/
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = modifier.padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        MockButton(context, MockActivity::class.java, "Go to MockActivity")
-        MockButton(context, MockDiceActivity::class.java, "Go to Dice")
-        MockButton(context, TasksActivity::class.java, "Go to Tasks")
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LuckyTaskAppPreview() {
-    LuckyTaskTheme {
-        LuckyTaskApp()
+        verticalArrangement = Arrangement.Center
+    )
+    {
+        Task(
+            "This is a task",
+            modifier = Modifier
+        )
+        AddTaskButton(
+            modifier = Modifier
+        )
+        ProgressCircle(7, 10, colorResource(R.color.purple_500))
+        Spacer(modifier = Modifier.padding(10.dp))
+        ProgressCircle(6, 27, colorResource(R.color.teal_700))
     }
 }
