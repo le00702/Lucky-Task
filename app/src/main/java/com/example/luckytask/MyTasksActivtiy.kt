@@ -90,7 +90,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         item {
             Task(
                 "This is a task",
-                modifier = Modifier
+                modifier = Modifier,
+                active = true
             )
         }
 

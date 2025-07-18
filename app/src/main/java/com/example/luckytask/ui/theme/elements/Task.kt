@@ -24,12 +24,13 @@ import com.example.luckytask.R
 fun Task(
     title: String,
     modifier: Modifier = Modifier,
+    active: Boolean = false
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        color = colorResource(R.color.app_color),
+        color = if(active) colorResource(R.color.active_task_color) else colorResource(R.color.app_color),
         shape = RoundedCornerShape(12.dp)
     ) {
         /*** Align all elements in a row, to organize them horizontally ***/
@@ -44,7 +45,7 @@ fun Task(
             Text(
                 text = title,
                 fontSize = 25.sp,
-                color = colorResource(R.color.task_color),
+                color = colorResource(R.color.task_text_color),
                 maxLines = 1,
                 /*** If text is too long, shorten it by using '...' at the end ***/
                 overflow = TextOverflow.Ellipsis,
@@ -59,7 +60,7 @@ fun Task(
                 Icon(
                     painter = painterResource(R.drawable.info),
                     contentDescription = "Info",
-                    tint = colorResource(R.color.task_color)
+                    tint = colorResource(R.color.task_text_color)
                 )
             }
         }
