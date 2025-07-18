@@ -23,6 +23,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>, isMock: Boolean) {
 
+    /*** Use this for mocking purposes for now: If it is the mock, apply the modifier and
+     *   place in middle of the WHOLE screen --> else, do not do this! ***/
     val customModifier: Modifier = if (isMock) modifier.fillMaxSize() else Modifier
 
     /*** Upscale the image when it is zoomed to 1.5 of original size
@@ -56,9 +58,7 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>,
 
     /*** Organize elements in column ***/
     Column(
-        //modifier = modifier
-        //.fillMaxSize(),
-        // .padding(20.dp),
+        /*** Apply custom modifier, depending on whether this is the mock dice or not ***/
         modifier = customModifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
