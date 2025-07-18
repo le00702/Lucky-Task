@@ -52,7 +52,7 @@ fun LuckyTaskApp(modifier: Modifier = Modifier) {
         MockButton(context, MockActivity::class.java, "Go to MockActivity")
         MockButton(context, MockDiceActivity::class.java, "Go to Dice")
         MockButton(context, MyTasksActivity::class.java, "Go to my Tasks")
-        MockButton(context, MyTasksActivity::class.java, "Go to Group Tasks")
+        MockButton(context, GroupTasksActivity::class.java, "Go to Group Tasks")
     }
 }
 
