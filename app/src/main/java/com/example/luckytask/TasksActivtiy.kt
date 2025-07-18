@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +16,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +24,6 @@ import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
-import com.example.luckytask.ui.theme.elements.ProgressCircle
 import com.example.luckytask.ui.theme.elements.Task
 
 class TasksActivity : ComponentActivity() {
@@ -76,6 +73,8 @@ class TasksActivity : ComponentActivity() {
 @Composable
 fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>) {
 
+    val HEADER_SIZE = 30.sp
+
     /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
@@ -86,7 +85,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         item {
             Text(
                 text = "My Active Tasks",
-                fontSize = 30.sp
+                fontSize = HEADER_SIZE
             )
         }
 
@@ -109,7 +108,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         item {
             Text(
                 text = "My TODO List",
-                fontSize = 30.sp
+                fontSize = HEADER_SIZE
             )
         }
 
