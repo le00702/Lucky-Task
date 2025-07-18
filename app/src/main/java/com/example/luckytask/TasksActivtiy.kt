@@ -79,7 +79,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     LazyColumn(
         modifier = modifier.padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        //verticalArrangement = Arrangement.Center
     )
     {
         item {
@@ -101,7 +101,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                 modifier = modifier,
 
                 /*** Pass value of triggerAnimation to Dice for the actual animation ***/
-                triggerAnimation = triggerAnimation
+                triggerAnimation = triggerAnimation,
+                isMock = false
             )
         }
 

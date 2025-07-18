@@ -7,9 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -17,23 +15,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.luckytask.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>) {
+fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>, isMock: Boolean) {
+
+    val customModifier: Modifier = if (isMock) modifier.fillMaxSize() else Modifier
 
     /*** Upscale the image when it is zoomed to 1.5 of original size
      *   --> if it is not zoomed, it should stay at its original size
      *   --> set the animation time for zooming to 250ms
      *   --> using tween for time-based animation ***/
     val zoomFactor by animateFloatAsState(
-        targetValue = if (triggerAnimation.value) 1.5f else 1.0f,
-        animationSpec = tween(250)
+        targetValue = if (triggerAnimation.value) 1.5f else 1.0f, animationSpec = tween(250)
     )
 
     /*** Rotate image only, when it is zoomed
@@ -59,18 +56,13 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>)
 
     /*** Organize elements in column ***/
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(20.dp),
+        //modifier = modifier
+        //.fillMaxSize(),
+        // .padding(20.dp),
+        modifier = customModifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    )
-    {
-        Text(
-            text = "Roll the dice!",
-            fontSize = 30.sp,
-            color = colorResource(R.color.header_color)
-        )
+    ) {
         Image(
             painter = painterResource(R.drawable.dice),
             contentDescription = "Dice Image",
@@ -82,7 +74,6 @@ fun Dice(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>)
                     scaleX = zoomFactor
                     scaleY = zoomFactor
                     rotationZ = rotation
-                }
-        )
+                })
     }
 }
