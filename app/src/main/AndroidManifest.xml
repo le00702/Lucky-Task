@@ -25,7 +25,7 @@
         </activity>
         <activity android:name=".MockActivity" />
         <activity android:name=".MockDiceActivity" />
-        <activity android:name=".TasksActivity" />
+        <activity android:name=".MyTasksActivity" />
     </application>
 
 </manifest>
