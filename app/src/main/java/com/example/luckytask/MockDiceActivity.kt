@@ -45,7 +45,8 @@ class MockDiceActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
 
                         /*** Pass value of triggerAnimation to Dice for the actual animation ***/
-                        triggerAnimation = triggerAnimation
+                        triggerAnimation = triggerAnimation,
+                        isMock = true
                     )
                 }
             }

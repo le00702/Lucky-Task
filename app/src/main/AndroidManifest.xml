@@ -6,9 +6,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_luckytask_foreground"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_luckytask_foreground"
         android:supportsRtl="true"
         android:theme="@style/Theme.LuckyTask"
         tools:targetApi="31">
@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".MockActivity" />
         <activity android:name=".MockDiceActivity" />
+        <activity android:name=".MyTasksActivity" />
+        <activity android:name=".GroupTasksActivity" />
     </application>
 
 </manifest>

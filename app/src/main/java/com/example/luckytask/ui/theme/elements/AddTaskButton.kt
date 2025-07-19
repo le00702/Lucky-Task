@@ -1,7 +1,10 @@
 package com.example.luckytask.ui.theme.elements
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,19 +34,20 @@ fun AddTaskButton(
                 /*** Add some padding, so the text is not that close to the border ***/
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
-            IconButton(onClick = {}) {
+            /*** Fix icon size to avoid resizing issues ***/
+            IconButton(onClick = {}, Modifier.size(30.dp)) {
                 Icon(
                     painter = painterResource(R.drawable.plus),
                     contentDescription = "Add new task",
                     tint = colorResource(R.color.white)
                 )
             }
+            /*** Add this to slightly increase space between text and plus-icon ***/
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "New Task",
                 fontSize = 25.sp,
-                color = colorResource(R.color.white),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                color = colorResource(R.color.white)
             )
         }
     }

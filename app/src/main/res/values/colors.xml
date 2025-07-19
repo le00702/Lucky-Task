@@ -9,6 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="app_color">#B29ADB</color>
     <color name="header_color">#000000</color>
-    <color name="task_color">#E12F2F2F</color>
+    <color name="task_text_color">#E12F2F2F</color>
+    <color name="active_task_color">#ACCEAE</color>
+    <color name="roommate_task_color">#92BCCE</color>
     <color name="add_task_color">#593397</color>
 </resources>
