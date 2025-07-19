@@ -21,16 +21,27 @@ import androidx.compose.ui.unit.sp
 import com.example.luckytask.R
 
 @Composable
+/***
+ * @param title: The short description of the task --> longer description will be provided via info icon
+ * @param active: For now, describes active state as Boolean --> does not matter whether
+ * its a private or group task
+ * @param roommate: For now, refers to whether this task was drawn by any roommate ***/
 fun Task(
     title: String,
     modifier: Modifier = Modifier,
-    active: Boolean = false
+    active: Boolean = false,
+    roommate: Boolean = false
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        color = if(active) colorResource(R.color.active_task_color) else colorResource(R.color.app_color),
+        /*** Choose color based on whether this is an active task, a (not yet drawn)
+         *   To-Do, or a task that was drawn by a roommate ***/
+        color =
+            if(roommate) colorResource(R.color.roommate_task_color)
+            else if(active) colorResource(R.color.active_task_color)
+            else colorResource(R.color.app_color),
         shape = RoundedCornerShape(12.dp)
     ) {
         /*** Align all elements in a row, to organize them horizontally ***/

@@ -173,7 +173,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 Task(
                     title = roommateTasks[index],
                     modifier = Modifier,
-                    active = true
+                    active = true,
+                    roommate = true
                 )
             }
         }
