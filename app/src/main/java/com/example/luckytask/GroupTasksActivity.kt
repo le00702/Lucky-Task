@@ -88,7 +88,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     var roommateTasks = listOf<String>()
 
     /*** ENABLE WHEN CHECKING FOR ROOMMATE TASKS DISPLAY ***/
-   // roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
+    roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
 
     /*** Organize elements in column ***/
     LazyColumn(
@@ -148,7 +148,10 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         item {
             Text(
                 text = "My Roommates' Group Tasks",
-                fontSize = HEADER_SIZE
+                fontSize = HEADER_SIZE,
+                textAlign = TextAlign.Center,
+                /*** Use this to add space between the lines ***/
+                lineHeight = 30.sp
             )
         }
 
