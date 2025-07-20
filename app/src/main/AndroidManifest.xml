@@ -27,6 +27,7 @@
         <activity android:name=".MockDiceActivity" />
         <activity android:name=".MyTasksActivity" />
         <activity android:name=".GroupTasksActivity" />
+        <activity android:name=".AddNewTaskActivity" />
     </application>
 
 </manifest>
