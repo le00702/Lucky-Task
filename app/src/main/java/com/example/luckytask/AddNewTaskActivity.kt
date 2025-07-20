@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -72,6 +73,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Task Title",
+                    fontSize = 25.sp,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 OutlinedTextField(
@@ -79,6 +81,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
                     onValueChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(30.dp))
             }
         }
 
@@ -86,6 +89,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Task Description",
+                    fontSize = 25.sp,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 OutlinedTextField(
@@ -93,6 +97,12 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
                     onValueChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(30.dp))
+            }
+        }
+        item {
+            Button(onClick = {}) {
+                Text("Save Task", fontSize = 25.sp)
             }
         }
     }
