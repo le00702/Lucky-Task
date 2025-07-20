@@ -18,6 +18,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,6 +61,10 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
 
     val HEADER_SIZE = 30.sp
 
+    /*** Use '=' to assign as MutableState instead of String (by using 'by') ***/
+    var title = remember { mutableStateOf("") }
+    var description = remember { mutableStateOf("") }
+
     /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
@@ -76,11 +84,11 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            AddTaskInput("Task Title", "Enter a task title")
+            AddTaskInput(title,"Task Title", "Enter a task title")
         }
 
         item {
-            AddTaskInput("Task Description", "Enter a task description")
+            AddTaskInput(description,"Task Description", "Enter a task description")
         }
         item {
             Button(onClick = {},

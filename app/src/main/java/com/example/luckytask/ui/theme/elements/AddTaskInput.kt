@@ -8,12 +8,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AddTaskInput(labelText: String, placeholderText: String) {
+/*** Pass 'input' as MutableState, so we can modify the value here
+ *   for updating the text --> not possible when passed as String only,
+ *   as it cannot be reassigned (=val) ***/
+fun AddTaskInput(input: MutableState<String>, labelText: String, placeholderText: String) {
     val LABEL_FONT_SIZE = 25.sp
     val INPUT_FONT_SIZE = 20.sp
 
@@ -25,14 +30,15 @@ fun AddTaskInput(labelText: String, placeholderText: String) {
             modifier = Modifier.padding(bottom = 4.dp)
         )
         OutlinedTextField(
-            value = "",
+            value = input.value,
+            onValueChange = { input.value = it },
+            textStyle = TextStyle(fontSize = INPUT_FONT_SIZE),
             placeholder = {
                 Text(
                     placeholderText,
                     fontSize = INPUT_FONT_SIZE
                 )
             },
-            onValueChange = {},
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(30.dp))
