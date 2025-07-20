@@ -20,13 +20,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.luckytask.AddNewTaskActivity
 import com.example.luckytask.R
 
 @Composable
 fun AddTaskButton(
     modifier: Modifier = Modifier,
-    context: Context,
-    activity: Class<out ComponentActivity>
+    context: Context
 ) {
     Surface(
         modifier = modifier
@@ -34,8 +34,7 @@ fun AddTaskButton(
         color = colorResource(R.color.add_task_color),
         shape = RoundedCornerShape(30.dp),
         onClick = {
-            Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(context, activity)
+            val intent = Intent(context, AddNewTaskActivity::class.java)
             context.startActivity(intent)
         }
     ) {

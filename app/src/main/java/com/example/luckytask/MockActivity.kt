@@ -61,8 +61,7 @@ fun MockApp(modifier: Modifier = Modifier) {
         )
         AddTaskButton(
             modifier = Modifier,
-            context,
-            AddNewTaskActivity::class.java
+            context
         )
         ProgressCircle(7, 10, colorResource(R.color.purple_500))
         Spacer(modifier = Modifier.padding(10.dp))

@@ -109,7 +109,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         /*** If there are no active tasks, display the following message
          *   --> user is asked to roll dice
          *   --> align text centered ***/
-        if(activeTasks.isEmpty()) {
+        if (activeTasks.isEmpty()) {
             item {
                 Text(
                     "You currently have no active tasks. Roll the dice to start a task!",
@@ -160,7 +160,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         /*** If there are no active tasks, display the following message
          *   --> user is asked to roll dice
          *   --> align text centered ***/
-        if(roommateTasks.isEmpty()) {
+        if (roommateTasks.isEmpty()) {
             item {
                 Text(
                     "Your roommates haven’t drawn a task yet.",
@@ -195,8 +195,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         item {
             AddTaskButton(
                 modifier = Modifier,
-                context,
-                AddNewTaskActivity::class.java
+                context
             )
         }
 
