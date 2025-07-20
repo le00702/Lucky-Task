@@ -50,6 +50,7 @@ class AddNewTaskActivity : ComponentActivity() {
 fun AddNewTaskScreen(modifier: Modifier = Modifier) {
 
     val HEADER_SIZE = 30.sp
+    val FONT_SIZE = 20.sp
 
     /*** Organize elements in column ***/
     LazyColumn(
@@ -77,7 +78,13 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 OutlinedTextField(
-                    value = "This is a task title",
+                    value = "",
+                    placeholder = {
+                        Text(
+                            "Enter a task title",
+                            fontSize = FONT_SIZE
+                        )
+                    },
                     onValueChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -93,7 +100,13 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 OutlinedTextField(
-                    value = "This is a task description",
+                    value = "",
+                    placeholder = {
+                        Text(
+                            "Enter a task description",
+                            fontSize = FONT_SIZE
+                        )
+                    },
                     onValueChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
