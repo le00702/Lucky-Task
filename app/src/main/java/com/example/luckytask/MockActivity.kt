@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,8 @@ class MockActivity : ComponentActivity() {
 @Composable
 fun MockApp(modifier: Modifier = Modifier) {
 
+    val context = LocalContext.current
+
     /*** Organize elements in column ***/
     Column(
         modifier = modifier.padding(20.dp),
@@ -57,7 +60,8 @@ fun MockApp(modifier: Modifier = Modifier) {
             modifier = Modifier
         )
         AddTaskButton(
-            modifier = Modifier
+            modifier = Modifier,
+            context
         )
         ProgressCircle(7, 10, colorResource(R.color.purple_500))
         Spacer(modifier = Modifier.padding(10.dp))

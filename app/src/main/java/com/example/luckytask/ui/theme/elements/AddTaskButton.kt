@@ -1,5 +1,7 @@
 package com.example.luckytask.ui.theme.elements
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -21,12 +23,16 @@ import com.example.luckytask.R
 @Composable
 fun AddTaskButton(
     modifier: Modifier = Modifier,
+    context: Context
 ) {
     Surface(
         modifier = modifier
             .padding(8.dp),
         color = colorResource(R.color.add_task_color),
-        shape = RoundedCornerShape(30.dp)
+        shape = RoundedCornerShape(30.dp),
+        onClick = {
+            Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
+        }
     ) {
         /*** Align all elements in a row, to organize them horizontally ***/
         Row(

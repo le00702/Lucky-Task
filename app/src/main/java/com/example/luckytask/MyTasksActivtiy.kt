@@ -17,6 +17,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -77,6 +78,7 @@ class MyTasksActivity : ComponentActivity() {
 fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>) {
 
     val HEADER_SIZE = 30.sp
+    val context = LocalContext.current
 
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = listOf<String>()
@@ -148,7 +150,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
 
         item {
             AddTaskButton(
-                modifier = Modifier
+                modifier = Modifier,
+                context
             )
         }
 

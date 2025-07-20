@@ -116,12 +116,6 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            AddTaskButton(
-                modifier = Modifier
-            )
-        }
-
-        item {
             Task(
                 "This is a TODO item TEST LONG LINE",
                 modifier = Modifier
