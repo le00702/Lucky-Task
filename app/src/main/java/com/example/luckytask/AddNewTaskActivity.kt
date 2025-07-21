@@ -64,6 +64,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
     /*** Use '=' to assign as MutableState instead of String (by using 'by') ***/
     var title = remember { mutableStateOf("") }
     var description = remember { mutableStateOf("") }
+    var formIsComplete = title.value.isNotBlank() && description.value.isNotBlank()
 
     /*** Organize elements in column ***/
     LazyColumn(
@@ -84,19 +85,25 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            AddTaskInput(title,"Task Title", "Enter a task title")
+            AddTaskInput(title, "Task Title", "Enter a task title")
         }
 
         item {
-            AddTaskInput(description,"Task Description", "Enter a task description")
+            AddTaskInput(description, "Task Description", "Enter a task description")
         }
         item {
-            Button(onClick = {},
-                /*** Set the color to the same as the 'add-task' button ***/
+            Button(
+                onClick = {},
+                enabled = formIsComplete,
+                /*** Set the color to the same as the 'add-task' button (if enabled)
+                 *   --> else make it grey ***/
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.add_task_color),
+                    containerColor =
+                        if(formIsComplete) colorResource(R.color.add_task_color)
+                        else colorResource(R.color.task_text_color),
                     contentColor = Color.White
-                ),) {
+                ),
+            ) {
                 Text("Save Task", fontSize = 25.sp)
             }
         }
