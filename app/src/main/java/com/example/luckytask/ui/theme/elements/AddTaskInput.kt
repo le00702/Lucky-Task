@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 /*** Pass 'input' as MutableState, so we can modify the value here
  *   for updating the text --> not possible when passed as String only,
  *   as it cannot be reassigned (=val) ***/
-fun AddTaskInput(input: MutableState<String>, labelText: String, placeholderText: String) {
+fun AddTaskInput(input: MutableState<String>, labelText: String, placeholderText: String, isTitle: Boolean = false) {
     val LABEL_FONT_SIZE = 25.sp
     val INPUT_FONT_SIZE = 20.sp
 
@@ -32,6 +32,7 @@ fun AddTaskInput(input: MutableState<String>, labelText: String, placeholderText
         OutlinedTextField(
             value = input.value,
             onValueChange = { input.value = it },
+            singleLine = isTitle,
             textStyle = TextStyle(fontSize = INPUT_FONT_SIZE),
             placeholder = {
                 Text(

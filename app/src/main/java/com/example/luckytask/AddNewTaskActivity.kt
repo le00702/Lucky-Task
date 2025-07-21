@@ -85,7 +85,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            AddTaskInput(title, "Task Title", "Enter a task title")
+            AddTaskInput(title, "Task Title", "Enter a task title", isTitle = true,)
         }
 
         item {
