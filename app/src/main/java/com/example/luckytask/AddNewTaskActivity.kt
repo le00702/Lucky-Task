@@ -32,9 +32,10 @@ class AddNewTaskActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LuckyTaskTheme {
+                val parentActivity = intent.getStringExtra("parentActivity").toString()
                 AppWithDrawer(
-                    currentActivityName = intent.getStringExtra("parentActivity").toString(),
-                    topBarTitle = "Add Task"
+                    currentActivityName = parentActivity,
+                    topBarTitle = parentActivity
                 ) {
                     AddNewTaskScreen(
                         modifier = Modifier.padding(20.dp)
