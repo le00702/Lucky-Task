@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.luckytask.ui.theme.LuckyTaskTheme
-import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
+import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.elements.Dice
 
@@ -36,15 +36,12 @@ class MockDiceActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LuckyTaskTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-                    LuckyTaskTopAppBar(
-                        stringResource(id = R.string.app_name)
-                    )
-                }) { innerPadding ->
+                AppWithDrawer(
+                    currentActivityName = "MockDiceActivity",
+                    topBarTitle = "Dice Game"
+                ) {
                     Dice(
-                        modifier = Modifier.padding(innerPadding),
-
-                        /*** Pass value of triggerAnimation to Dice for the actual animation ***/
+                        modifier = Modifier,
                         triggerAnimation = triggerAnimation,
                         isMock = true
                     )
