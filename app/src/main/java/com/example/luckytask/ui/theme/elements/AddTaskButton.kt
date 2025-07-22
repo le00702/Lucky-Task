@@ -26,7 +26,8 @@ import com.example.luckytask.R
 @Composable
 fun AddTaskButton(
     modifier: Modifier = Modifier,
-    context: Context
+    context: Context,
+    parentActivity: String
 ) {
     Surface(
         modifier = modifier
@@ -35,6 +36,7 @@ fun AddTaskButton(
         shape = RoundedCornerShape(30.dp),
         onClick = {
             val intent = Intent(context, AddNewTaskActivity::class.java)
+            intent.putExtra("parentActivity", parentActivity)
             context.startActivity(intent)
         }
     ) {

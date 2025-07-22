@@ -57,7 +57,8 @@ fun MockApp(modifier: Modifier = Modifier) {
         )
         AddTaskButton(
             modifier = Modifier,
-            context
+            context,
+            "MockActivity"
         )
         ProgressCircle(7, 10, colorResource(R.color.purple_500))
         Spacer(modifier = Modifier.padding(10.dp))

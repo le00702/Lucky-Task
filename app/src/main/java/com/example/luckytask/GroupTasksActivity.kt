@@ -195,7 +195,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         item {
             AddTaskButton(
                 modifier = Modifier,
-                context
+                context,
+                "GroupTasksActivity"
             )
         }
 

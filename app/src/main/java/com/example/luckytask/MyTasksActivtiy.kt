@@ -149,7 +149,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         item {
             AddTaskButton(
                 modifier = Modifier,
-                context
+                context,
+                "MyTasksActivity"
             )
         }
 

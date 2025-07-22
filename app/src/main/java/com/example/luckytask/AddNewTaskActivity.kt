@@ -37,7 +37,7 @@ class AddNewTaskActivity : ComponentActivity() {
         setContent {
             LuckyTaskTheme {
                 AppWithDrawer(
-                    currentActivityName = "GroupTasksActivity",
+                    currentActivityName = intent.getStringExtra("parentActivity").toString(),
                     topBarTitle = "Add Task"
                 ) {
                     AddNewTaskScreen(
