@@ -45,7 +45,7 @@ fun DrawerContent(
     val menuItems = listOf(
         MenuItem("Home Screen", Icons.Default.Home, MainActivity::class.java),
         MenuItem(stringResource(R.string.title_mock), R.drawable.info, MockActivity::class.java),
-        MenuItem("Dice Game", R.drawable.plus, MockDiceActivity::class.java),
+        MenuItem("Dice Game", R.drawable.dice_3, MockDiceActivity::class.java),
         MenuItem(stringResource(R.string.title_my_todos), Icons.Default.Person, MyTasksActivity::class.java),
         MenuItem(stringResource(R.string.title_group_todos), R.drawable.user_account, GroupTasksActivity::class.java)
     )
