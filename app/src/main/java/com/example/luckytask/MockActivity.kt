@@ -7,21 +7,21 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.ProgressCircle
 import com.example.luckytask.ui.theme.elements.Task
+
+/*** Pass the name of the activity to display it correctly on the hamburger menu ***/
+private val ACTIVITY_NAME = "MockActivity"
 
 class MockActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +30,7 @@ class MockActivity : ComponentActivity() {
         setContent {
             LuckyTaskTheme {
                 AppWithDrawer(
-                    currentActivityName = "MockActivity",
+                    currentActivityName = ACTIVITY_NAME,
                     topBarTitle = "Mock"
                 ) {
                     MockApp(modifier = Modifier.padding(20.dp))
@@ -58,7 +58,7 @@ fun MockApp(modifier: Modifier = Modifier) {
         AddTaskButton(
             modifier = Modifier,
             context,
-            "MockActivity"
+            ACTIVITY_NAME
         )
         ProgressCircle(7, 10, colorResource(R.color.purple_500))
         Spacer(modifier = Modifier.padding(10.dp))

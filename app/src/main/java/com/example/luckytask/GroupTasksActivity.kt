@@ -6,11 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -19,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,8 +25,10 @@ import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
-import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
 import com.example.luckytask.ui.theme.elements.Task
+
+/*** Pass the name of the activity to display it correctly on the hamburger menu ***/
+private val ACTIVITY_NAME = "GroupTasksActivity"
 
 class GroupTasksActivity : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
@@ -51,7 +50,7 @@ class GroupTasksActivity : ComponentActivity() {
         setContent {
             LuckyTaskTheme {
                 AppWithDrawer(
-                    currentActivityName = "GroupTasksActivity",
+                    currentActivityName = ACTIVITY_NAME,
                     topBarTitle = "Group TODO's"
                 ) {
                     GroupTasksScreen(
@@ -196,7 +195,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             AddTaskButton(
                 modifier = Modifier,
                 context,
-                "GroupTasksActivity"
+                ACTIVITY_NAME
             )
         }
 
