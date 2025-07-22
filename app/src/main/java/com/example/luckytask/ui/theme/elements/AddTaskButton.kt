@@ -27,7 +27,11 @@ import com.example.luckytask.R
 fun AddTaskButton(
     modifier: Modifier = Modifier,
     context: Context,
-    parentActivity: String
+    /*** Add these to remember which activity we came from and what to display
+     *   @param: parentActivity --> which activity we came from
+     *   @param: topBarTitle --> which title to display on the top bar ***/
+    parentActivity: String,
+    topBarTitle: String
 ) {
     Surface(
         modifier = modifier
@@ -37,6 +41,7 @@ fun AddTaskButton(
         onClick = {
             val intent = Intent(context, AddNewTaskActivity::class.java)
             intent.putExtra("parentActivity", parentActivity)
+            intent.putExtra("topBarTitle", topBarTitle)
             context.startActivity(intent)
         }
     ) {

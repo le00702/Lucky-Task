@@ -33,9 +33,11 @@ class AddNewTaskActivity : ComponentActivity() {
         setContent {
             LuckyTaskTheme {
                 val parentActivity = intent.getStringExtra("parentActivity").toString()
+                val topBarTitle = intent.getStringExtra("topBarTitle").toString()
+
                 AppWithDrawer(
                     currentActivityName = parentActivity,
-                    topBarTitle = parentActivity
+                    topBarTitle = topBarTitle
                 ) {
                     AddNewTaskScreen(
                         modifier = Modifier.padding(20.dp)
