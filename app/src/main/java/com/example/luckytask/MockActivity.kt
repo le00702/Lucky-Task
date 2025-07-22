@@ -31,7 +31,7 @@ class MockActivity : ComponentActivity() {
             LuckyTaskTheme {
                 AppWithDrawer(
                     currentActivityName = "MockActivity",
-                    topBarTitle = "Mock Components"
+                    topBarTitle = "Mock"
                 ) {
                     MockApp(modifier = Modifier.padding(20.dp))
                 }
