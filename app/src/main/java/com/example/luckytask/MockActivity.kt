@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
-import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
+import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.ProgressCircle
 import com.example.luckytask.ui.theme.elements.Task
 
@@ -29,14 +29,11 @@ class MockActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LuckyTaskTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-                    LuckyTaskTopAppBar(
-                        stringResource(id = R.string.app_name)
-                    )
-                }) { innerPadding ->
-                    MockApp(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                AppWithDrawer(
+                    currentActivityName = "MockActivity",
+                    topBarTitle = "Mock Components"
+                ) {
+                    MockApp(modifier = Modifier.padding(20.dp))
                 }
             }
         }
@@ -50,11 +47,10 @@ fun MockApp(modifier: Modifier = Modifier) {
 
     /*** Organize elements in column ***/
     Column(
-        modifier = modifier.padding(20.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    )
-    {
+    ) {
         Task(
             "This is a task",
             modifier = Modifier

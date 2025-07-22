@@ -24,8 +24,8 @@ fun LuckyTaskTopAppBar(
     title: String,
     backgroundColor: Color = colorResource(R.color.app_color),
     contentColor: Color = colorResource(R.color.header_color),
-
-    ) {
+    onMenuClick: (() -> Unit)? = null
+) {
     TopAppBar(
         title = {
             Box(
@@ -43,7 +43,11 @@ fun LuckyTaskTopAppBar(
         },
         /*** Left side of the app bar ***/
         navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(
+                onClick = {
+                    onMenuClick?.invoke()
+                }
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.hamburger_menu),
                     contentDescription = "Menu",

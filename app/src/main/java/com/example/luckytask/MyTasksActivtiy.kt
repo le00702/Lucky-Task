@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
+import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
 import com.example.luckytask.ui.theme.elements.Task
@@ -49,13 +50,12 @@ class MyTasksActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LuckyTaskTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-                    LuckyTaskTopAppBar(
-                        stringResource(id = R.string.app_name)
-                    )
-                }) { innerPadding ->
+                AppWithDrawer(
+                    currentActivityName = "MyTasksActivity",
+                    topBarTitle = "My Tasks"
+                ) {
                     TasksScreen(
-                        modifier = Modifier.padding(innerPadding),
+                        modifier = Modifier.padding(20.dp),
                         triggerAnimation
                     )
                 }
@@ -90,9 +90,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     LazyColumn(
         modifier = modifier.padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-    )
-    {
-
+    ) {
         item {
             Text(
                 text = "My Active Tasks",

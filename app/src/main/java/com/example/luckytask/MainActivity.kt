@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.luckytask.ui.theme.LuckyTaskTheme
-import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
+import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.MockButton
 
 class MainActivity : ComponentActivity() {
@@ -25,14 +25,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LuckyTaskTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-                    LuckyTaskTopAppBar(
-                        stringResource(id = R.string.app_name)
-                    )
-                }) { innerPadding ->
-                    LuckyTaskApp(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                AppWithDrawer(
+                    currentActivityName = "MainActivity",
+                    topBarTitle = "Lucky Task"
+                ) {
+                    LuckyTaskApp()
                 }
             }
         }
@@ -44,8 +41,7 @@ fun LuckyTaskApp(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
