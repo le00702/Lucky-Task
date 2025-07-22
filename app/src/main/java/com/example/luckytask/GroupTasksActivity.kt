@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
+import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
 import com.example.luckytask.ui.theme.elements.Task
@@ -48,13 +49,12 @@ class GroupTasksActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LuckyTaskTheme {
-                Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-                    LuckyTaskTopAppBar(
-                        stringResource(id = R.string.app_name)
-                    )
-                }) { innerPadding ->
+                AppWithDrawer(
+                    currentActivityName = "GroupTasksActivity",
+                    topBarTitle = "Group TODO's"
+                ) {
                     GroupTasksScreen(
-                        modifier = Modifier.padding(innerPadding),
+                        modifier = Modifier.padding(20.dp),
                         triggerAnimation
                     )
                 }
