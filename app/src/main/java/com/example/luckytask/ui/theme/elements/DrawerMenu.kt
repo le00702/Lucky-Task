@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.MainActivity
@@ -43,10 +44,10 @@ fun DrawerContent(
 
     val menuItems = listOf(
         MenuItem("Home Screen", Icons.Default.Home, MainActivity::class.java),
-        MenuItem("Mock Components", R.drawable.info, MockActivity::class.java),
+        MenuItem(stringResource(R.string.title_mock), R.drawable.info, MockActivity::class.java),
         MenuItem("Dice Game", R.drawable.plus, MockDiceActivity::class.java),
-        MenuItem("My TODO's", Icons.Default.Person, MyTasksActivity::class.java),
-        MenuItem("Group TODO's", R.drawable.user_account, GroupTasksActivity::class.java)
+        MenuItem(stringResource(R.string.title_my_todos), Icons.Default.Person, MyTasksActivity::class.java),
+        MenuItem(stringResource(R.string.title_group_todos), R.drawable.user_account, GroupTasksActivity::class.java)
     )
 
     Column(

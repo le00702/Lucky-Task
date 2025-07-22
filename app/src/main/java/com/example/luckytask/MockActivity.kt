@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
@@ -31,7 +32,7 @@ class MockActivity : ComponentActivity() {
             LuckyTaskTheme {
                 AppWithDrawer(
                     currentActivityName = ACTIVITY_NAME,
-                    topBarTitle = "Mock"
+                    topBarTitle = stringResource(R.string.title_mock)
                 ) {
                     MockApp(modifier = Modifier.padding(20.dp))
                 }
