@@ -13,4 +13,6 @@
     <color name="active_task_color">#ACCEAE</color>
     <color name="roommate_task_color">#92BCCE</color>
     <color name="add_task_color">#593397</color>
+    <color name="completed_task_color">#E8F5E8</color>
+    <color name="error_color">#F44336</color>
 </resources>
