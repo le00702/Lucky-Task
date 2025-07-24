@@ -129,7 +129,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                     title = activeTasks[index],
                     modifier = Modifier,
                     active = true,
-                    onInfoIconClick = onInfoIconClick
+                    context = context
                 )
             }
         }
@@ -182,7 +182,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                     modifier = Modifier,
                     active = true,
                     roommate = true,
-                    onInfoIconClick = onInfoIconClick
+                    context = context
                 )
             }
         }
@@ -211,7 +211,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             Task(
                 "This is a TODO item TEST LONG LINE",
                 modifier = Modifier,
-                onInfoIconClick = onInfoIconClick
+                context = context
             )
         }
     }

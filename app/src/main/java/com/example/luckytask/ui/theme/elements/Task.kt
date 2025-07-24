@@ -1,5 +1,7 @@
 package com.example.luckytask.ui.theme.elements
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +33,7 @@ fun Task(
     modifier: Modifier = Modifier,
     active: Boolean = false,
     roommate: Boolean = false,
-    onInfoIconClick: () -> Unit
+    context: Context
 ) {
     Surface(
         modifier = modifier
@@ -68,7 +70,7 @@ fun Task(
                 modifier = Modifier
                     .weight(1f)
             )
-            IconButton(onClick = onInfoIconClick, Modifier.size(25.dp)) {
+            IconButton(onClick = { Toast.makeText(context, "Info icon clicked!", Toast.LENGTH_SHORT).show() }, Modifier.size(25.dp)) {
                 Icon(
                     painter = painterResource(R.drawable.info),
                     contentDescription = "Info",

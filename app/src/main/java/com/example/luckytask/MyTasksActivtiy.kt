@@ -151,7 +151,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                     title = activeTasks[index],
                     modifier = Modifier,
                     active = true,
-                    onInfoIconClick = {}
+                    context = context
                 )
             }
         }
@@ -202,7 +202,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             Task(
                 "This is a TODO item TEST LONG LINE",
                 modifier = Modifier,
-                onInfoIconClick = {}
+                context = context
             )
         }
     }

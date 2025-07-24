@@ -55,7 +55,7 @@ fun MockApp(modifier: Modifier = Modifier) {
         Task(
             "This is a task",
             modifier = Modifier,
-            onInfoIconClick = {}
+            context = context
         )
         AddTaskButton(
             modifier = Modifier,
