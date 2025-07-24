@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,26 +13,33 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.luckytask.data.TaskFilter
+import com.example.luckytask.data.TaskItem
+import com.example.luckytask.data.applyFilters
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
-import com.example.luckytask.ui.theme.elements.LuckyTaskTopAppBar
 import com.example.luckytask.ui.theme.elements.Task
-import com.example.luckytask.ui.theme.elements.TaskFilterBar
 import com.example.luckytask.ui.theme.elements.TaskCard
-import com.example.luckytask.data.*
+import com.example.luckytask.ui.theme.elements.TaskFilterBar
 import java.time.LocalDate
+
+/*** Pass the name of the activity to display it correctly on the hamburger menu ***/
+private val ACTIVITY_NAME = "MyTasksActivity"
 
 class MyTasksActivity : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
@@ -55,8 +61,8 @@ class MyTasksActivity : ComponentActivity() {
         setContent {
             LuckyTaskTheme {
                 AppWithDrawer(
-                    currentActivityName = "MyTasksActivity",
-                    topBarTitle = "My Tasks"
+                    currentActivityName = ACTIVITY_NAME,
+                    topBarTitle = stringResource(R.string.title_my_todos)
                 ) {
                     TasksScreen(
                         modifier = Modifier.padding(20.dp),
@@ -82,6 +88,7 @@ class MyTasksActivity : ComponentActivity() {
 fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>) {
 
     val HEADER_SIZE = 30.sp
+    val context = LocalContext.current
 
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = listOf<String>()
@@ -183,7 +190,10 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
 
         item {
             AddTaskButton(
-                modifier = Modifier
+                modifier = Modifier,
+                context,
+                ACTIVITY_NAME,
+                stringResource(R.string.title_my_todos)
             )
         }
 
