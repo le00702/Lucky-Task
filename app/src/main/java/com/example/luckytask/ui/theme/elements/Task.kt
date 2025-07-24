@@ -30,7 +30,8 @@ fun Task(
     title: String,
     modifier: Modifier = Modifier,
     active: Boolean = false,
-    roommate: Boolean = false
+    roommate: Boolean = false,
+    onInfoIconClick: () -> Unit
 ) {
     Surface(
         modifier = modifier
@@ -67,7 +68,7 @@ fun Task(
                 modifier = Modifier
                     .weight(1f)
             )
-            IconButton(onClick = {}, Modifier.size(25.dp)) {
+            IconButton(onClick = onInfoIconClick, Modifier.size(25.dp)) {
                 Icon(
                     painter = painterResource(R.drawable.info),
                     contentDescription = "Info",

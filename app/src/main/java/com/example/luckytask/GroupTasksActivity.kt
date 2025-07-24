@@ -2,6 +2,7 @@ package com.example.luckytask
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -92,6 +93,9 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     /*** ENABLE WHEN CHECKING FOR ROOMMATE TASKS DISPLAY ***/
     roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
 
+    val onInfoIconClick = { Toast.makeText(context, "Clicked info!", Toast.LENGTH_SHORT).show() }
+
+
     /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
@@ -124,7 +128,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 Task(
                     title = activeTasks[index],
                     modifier = Modifier,
-                    active = true
+                    active = true,
+                    onInfoIconClick = onInfoIconClick
                 )
             }
         }
@@ -176,7 +181,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                     title = roommateTasks[index],
                     modifier = Modifier,
                     active = true,
-                    roommate = true
+                    roommate = true,
+                    onInfoIconClick = onInfoIconClick
                 )
             }
         }
@@ -204,7 +210,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         item {
             Task(
                 "This is a TODO item TEST LONG LINE",
-                modifier = Modifier
+                modifier = Modifier,
+                onInfoIconClick = onInfoIconClick
             )
         }
     }
