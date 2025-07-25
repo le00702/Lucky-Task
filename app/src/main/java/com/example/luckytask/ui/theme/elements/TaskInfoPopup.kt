@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -32,10 +33,11 @@ fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit) {
         alignment = Alignment.Center
     ) {
         /*** Display info icon, task title, task description in a column ***/
-        Column (
+        Column(
             modifier = Modifier
                 .background(Color.White, RoundedCornerShape(12.dp))
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             /*** Add the info icon on top but much smaller and center it ***/
             Icon(
@@ -43,18 +45,20 @@ fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit) {
                 contentDescription = "Info",
                 tint = colorResource(R.color.task_text_color),
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
                     .size(20.dp)
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
                 fontSize = 20.sp,
                 color = colorResource(R.color.task_text_color),
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = text,
-                color = colorResource(R.color.task_text_color)
+                color = colorResource(R.color.task_text_color),
+                textAlign = TextAlign.Center
             )
         }
     }

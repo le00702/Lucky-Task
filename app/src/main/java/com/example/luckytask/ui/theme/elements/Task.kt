@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,6 +67,7 @@ fun Task(
         ) {
             Text(
                 text = title,
+                textAlign = TextAlign.Center,
                 fontSize = 25.sp,
                 color = colorResource(R.color.task_text_color),
                 maxLines = 1,
