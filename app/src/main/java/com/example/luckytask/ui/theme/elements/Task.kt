@@ -95,7 +95,8 @@ fun Task(
             /*** Display the detailed info of the task ***/
             if (showInfo) {
                 TaskInfoPopup(
-                    context, "Info icon clicked!", onDismissRequest = { showInfo = false },)
+                    "Info icon clicked!", onDismissRequest = { showInfo = false },
+                )
             }
         }
     }
