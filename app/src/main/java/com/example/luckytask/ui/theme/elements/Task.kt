@@ -92,14 +92,9 @@ fun Task(
                 }
             }
 
-            /*** Use this Toast as a preliminary function for clicking on the
-             *   info icon ***/
+            /*** Display the detailed info of the task ***/
             if (showInfo) {
-                Toast.makeText(
-                    context,
-                    "Info icon clicked!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                TaskInfoPopup(context, "Info icon clicked!")
             }
         }
     }
