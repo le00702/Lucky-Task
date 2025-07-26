@@ -127,8 +127,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             items(activeTasks.size) { index ->
                 Task(
                     title = activeTasks[index],
-                    modifier = Modifier,
-                    active = true,
+                    active = true
                 )
             }
         }
@@ -178,7 +177,6 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             items(roommateTasks.size) { index ->
                 Task(
                     title = roommateTasks[index],
-                    modifier = Modifier,
                     active = true,
                     roommate = true,
                 )
@@ -207,8 +205,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
         item {
             Task(
-                "This is a TODO item TEST LONG LINE",
-                modifier = Modifier
+                "This is a TODO item TEST LONG LINE"
             )
         }
     }

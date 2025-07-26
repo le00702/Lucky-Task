@@ -34,7 +34,6 @@ import com.example.luckytask.R
          * @param roommate: For now, refers to whether this task was drawn by any roommate ***/
 fun Task(
     title: String,
-    modifier: Modifier = Modifier,
     active: Boolean = false,
     roommate: Boolean = false,
 ) {
@@ -49,7 +48,7 @@ fun Task(
         else colorResource(R.color.app_color)
 
     Surface(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         color = color,
