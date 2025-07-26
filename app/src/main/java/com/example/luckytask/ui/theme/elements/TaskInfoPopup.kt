@@ -27,16 +27,20 @@ fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit, par
      *   @param title: The title of the task
      *   @param text: The info text to display
      *   @param onDismissRequest: What happens on dismissal (clicking outside/back...)
+     *   @param parentColor: The color of the parent element/task
      * ***/
 
     Popup(
         onDismissRequest = onDismissRequest,
         alignment = Alignment.Center
     ) {
-        /*** Display info icon, task title, task description in a column ***/
+        /*** Display info icon, task title, task description in a column
+         *   --> based on the task color, choose background color ***/
         Column(
             modifier = Modifier
-                .background(parentColor, RoundedCornerShape(12.dp))
+                .background(
+                    getPopUpColor(parentColor), RoundedCornerShape(12.dp)
+                )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -63,4 +67,18 @@ fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit, par
             )
         }
     }
+}
+
+
+/*** Take the parent color and adjust its RGB values for the info popup
+ *   --> DO NOT CHANGE OPACITY
+ *   --> make the color lighter by multiplying by factor ***/
+private fun getPopUpColor(color: Color): Color {
+    val factor = 1.4f
+    return Color(
+        red = color.red * factor,
+        green = color.green * factor,
+        blue = color.blue * factor,
+        alpha = color.alpha
+    )
 }
