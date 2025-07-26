@@ -22,12 +22,13 @@ import androidx.compose.ui.window.Popup
 import com.example.luckytask.R
 
 @Composable
-fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit) {
+fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit, parentColor: Color) {
     /*** Use custom popup
      *   @param title: The title of the task
      *   @param text: The info text to display
      *   @param onDismissRequest: What happens on dismissal (clicking outside/back...)
      * ***/
+
     Popup(
         onDismissRequest = onDismissRequest,
         alignment = Alignment.Center
@@ -35,7 +36,7 @@ fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit) {
         /*** Display info icon, task title, task description in a column ***/
         Column(
             modifier = Modifier
-                .background(Color.White, RoundedCornerShape(12.dp))
+                .background(parentColor, RoundedCornerShape(12.dp))
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

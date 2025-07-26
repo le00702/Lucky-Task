@@ -135,7 +135,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         /*** If there are no active tasks, display the following message
          *   --> user is asked to roll dice
          *   --> align text centered ***/
-        if(activeTasks.isEmpty()) {
+        if (activeTasks.isEmpty()) {
             item {
                 Text(
                     "You currently have no active tasks. Roll the dice to start a task!",
@@ -151,7 +151,6 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                     title = activeTasks[index],
                     modifier = Modifier,
                     active = true,
-                    context = context
                 )
             }
         }
@@ -201,8 +200,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         item {
             Task(
                 "This is a TODO item TEST LONG LINE",
-                modifier = Modifier,
-                context = context
+                modifier = Modifier
             )
         }
     }

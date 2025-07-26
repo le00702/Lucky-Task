@@ -1,7 +1,5 @@
 package com.example.luckytask.ui.theme.elements
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -39,21 +37,22 @@ fun Task(
     modifier: Modifier = Modifier,
     active: Boolean = false,
     roommate: Boolean = false,
-    context: Context,
 ) {
     /*** Extract this variable for deciding whether to display the detailed info ***/
     var showInfo by remember { mutableStateOf(false) }
+
+    /*** Choose color based on whether this is an active task, a (not yet drawn)
+     *   To-Do, or a task that was drawn by a roommate ***/
+    val color =
+        if (roommate) colorResource(R.color.roommate_task_color)
+        else if (active) colorResource(R.color.active_task_color)
+        else colorResource(R.color.app_color)
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp),
-        /*** Choose color based on whether this is an active task, a (not yet drawn)
-         *   To-Do, or a task that was drawn by a roommate ***/
-        color =
-            if (roommate) colorResource(R.color.roommate_task_color)
-            else if (active) colorResource(R.color.active_task_color)
-            else colorResource(R.color.app_color),
+        color = color,
         shape = RoundedCornerShape(12.dp)
     ) {
         /*** Align all elements in a row, to organize them horizontally ***/
@@ -98,6 +97,7 @@ fun Task(
             if (showInfo) {
                 TaskInfoPopup(
                     title, "Info icon clicked!", onDismissRequest = { showInfo = false },
+                    parentColor = color
                 )
             }
         }
