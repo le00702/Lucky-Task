@@ -38,9 +38,12 @@ fun TaskInfoPopup(title: String, text: String, onDismissRequest: () -> Unit, par
          *   --> based on the task color, choose background color ***/
         Column(
             modifier = Modifier
+                /*** Add space between border of popup and screen edge ***/
+                .padding(horizontal = 16.dp, vertical = 12.dp)
                 .background(
                     getPopUpColor(parentColor), RoundedCornerShape(12.dp)
                 )
+                /*** Add space between text and border of popup ***/
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
