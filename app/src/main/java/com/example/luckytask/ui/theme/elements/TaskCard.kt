@@ -6,6 +6,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -25,7 +29,7 @@ import java.time.format.DateTimeFormatter
 fun TaskCard(
     task: TaskItem,
     modifier: Modifier = Modifier,
-    onInfoClick: () -> Unit = {}
+    //onInfoClick: () -> Unit = {}
 ) {
     val backgroundColor = when {
         task.assignee != null && task.assignee != "Me" -> colorResource(R.color.roommate_task_color)
@@ -34,6 +38,14 @@ fun TaskCard(
     }
 
     val isOverdue = task.dueDate?.isBefore(LocalDate.now()) == true && !task.isCompleted
+
+    /*** Extract this variable for deciding whether to display the detailed info ***/
+    var showInfo by remember { mutableStateOf(false) }
+    val onInfoClick = {
+        /*** When the detailed info is shown, revert the value
+         *   --> does not need to be shown anymore (for now) ***/
+        showInfo = !showInfo
+    }
 
     Card(
         modifier = modifier
@@ -162,6 +174,13 @@ fun TaskCard(
                         )
                     }
                 }
+            }
+            /*** Display the detailed info of the task ***/
+            if (showInfo) {
+                TaskInfoPopup(
+                    task.title, "Info icon clicked!", onDismissRequest = { showInfo = false },
+                    parentColor = backgroundColor
+                )
             }
         }
     }
