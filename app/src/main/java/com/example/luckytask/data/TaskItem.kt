@@ -15,7 +15,7 @@ abstract class TaskItem(
 
 /*** Extract separate data class/entity for private tasks -->
  *   pass only title to constructor as it does not have a default value ***/
-@Entity(tableName = "private_task")
+@Entity(tableName = "private_tasks")
 data class PrivateTaskItem(
     @PrimaryKey val id: Int,
     override val title: String,
@@ -27,7 +27,7 @@ data class PrivateTaskItem(
 
 /*** Extract separate data class/entity for group tasks -->
  *   pass only title to constructor as it does not have a default value ***/
-@Entity(tableName = "group_task")
+@Entity(tableName = "group_tasks")
 data class GroupTaskItem(
     @PrimaryKey val id: Int,
     override val title: String,
