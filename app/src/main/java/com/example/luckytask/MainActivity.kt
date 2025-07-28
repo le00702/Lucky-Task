@@ -10,11 +10,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.luckytask.data.PrivateTasksDB
+import com.example.luckytask.model.PrivateTasksViewModel
+import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.MockButton
@@ -38,7 +44,13 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LuckyTaskApp(modifier: Modifier = Modifier) {
+    /*** Get viewModel for private tasks + application context + DB ***/
     val context = LocalContext.current
+    val app = context.applicationContext as PrivateTasksApp
+    val privateTaskViewModel: PrivateTasksViewModel =
+        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
+    val privateTasks by privateTaskViewModel.tasks.collectAsState()
+
 
     Column(
         modifier = modifier.fillMaxSize(),
