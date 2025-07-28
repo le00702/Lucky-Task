@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskFilter
 import com.example.luckytask.data.TaskItem
 import com.example.luckytask.data.applyFilters
@@ -36,6 +37,7 @@ import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.ui.theme.elements.TaskCard
 import com.example.luckytask.ui.theme.elements.TaskFilterBar
+import java.nio.file.attribute.PosixFileAttributeView
 import java.time.LocalDate
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
@@ -99,10 +101,10 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     // Mock-Data
     val mockTaskItems = remember {
         listOf(
-            TaskItem(1, "Clean Kitchen", "Wash dishes", "Me", LocalDate.now(), true),
-            TaskItem(2, "Buy Groceries", "", null, LocalDate.now().plusDays(1)),
-            TaskItem(3, "Study", "", "Me", LocalDate.now().plusDays(7)),
-            TaskItem(4, "Meeting", "", "John", LocalDate.now(), true),
+            PrivateTaskItem(1, "Clean Kitchen", "Wash dishes",  LocalDate.now(), true),
+            PrivateTaskItem(2, "Buy Groceries", "", LocalDate.now().plusDays(1)),
+            PrivateTaskItem(3, "Study", "",  LocalDate.now().plusDays(7)),
+            PrivateTaskItem(4, "Meeting", "", LocalDate.now(), true),
         )
     }
 

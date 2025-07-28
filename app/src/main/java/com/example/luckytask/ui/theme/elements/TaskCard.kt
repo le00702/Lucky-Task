@@ -21,6 +21,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.R
+import com.example.luckytask.data.GroupTaskItem
+import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskItem
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -32,8 +34,11 @@ fun TaskCard(
     //onInfoClick: () -> Unit = {}
 ) {
     val backgroundColor = when {
-        task.assignee != null && task.assignee != "Me" -> colorResource(R.color.roommate_task_color)
+        /*** If it is a group task done by a roommate, color it as such ***/
+        (task is GroupTaskItem) && task.assignee != null && task.assignee != "Me" -> colorResource(R.color.roommate_task_color)
+        /*** If it is done by me, mark it as active ***/
         task.isActive -> colorResource(R.color.active_task_color)
+        /*** If it is still in the pool (no one has drawn it) leave it in the standard color ***/
         else -> colorResource(R.color.app_color)
     }
 
@@ -117,44 +122,45 @@ fun TaskCard(
                     }
                 }
             }
+            if (task is GroupTaskItem) {
+                if (task.assignee != null || task.dueDate != null) {
+                    Spacer(modifier = Modifier.height(12.dp))
 
-            if (task.assignee != null || task.dueDate != null) {
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    task.assignee?.let { assignee ->
-                        TaskDetailChip(
-                            icon = Icons.Default.Person,
-                            text = assignee,
-                            isHighlighted = assignee != "Me"
-                        )
-                    }
-
-                    task.dueDate?.let { dueDate ->
-                        TaskDetailChip(
-                            icon = Icons.Default.Schedule,
-                            text = formatDueDate(dueDate),
-                            isHighlighted = isOverdue,
-                            isError = isOverdue
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    IconButton(
-                        onClick = onInfoClick,
-                        modifier = Modifier.size(32.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.info),
-                            contentDescription = "Task Info",
-                            tint = colorResource(R.color.task_text_color),
-                            modifier = Modifier.size(20.dp)
-                        )
+                        task.assignee?.let { assignee ->
+                            TaskDetailChip(
+                                icon = Icons.Default.Person,
+                                text = assignee,
+                                isHighlighted = assignee != "Me"
+                            )
+                        }
+
+                        task.dueDate?.let { dueDate ->
+                            TaskDetailChip(
+                                icon = Icons.Default.Schedule,
+                                text = formatDueDate(dueDate),
+                                isHighlighted = isOverdue,
+                                isError = isOverdue
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        IconButton(
+                            onClick = onInfoClick,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.info),
+                                contentDescription = "Task Info",
+                                tint = colorResource(R.color.task_text_color),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             } else {
@@ -191,7 +197,7 @@ fun TaskDetailChip(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     text: String,
     isHighlighted: Boolean = false,
-    isError: Boolean = false
+    isError: Boolean = false,
 ) {
     val backgroundColor = when {
         isError -> colorResource(R.color.error_color)
@@ -238,6 +244,7 @@ private fun formatDueDate(dueDate: LocalDate): String {
         dueDate.isBefore(today) -> "Overdue"
         dueDate.isAfter(today) && dueDate.isBefore(today.plusDays(7)) ->
             dueDate.format(DateTimeFormatter.ofPattern("EEEE"))
+
         else -> dueDate.format(DateTimeFormatter.ofPattern("MMM dd"))
     }
 }
