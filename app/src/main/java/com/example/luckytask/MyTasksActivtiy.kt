@@ -13,12 +13,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +39,8 @@ import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.ui.theme.elements.TaskCard
 import com.example.luckytask.ui.theme.elements.TaskFilterBar
 import java.time.LocalDate
+import com.example.luckytask.data.TaskRepository
+import com.example.luckytask.ui.theme.elements.EditableTaskCard
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "MyTasksActivity"
@@ -89,6 +93,9 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
 
     val HEADER_SIZE = 30.sp
     val context = LocalContext.current
+    val taskRepository = remember { TaskRepository.getInstance() }
+    val tasks by taskRepository.tasks.collectAsState()
+    var refreshTrigger by remember { mutableStateOf(0) }
 
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = listOf<String>()
@@ -108,8 +115,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
 
     // Filter State
     var currentFilter by remember { mutableStateOf(TaskFilter()) }
-    val filteredTasks = remember(mockTaskItems, currentFilter) {
-        mockTaskItems.applyFilters(currentFilter)
+    val filteredTasks = remember(tasks, currentFilter, refreshTrigger) {
+        tasks.applyFilters(currentFilter)
     }
 
     /*** Organize elements in column ***/
@@ -154,9 +161,22 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             }
         }
 
-        // Show filtered tasks
+        // Show filtered tasks with edit functionality
         items(filteredTasks) { taskItem ->
-            TaskCard(
+            EditableTaskCard(
+                task = taskItem,
+                modifier = Modifier,
+                onTaskUpdated = { refreshTrigger++ } // UI refresh for changes
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+
+        // Show editable tasks from repository
+        items(tasks) { taskItem ->
+            EditableTaskCard(
                 task = taskItem,
                 modifier = Modifier
             )
