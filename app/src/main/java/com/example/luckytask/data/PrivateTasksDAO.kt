@@ -6,14 +6,17 @@ import androidx.room.*
 @Dao
 interface PrivateTasksDAO {
     @Query("SELECT * FROM private_tasks")
-    suspend fun getAllTasks(): List<PrivateTaskItem>
+    suspend fun getAllPrivateTasks(): List<PrivateTaskItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTask(task: PrivateTaskItem)
+    suspend fun insertPrivateTask(task: PrivateTaskItem)
+
+    @Update
+    suspend fun updatePrivateTask(task: PrivateTaskItem)
 
     @Delete
-    suspend fun deleteTask(task: PrivateTaskItem)
+    suspend fun deletePrivateTask(task: PrivateTaskItem)
 
     @Query("DELETE FROM private_tasks")
-    suspend fun deleteAll()
+    suspend fun deleteAllPrivateTasks()
 }
