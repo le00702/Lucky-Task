@@ -99,10 +99,10 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     // Mock-Data
     val mockTaskItems = remember {
         listOf(
-            TaskItem("1", "Clean Kitchen", "Wash dishes", "Me", LocalDate.now(), true),
-            TaskItem("2", "Buy Groceries", "", null, LocalDate.now().plusDays(1)),
-            TaskItem("3", "Study", "", "Me", LocalDate.now().plusDays(7)),
-            TaskItem("4", "Meeting", "", "John", LocalDate.now(), true),
+            TaskItem(1, "Clean Kitchen", "Wash dishes", "Me", LocalDate.now(), true),
+            TaskItem(2, "Buy Groceries", "", null, LocalDate.now().plusDays(1)),
+            TaskItem(3, "Study", "", "Me", LocalDate.now().plusDays(7)),
+            TaskItem(4, "Meeting", "", "John", LocalDate.now(), true),
         )
     }
 
