@@ -28,6 +28,7 @@
         <activity android:name=".MyTasksActivity" />
         <activity android:name=".GroupTasksActivity" />
         <activity android:name=".AddNewTaskActivity" />
+        <activity android:name=".EditTaskActivity" />
     </application>
 
 </manifest>
