@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "582698071286",
+    "project_id": "lucky-task-91027",
+    "storage_bucket": "lucky-task-91027.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582698071286:android:5addb812b6c8767927a8d7",
+        "android_client_info": {
+          "package_name": "com.example.luckytask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8n_MPjIfJF5kmNk1X-ByzO1p3N7wF0GE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
