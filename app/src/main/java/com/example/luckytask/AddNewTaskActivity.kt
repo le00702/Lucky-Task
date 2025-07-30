@@ -13,8 +13,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,6 +73,8 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
     val app = context.applicationContext as PrivateTasksApp
     val DAO = app.database.privateTasksDAO()
 
+    var id by remember { mutableStateOf(0) }
+
     /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
@@ -101,7 +105,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
                 onClick = {
                     /*** Call this function in Coroutine scope to not block the
                      *   main thread/UI --> Also show Toast for now ***/
-                    val id = 1
+                    id += 1
                     Toast.makeText(context, "Add Task $id clicked!", Toast.LENGTH_SHORT).show()
                     CoroutineScope(Dispatchers.IO).launch {
                         addTask(id, title.value, description.value, DAO)
