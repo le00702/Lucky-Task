@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskFilter
-import com.example.luckytask.data.TaskItem
 import com.example.luckytask.data.applyFilters
 import com.example.luckytask.model.PrivateTasksViewModel
 import com.example.luckytask.model.PrivateTasksViewModelFactory
@@ -41,7 +40,6 @@ import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.ui.theme.elements.TaskCard
 import com.example.luckytask.ui.theme.elements.TaskFilterBar
-import java.nio.file.attribute.PosixFileAttributeView
 import java.time.LocalDate
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
@@ -204,17 +202,9 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                 modifier = Modifier,
                 context,
                 ACTIVITY_NAME,
-                stringResource(R.string.title_my_todos)
-            ) {
-                val newTask = PrivateTaskItem(
-                    title = "New local task",
-                    description = "Test local task",
-                    dueDate = LocalDate.now().plusDays(1),
-                    isActive = true,
-                    id = 1024
-                )
-                privateTaskViewModel.addTask(newTask)
-            }
+                stringResource(R.string.title_my_todos),
+                isGroupTask = false
+            )
         }
 
         item {

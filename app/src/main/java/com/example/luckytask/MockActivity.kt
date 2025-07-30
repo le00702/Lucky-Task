@@ -60,7 +60,7 @@ fun MockApp(modifier: Modifier = Modifier) {
             context,
             ACTIVITY_NAME,
             stringResource(R.string.title_mock),
-            onClick = {}
+            isGroupTask = false
         )
         ProgressCircle(7, 10, colorResource(R.color.purple_500))
         Spacer(modifier = Modifier.padding(10.dp))

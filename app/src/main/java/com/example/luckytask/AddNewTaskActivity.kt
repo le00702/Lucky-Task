@@ -44,13 +44,15 @@ class AddNewTaskActivity : ComponentActivity() {
             LuckyTaskTheme {
                 val parentActivity = intent.getStringExtra("parentActivity").toString()
                 val topBarTitle = intent.getStringExtra("topBarTitle").toString()
+                val isGroupTask = intent.getBooleanExtra("isGroupTask", false)
 
                 AppWithDrawer(
                     currentActivityName = parentActivity,
                     topBarTitle = topBarTitle
                 ) {
                     AddNewTaskScreen(
-                        modifier = Modifier.padding(20.dp)
+                        modifier = Modifier.padding(20.dp),
+                        isGroupTask = isGroupTask
                     )
                 }
             }
@@ -59,7 +61,7 @@ class AddNewTaskActivity : ComponentActivity() {
 }
 
 @Composable
-fun AddNewTaskScreen(modifier: Modifier = Modifier) {
+fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
 
     val HEADER_SIZE = 30.sp
 
@@ -77,7 +79,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
 
     /*** Extract method to differentiate between private and group tasks ***/
     val onClick: () -> Unit = {
-        if(false) {
+        if(!isGroupTask) {
             /*** Call this function in Coroutine scope to not block the
              *   main thread/UI --> Also show Toast for now ***/
             id += 1
