@@ -1,7 +1,6 @@
 package com.example.luckytask
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -142,5 +141,4 @@ private suspend fun addTask(id: Int, title: String, description: String, DAO: Pr
         isCompleted = false
     )
     DAO.insertPrivateTask(newTask)
-    Log.d("[Local DB]", "Inserted task: $newTask")
 }
