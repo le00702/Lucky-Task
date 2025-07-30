@@ -75,6 +75,22 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
 
     var id by remember { mutableStateOf(0) }
 
+    /*** Extract method to differentiate between private and group tasks ***/
+    val onClick: () -> Unit = {
+        if(false) {
+            /*** Call this function in Coroutine scope to not block the
+             *   main thread/UI --> Also show Toast for now ***/
+            id += 1
+            Toast.makeText(context, "Add Task $id clicked!", Toast.LENGTH_SHORT).show()
+            CoroutineScope(Dispatchers.IO).launch {
+                addTask(id, title.value, description.value, DAO)
+            }
+        } else {
+            /*** For group tasks use Toast as placeholder for now ***/
+            Toast.makeText(context, "[GROUP TASK]: clicked!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
@@ -102,15 +118,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
         }
         item {
             Button(
-                onClick = {
-                    /*** Call this function in Coroutine scope to not block the
-                     *   main thread/UI --> Also show Toast for now ***/
-                    id += 1
-                    Toast.makeText(context, "Add Task $id clicked!", Toast.LENGTH_SHORT).show()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addTask(id, title.value, description.value, DAO)
-                    }
-                },
+                onClick = onClick,
                 enabled = formIsComplete,
                 /*** Set the color to the same as the 'add-task' button (if enabled)
                  *   --> else make it grey ***/
