@@ -199,7 +199,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 modifier = Modifier,
                 context,
                 ACTIVITY_NAME,
-                stringResource(R.string.title_group_todos)
+                stringResource(R.string.title_group_todos),
+                onClick = {}
             )
         }
 

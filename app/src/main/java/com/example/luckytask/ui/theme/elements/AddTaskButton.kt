@@ -29,9 +29,11 @@ fun AddTaskButton(
     context: Context,
     /*** Add these to remember which activity we came from and what to display
      *   @param: parentActivity --> which activity we came from
-     *   @param: topBarTitle --> which title to display on the top bar ***/
+     *   @param: topBarTitle --> which title to display on the top bar
+     *   @param: onClick --> what happens if this button is clicked? ***/
     parentActivity: String,
-    topBarTitle: String
+    topBarTitle: String,
+    onClick: () -> Unit
 ) {
     Surface(
         modifier = modifier

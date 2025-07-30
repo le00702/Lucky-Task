@@ -44,13 +44,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LuckyTaskApp(modifier: Modifier = Modifier) {
-    /*** Get viewModel for private tasks + application context + DB ***/
-    val context = LocalContext.current
-    val app = context.applicationContext as PrivateTasksApp
-    val privateTaskViewModel: PrivateTasksViewModel =
-        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
-    val privateTasks by privateTaskViewModel.tasks.collectAsState()
 
+    val context = LocalContext.current
 
     Column(
         modifier = modifier.fillMaxSize(),

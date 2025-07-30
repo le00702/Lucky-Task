@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,10 +26,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskFilter
 import com.example.luckytask.data.TaskItem
 import com.example.luckytask.data.applyFilters
+import com.example.luckytask.model.PrivateTasksViewModel
+import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
@@ -92,6 +96,12 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     val HEADER_SIZE = 30.sp
     val context = LocalContext.current
 
+    /*** Get viewModel for private tasks + application context + DB ***/
+    val app = context.applicationContext as PrivateTasksApp
+    val privateTaskViewModel: PrivateTasksViewModel =
+        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
+    val privateTasks by privateTaskViewModel.tasks.collectAsState()
+
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = listOf<String>()
 
@@ -101,9 +111,9 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     // Mock-Data
     val mockTaskItems = remember {
         listOf(
-            PrivateTaskItem(1, "Clean Kitchen", "Wash dishes",  LocalDate.now(), true),
+            PrivateTaskItem(1, "Clean Kitchen", "Wash dishes", LocalDate.now(), true),
             PrivateTaskItem(2, "Buy Groceries", "", LocalDate.now().plusDays(1)),
-            PrivateTaskItem(3, "Study", "",  LocalDate.now().plusDays(7)),
+            PrivateTaskItem(3, "Study", "", LocalDate.now().plusDays(7)),
             PrivateTaskItem(4, "Meeting", "", LocalDate.now(), true),
         )
     }
@@ -195,12 +205,22 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                 context,
                 ACTIVITY_NAME,
                 stringResource(R.string.title_my_todos)
-            )
+            ) {
+                val newTask = PrivateTaskItem(
+                    title = "New local task",
+                    description = "Test local task",
+                    dueDate = LocalDate.now().plusDays(1),
+                    isActive = true,
+                    id = 1024
+                )
+                privateTaskViewModel.addTask(newTask)
+            }
         }
 
         item {
             Task(
-                "This is a TODO item TEST LONG LINE")
+                "This is a TODO item TEST LONG LINE"
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.luckytask.model
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckytask.data.PrivateTaskItem
@@ -24,6 +25,7 @@ class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO): ViewM
     }
 
     fun addTask(task: PrivateTaskItem) {
+        Log.d("[TASK LOCAL]", "Add")
         viewModelScope.launch {
             privateTasksDAO.insertPrivateTask(task)
             loadTasks()

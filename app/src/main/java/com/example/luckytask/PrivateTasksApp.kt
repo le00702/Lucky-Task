@@ -9,6 +9,6 @@ class PrivateTasksApp : Application() {
     lateinit var database: PrivateTasksDB private set
     override fun onCreate() {
         super.onCreate()
-        database = Room.databaseBuilder (applicationContext, PrivateTasksDB::class.java, "rates").build()
+        database = Room.databaseBuilder (applicationContext, PrivateTasksDB::class.java, "private_tasks_db").build()
     }
 }

@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_luckytask_foreground"
         android:supportsRtl="true"
         android:theme="@style/Theme.LuckyTask"
+        android:name=".PrivateTasksApp"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
