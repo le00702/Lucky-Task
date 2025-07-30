@@ -101,9 +101,10 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
                 onClick = {
                     /*** Call this function in Coroutine scope to not block the
                      *   main thread/UI --> Also show Toast for now ***/
-                    Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
+                    val id = 1
+                    Toast.makeText(context, "Add Task $id clicked!", Toast.LENGTH_SHORT).show()
                     CoroutineScope(Dispatchers.IO).launch {
-                        addTask(title.value, description.value, DAO)
+                        addTask(id, title.value, description.value, DAO)
                     }
                 },
                 enabled = formIsComplete,
@@ -126,9 +127,9 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
  *   --> suspend to use in Coroutine scope
  *   --> can be suspended and resumed later
  *   ***/
-private suspend fun addTask(title: String, description: String, DAO: PrivateTasksDAO) {
+private suspend fun addTask(id: Int, title: String, description: String, DAO: PrivateTasksDAO) {
     val newTask = PrivateTaskItem(
-        id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(), // or better: use auto-generated ID
+        id = id,
         title = title,
         description = description,
         dueDate = LocalDate.now().plusDays(1),
