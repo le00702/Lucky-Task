@@ -1,6 +1,7 @@
 package com.example.luckytask
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,12 +18,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.luckytask.data.PrivateTaskItem
+import com.example.luckytask.data.PrivateTasksDAO
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskInput
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class AddNewTaskActivity : ComponentActivity() {
 
@@ -58,6 +66,11 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
     var description = remember { mutableStateOf("") }
     var formIsComplete = title.value.isNotBlank() && description.value.isNotBlank()
 
+    /*** Use context + DB for inserting a new task ***/
+    val context = LocalContext.current
+    val app = context.applicationContext as PrivateTasksApp
+    val DAO = app.database.privateTasksDAO()
+
     /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
@@ -77,7 +90,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            AddTaskInput(title, "Task Title", "Enter a task title", isTitle = true,)
+            AddTaskInput(title, "Task Title", "Enter a task title", isTitle = true)
         }
 
         item {
@@ -85,13 +98,20 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
         }
         item {
             Button(
-                onClick = {},
+                onClick = {
+                    /*** Call this function in Coroutine scope to not block the
+                     *   main thread/UI --> Also show Toast for now ***/
+                    Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        addTask(title.value, description.value, DAO)
+                    }
+                },
                 enabled = formIsComplete,
                 /*** Set the color to the same as the 'add-task' button (if enabled)
                  *   --> else make it grey ***/
                 colors = ButtonDefaults.buttonColors(
                     containerColor =
-                        if(formIsComplete) colorResource(R.color.add_task_color)
+                        if (formIsComplete) colorResource(R.color.add_task_color)
                         else colorResource(R.color.task_text_color),
                     contentColor = Color.White
                 ),
@@ -100,4 +120,20 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier) {
             }
         }
     }
+}
+
+/*** Use this function for adding new tasks
+ *   --> suspend to use in Coroutine scope
+ *   --> can be suspended and resumed later
+ *   ***/
+private suspend fun addTask(title: String, description: String, DAO: PrivateTasksDAO) {
+    val newTask = PrivateTaskItem(
+        id = (System.currentTimeMillis() % Int.MAX_VALUE).toInt(), // or better: use auto-generated ID
+        title = title,
+        description = description,
+        dueDate = LocalDate.now().plusDays(1),
+        isActive = false,
+        isCompleted = false
+    )
+    DAO.insertPrivateTask(newTask)
 }
