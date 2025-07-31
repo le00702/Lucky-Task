@@ -4,7 +4,8 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
-fun List<TaskItem>.applyFilters(filter: TaskFilter): List<TaskItem> {
+/*** Make filter more generic in terms of accepting types ***/
+fun <T: TaskItem> List<T>.applyFilters(filter: TaskFilter): List<T> {
     return this
         .filter { task -> if(task is GroupTaskItem) task.matchesAssigneeFilter(filter.assignee) else false }
         .filter { task -> task.matchesDueDateFilter(filter.dueDate) }

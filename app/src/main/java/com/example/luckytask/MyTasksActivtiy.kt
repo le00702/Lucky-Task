@@ -100,26 +100,38 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
     val privateTasks by privateTaskViewModel.tasks.collectAsState()
 
-    /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = listOf<String>()
-
-    /*** ENABLE WHEN CHECKING FOR ACTIVE TASKS DISPLAY ***/
-    activeTasks = listOf<String>("Task 1", "Task 2", "Task 3")
-
-    // Mock-Data
-    val mockTaskItems = remember {
-        listOf(
-            PrivateTaskItem(1, "Clean Kitchen", "Wash dishes", LocalDate.now(), true),
-            PrivateTaskItem(2, "Buy Groceries", "", LocalDate.now().plusDays(1)),
-            PrivateTaskItem(3, "Study", "", LocalDate.now().plusDays(7)),
-            PrivateTaskItem(4, "Meeting", "", LocalDate.now(), true),
+    /*** Use mock task for displaying purposes only ***/
+    val mockActiveTask = listOf(
+        PrivateTaskItem(
+            id = -1,
+            title = "Mock Active Task",
+            description = "This is an active mock task",
+            dueDate = LocalDate.now(),
+            isActive = true
         )
-    }
+    )
+
+    val mockInactiveTask = listOf(
+        PrivateTaskItem(
+            id = -2,
+            title = "Mock Inactive Task",
+            description = "This is an inactive mock task",
+            dueDate = LocalDate.now(),
+            isActive = false
+        )
+    )
+    /*** Use this active-task-list for mocking purposes for now ***/
+    var activeTasks = mockActiveTask
+
+
+    val realInactiveTasks = privateTasks.filter { !it.isActive }
+    val inactiveTasks = mockInactiveTask + realInactiveTasks
+
 
     // Filter State
     var currentFilter by remember { mutableStateOf(TaskFilter()) }
-    val filteredTasks = remember(mockTaskItems, currentFilter) {
-        mockTaskItems.applyFilters(currentFilter)
+    val filteredTasks = remember(inactiveTasks, currentFilter) {
+       inactiveTasks.applyFilters(currentFilter)
     }
 
     /*** Organize elements in column ***/
@@ -158,7 +170,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             /*** If there ARE active tasks, display them all ***/
             items(activeTasks.size) { index ->
                 Task(
-                    title = activeTasks[index],
+                    title = activeTasks[index].title,
                     active = true
                 )
             }
@@ -207,9 +219,11 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             )
         }
 
-        item {
+        /*** Display all added, but still inactive tasks ***/
+        items(inactiveTasks.size) { index ->
             Task(
-                "This is a TODO item TEST LONG LINE"
+                title = inactiveTasks[index].title,
+                active = false
             )
         }
     }
