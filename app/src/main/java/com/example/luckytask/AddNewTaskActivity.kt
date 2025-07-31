@@ -1,5 +1,6 @@
 package com.example.luckytask
 
+import android.app.Activity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -91,6 +92,9 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
             /*** For group tasks use Toast as placeholder for now ***/
             Toast.makeText(context, "[GROUP TASK]: clicked!", Toast.LENGTH_SHORT).show()
         }
+
+        /*** End the current activity and return to the previous one ***/
+        (context as Activity).finish()
     }
 
     /*** Organize elements in column ***/
