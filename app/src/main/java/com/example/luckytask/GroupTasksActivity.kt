@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -22,12 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.luckytask.data.GroupTaskItem
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.Task
+import java.time.LocalDate
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "GroupTasksActivity"
@@ -82,19 +85,61 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     val context = LocalContext.current
 
     /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = listOf<String>()
+    var activeTasks = listOf<GroupTaskItem>(
+        GroupTaskItem(
+            id = -1,
+            title = "Task 1",
+            description = "I am the active group task 1",
+            dueDate = LocalDate.now().plusDays(1),
+            isActive = true
+        ),
+        GroupTaskItem(
+            id = -2,
+            title = "Task 2",
+            description = "I am the active group task 2",
+            dueDate = LocalDate.now().plusDays(2),
+            isActive = true
+        ),
+        GroupTaskItem(
+            id = -3,
+            title = "Task 3",
+            description = "I am the active group task 3",
+            dueDate = LocalDate.now().plusDays(3),
+            isActive = true
+        )
+    )
 
-    /*** ENABLE WHEN CHECKING FOR ACTIVE TASKS DISPLAY ***/
-    activeTasks = listOf<String>("Task 1", "Task 2", "Task 3")
 
     /*** Use this roommate-task-list for mocking purposes for now ***/
-    var roommateTasks = listOf<String>()
-
-    /*** ENABLE WHEN CHECKING FOR ROOMMATE TASKS DISPLAY ***/
-    roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
-
-    val onInfoIconClick = { Toast.makeText(context, "Clicked info!", Toast.LENGTH_SHORT).show() }
-
+    val roommateTasks = listOf<GroupTaskItem>(
+        GroupTaskItem(
+            id = -1,
+            title = "RM Task 1",
+            description = "RM Description 1",
+            assignee = "John",
+            dueDate = LocalDate.now().plusDays(1),
+            isActive = false,
+            isCompleted = false
+        ),
+        GroupTaskItem(
+            id = -2,
+            title = "RM Task 2",
+            description = "RM Description 2",
+            assignee = "Josef",
+            dueDate = LocalDate.now().plusDays(2),
+            isActive = false,
+            isCompleted = false
+        ),
+        GroupTaskItem(
+            id = -3,
+            title = "RM Task 3",
+            description = "RM Description 3",
+            assignee = "Jane",
+            dueDate = LocalDate.now().plusDays(3),
+            isActive = false,
+            isCompleted = false
+        )
+    )
 
     /*** Organize elements in column ***/
     LazyColumn(
@@ -124,11 +169,11 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
         } else {
             /*** If there ARE active tasks, display them all ***/
-            items(activeTasks.size) { index ->
+            items(activeTasks) { task ->
                 Task(
-                    title = activeTasks[index],
+                    title = task.title,
                     active = true,
-                    description = "I am an active group task"
+                    description = task.description
                 )
             }
         }
@@ -175,11 +220,11 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
         } else {
             /*** If there ARE roommate tasks, display them all ***/
-            items(roommateTasks.size) { index ->
+            items(roommateTasks) { task ->
                 Task(
-                    title = roommateTasks[index],
+                    title = task.title,
                     roommate = true,
-                    description = "I am a RM task"
+                    description =  task.description
                 )
             }
         }
