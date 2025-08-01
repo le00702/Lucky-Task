@@ -36,6 +36,7 @@ fun Task(
     title: String,
     active: Boolean = false,
     roommate: Boolean = false,
+    description: String
 ) {
     /*** Extract this variable for deciding whether to display the detailed info ***/
     var showInfo by remember { mutableStateOf(false) }
@@ -95,7 +96,7 @@ fun Task(
             /*** Display the detailed info of the task ***/
             if (showInfo) {
                 TaskInfoPopup(
-                    title, "Info icon clicked!", onDismissRequest = { showInfo = false },
+                    title, description, onDismissRequest = { showInfo = false },
                     parentColor = color
                 )
             }

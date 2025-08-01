@@ -171,7 +171,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             items(activeTasks) { task ->
                 Task(
                     title = task.title,
-                    active = true
+                    active = true,
+                    description = task.description
                 )
             }
         }
@@ -223,7 +224,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         items(inactiveTasks) { task ->
             Task(
                 title = task.title,
-                active = false
+                active = false,
+                description = task.description
             )
         }
     }

@@ -53,7 +53,8 @@ fun MockApp(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         Task(
-            "This is a task"
+            "This is a task",
+            description = "I am the mock task"
         )
         AddTaskButton(
             modifier = Modifier,
