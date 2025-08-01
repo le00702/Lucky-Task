@@ -28,10 +28,12 @@ data class PrivateTaskItem(
 ): TaskItem(title)
 
 /*** Extract separate data class/entity for group tasks -->
- *   pass only title to constructor as it does not have a default value ***/
+ *   pass only title to constructor as it does not have a default value
+ *   auto-generate id for each private task ***/
 @Entity(tableName = "group_tasks")
 data class GroupTaskItem(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     override val title: String,
     override val description: String = "",
     val assignee: String? = null, // null = unassigned, "Me" = current user, or roommate name

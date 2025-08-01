@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO): ViewModel() {
-    /*** Maintain a list of private tasks ***/
+class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO) : ViewModel() {
+    /*** Maintain a list of private tasks --> use Flow to receive
+     *   stream of tasks with live updates from DB
+     *   Source: https://developer.android.com/kotlin/flow ***/
     private val _tasks = MutableStateFlow<List<PrivateTaskItem>>(emptyList())
     val tasks: StateFlow<List<PrivateTaskItem>> = _tasks
 
@@ -20,8 +22,11 @@ class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO): ViewM
 
     private fun loadTasks() {
         viewModelScope.launch {
-            _tasks.value = privateTasksDAO.getAllPrivateTasks()
+            privateTasksDAO.getAllPrivateTasks().collect { taskList ->
+                _tasks.value = taskList
+            }
         }
+
     }
 
     fun addTask(task: PrivateTaskItem) {
