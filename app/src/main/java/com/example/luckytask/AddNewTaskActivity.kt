@@ -25,8 +25,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.data.PrivateTaskItem
-import com.example.luckytask.data.PrivateTasksDAO
+import com.example.luckytask.model.PrivateTasksViewModel
+import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskInput
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
@@ -74,7 +76,8 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     /*** Use context + DB for inserting a new task ***/
     val context = LocalContext.current
     val app = context.applicationContext as PrivateTasksApp
-    val DAO = app.database.privateTasksDAO()
+    val privateTasksViewModel: PrivateTasksViewModel =
+        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
 
     var id by remember { mutableStateOf(0) }
 
@@ -86,7 +89,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
             id += 1
             Toast.makeText(context, "Add Task $id clicked!", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch {
-                addTask(id, title.value, description.value, DAO)
+                addTask(id, title.value, description.value, privateTasksViewModel)
             }
         } else {
             /*** For group tasks use Toast as placeholder for now ***/
@@ -141,11 +144,8 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     }
 }
 
-/*** Use this function for adding new tasks
- *   --> suspend to use in Coroutine scope
- *   --> can be suspended and resumed later
- *   ***/
-private suspend fun addTask(id: Int, title: String, description: String, DAO: PrivateTasksDAO) {
+/*** Use this function for adding new tasks ***/
+private fun addTask(id: Int, title: String, description: String, privateTasksViewModel: PrivateTasksViewModel) {
     val newTask = PrivateTaskItem(
         id = id,
         title = title,
@@ -154,5 +154,5 @@ private suspend fun addTask(id: Int, title: String, description: String, DAO: Pr
         isActive = false,
         isCompleted = false
     )
-    DAO.insertPrivateTask(newTask)
+    privateTasksViewModel.addTask(newTask)
 }
