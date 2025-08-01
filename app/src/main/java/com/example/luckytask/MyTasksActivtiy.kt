@@ -168,9 +168,9 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             }
         } else {
             /*** If there ARE active tasks, display them all ***/
-            items(activeTasks.size) { index ->
+            items(activeTasks) { task ->
                 Task(
-                    title = activeTasks[index].title,
+                    title = task.title,
                     active = true
                 )
             }
@@ -220,9 +220,9 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         }
 
         /*** Display all added, but still inactive tasks ***/
-        items(inactiveTasks.size) { index ->
+        items(inactiveTasks) { task ->
             Task(
-                title = inactiveTasks[index].title,
+                title = task.title,
                 active = false
             )
         }
