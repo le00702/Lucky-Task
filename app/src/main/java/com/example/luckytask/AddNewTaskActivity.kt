@@ -14,10 +14,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -79,17 +77,14 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     val privateTasksViewModel: PrivateTasksViewModel =
         viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
 
-    var id by remember { mutableStateOf(0) }
-
     /*** Extract method to differentiate between private and group tasks ***/
     val onClick: () -> Unit = {
         if(!isGroupTask) {
             /*** Call this function in Coroutine scope to not block the
              *   main thread/UI --> Also show Toast for now ***/
-            id += 1
-            Toast.makeText(context, "Add Task $id clicked!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch {
-                addTask(id, title.value, description.value, privateTasksViewModel)
+                addTask(title.value, description.value, privateTasksViewModel)
             }
         } else {
             /*** For group tasks use Toast as placeholder for now ***/
@@ -145,9 +140,8 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
 }
 
 /*** Use this function for adding new tasks ***/
-private fun addTask(id: Int, title: String, description: String, privateTasksViewModel: PrivateTasksViewModel) {
+private fun addTask(title: String, description: String, privateTasksViewModel: PrivateTasksViewModel) {
     val newTask = PrivateTaskItem(
-        id = id,
         title = title,
         description = description,
         dueDate = LocalDate.now().plusDays(1),

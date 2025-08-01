@@ -14,10 +14,12 @@ abstract class TaskItem(
 )
 
 /*** Extract separate data class/entity for private tasks -->
- *   pass only title to constructor as it does not have a default value ***/
+ *   pass only title to constructor as it does not have a default value
+ *   auto-generate id for each private task ***/
 @Entity(tableName = "private_tasks")
 data class PrivateTaskItem(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     override val title: String,
     override val description: String = "",
     override val dueDate: LocalDate? = null,
