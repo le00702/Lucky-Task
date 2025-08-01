@@ -130,7 +130,7 @@ fun TodoByUser(modifier:Modifier = Modifier,setVisibility:(vis:Boolean) -> Unit,
                     Spacer(modifier.padding(30.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)){
                         Button(enabled = (!title.isEmpty()),onClick = {
-                            addTodo(TodoDAO(title, text))
+                            addTodo(TodoDAO(title = title, description = text))
                             title = ""
                             text = ""
                             setVisibility(false)}){
@@ -169,7 +169,7 @@ fun TodoItem(todoDAO: TodoDAO, index:Int, done :(index:Int) -> Unit, undone:(ind
                 Column {
                     Text(text = todoDAO.title, fontSize = 25.sp, fontWeight = FontWeight.Bold)
                     Box(modifier = Modifier.fillMaxWidth(fraction = 0.7f)){
-                        Text(text = todoDAO.text, fontSize = 15.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        Text(text = todoDAO.description, fontSize = 15.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
                 }
                 Box(modifier = Modifier.padding(10.dp).clickable(onClick = {})){
@@ -178,7 +178,7 @@ fun TodoItem(todoDAO: TodoDAO, index:Int, done :(index:Int) -> Unit, undone:(ind
                             painter = painterResource(R.drawable.done_icon),
                             contentDescription = "Set Task as Done",
                             modifier = Modifier.size(50.dp),
-                            tint = if(todoDAO.done)  Color.Green else Color.Gray
+                            tint = if(todoDAO.isCompleted)  Color.Green else Color.Gray
                         )
                     }
                 }

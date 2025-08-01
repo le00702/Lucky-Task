@@ -52,9 +52,11 @@ class TodoViewModel:ViewModel() {
      */
     fun setTodoDone(index:Int):Int{
         val todo = _todoDAOS[index]
-        if(!todo.done){
-            val newTodo = todo.copy(done = true, title = todo.title + " (Done)")
-            _todoDAOS[index] = newTodo
+        if(!todo.isCompleted){
+            _todoDAOS[index].apply{
+                isCompleted = true
+                title = todo.title + " (Done)"
+            }
             return _todoDAOS.size
         }else{
             return -1
@@ -63,9 +65,11 @@ class TodoViewModel:ViewModel() {
 
     fun setTodoUndone(index:Int):Int{
         val todo = _todoDAOS[index]
-        if(todo.done){
-            val newTodo = todo.copy(done = false, title = todo.title.replace("(Done)", ""))
-            _todoDAOS[index] = newTodo
+        if(todo.isCompleted){
+            _todoDAOS[index].apply{
+                isCompleted = false
+                title.replace("(Done)", "")
+            }
             return _todoDAOS.size
         }else{
             return -1
