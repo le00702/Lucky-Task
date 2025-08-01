@@ -28,6 +28,7 @@ import com.example.luckytask.MockDiceActivity
 import com.example.luckytask.MyTasksActivity
 import com.example.luckytask.GroupTasksActivity
 import com.example.luckytask.R
+import com.example.luckytask.firestore.RemoteDBActivity
 
 data class MenuItem(
     val title: String,
@@ -47,7 +48,8 @@ fun DrawerContent(
         MenuItem(stringResource(R.string.title_mock), R.drawable.info, MockActivity::class.java),
         MenuItem("Dice Game", R.drawable.dice_3, MockDiceActivity::class.java),
         MenuItem(stringResource(R.string.title_my_todos), Icons.Default.Person, MyTasksActivity::class.java),
-        MenuItem(stringResource(R.string.title_group_todos), R.drawable.user_account, GroupTasksActivity::class.java)
+        MenuItem(stringResource(R.string.title_group_todos), R.drawable.user_account, GroupTasksActivity::class.java),
+        MenuItem("Remote DB Mock", R.drawable.info, RemoteDBActivity::class.java)
     )
 
     Column(
