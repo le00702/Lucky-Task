@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 const val MOCK_GROUP = "Some Group"
-class TodoViewModel:ViewModel() {
+class GroupTaskViewModel:ViewModel() {
 
     private val _todoDAOS =  mutableStateListOf<TodoDAO>()
     val todoDAOS:List<TodoDAO>

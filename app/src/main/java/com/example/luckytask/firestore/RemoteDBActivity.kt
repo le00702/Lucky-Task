@@ -69,7 +69,7 @@ var roundedShape:(Dp) -> Shape = { size ->
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TodoView(modifier: Modifier = Modifier, viewModel: TodoViewModel = viewModel()){
+fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = viewModel()){
 
     val pullRefreshState = rememberPullRefreshState(
         viewModel.isLoading,
