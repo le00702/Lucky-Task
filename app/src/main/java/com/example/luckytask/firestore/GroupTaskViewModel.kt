@@ -25,6 +25,18 @@ class GroupTaskViewModel:ViewModel() {
         }
     }
 
+    fun joinGroup(id:String){
+        //TODO: Add Group ID to SharedPreferences
+    }
+
+    fun exitGroup(id:String){
+        //TODO: Remove Group ID from SharedPreferences
+    }
+
+    fun loadGroup(id:String){
+        //TODO: Load Task list and User list from Firestore
+    }
+
   fun loadTodos(){
         _todoDAOS.clear()
        viewModelScope.launch {
