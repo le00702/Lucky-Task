@@ -89,7 +89,15 @@ fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = view
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 contentPadding = PaddingValues(horizontal = 8.dp)
             ) {
-                items(viewModel.todoDAOS.size){ index ->
+                val size = viewModel.todoDAOS.size
+                if(size == 0){
+                    item{
+                        Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center){
+                            Text("No Tasks yet")
+                        }
+                    }
+                }
+                items(size){ index ->
                     TodoItem(viewModel.todoDAOS[index], index = index,
                         done = {viewModel.setTodoDone(index)},undone = {viewModel.setTodoUndone(index)}, remove = {viewModel.removeTodo(index)})
                 }
