@@ -93,7 +93,7 @@ fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = view
                 if(size == 0){
                     item{
                         Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center){
-                            Text("No Tasks yet")
+                            Text(text = if (viewModel.isLoading) "" else "No Tasks yet")
                         }
                     }
                 }

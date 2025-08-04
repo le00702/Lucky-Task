@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,6 @@ import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.firestore.GroupTaskViewModel
-import com.example.luckytask.firestore.*
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "GroupTasksActivity"
@@ -109,7 +109,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val onInfoIconClick = { Toast.makeText(context, "Clicked info!", Toast.LENGTH_SHORT).show() }
 
-    Box{
+    Box(modifier = Modifier.pullRefresh(pullRefreshState)){
         /*** Organize elements in column ***/
         LazyColumn(
             modifier = modifier.padding(20.dp),
