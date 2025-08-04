@@ -1,0 +1,61 @@
+package com.example.luckytask.ui.theme.elements
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun <T> Dropdown(
+    items: List<T>,
+    defaultText:String = "Select Group",
+    onValueChange: (T) -> T,
+    text: (T) -> String = {it.toString()},
+    type: String = "item",
+    specialFirstItem: (@Composable (var1:Any) -> Unit)? = null
+){
+    var expanded by remember { mutableStateOf(false) }
+    var selection by remember { mutableStateOf<T?>(null) }
+
+    Box(contentAlignment = Alignment.Center){
+        Button(modifier = Modifier.width(150.dp),
+            onClick = { expanded = !expanded; }) {
+            Text( if(selection != null) text(selection!!) else defaultText)
+            Icon(Icons.Default.ArrowDropDown, contentDescription = "Select first Unit")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            specialFirstItem
+            if(items.isEmpty()){
+                DropdownMenuItem(text = {Text("No $type found")}, onClick = {expanded})
+            }else{
+                items.forEach{ item ->
+                    DropdownMenuItem(
+                        text = {Text(text(item))},
+                        onClick = {
+                            expanded = false
+                            selection = item
+                            onValueChange(item)
+                        }
+                    )
+                }
+            }
+
+        }
+    }
+}
