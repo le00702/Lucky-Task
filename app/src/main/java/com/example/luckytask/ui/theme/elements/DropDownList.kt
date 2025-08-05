@@ -25,7 +25,7 @@ fun <T> Dropdown(
     onValueChange: (T) -> T, //load new Data
     text: (T) -> String = {it.toString()},
     type: String = "item",
-    specialFirstItem: (@Composable () -> Unit)? = null
+    specialFirstItem:  Pair<String, (Boolean)->Unit>? = null
 ){
     var expanded by remember { mutableStateOf(false) }
     var selection by remember { mutableStateOf<T?>(null) }
@@ -40,7 +40,12 @@ fun <T> Dropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            specialFirstItem
+            if(specialFirstItem != null){
+                val text = specialFirstItem.first
+                val func = specialFirstItem.second
+                DropdownMenuItem(text = {Text(text)}, onClick = {expanded = false; func(true)})
+            }
+
             if(items.isEmpty()){
                 DropdownMenuItem(text = {Text("No $type found")}, onClick = {expanded})
             }else{
