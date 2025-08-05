@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
+const val MOCK: Boolean = true //Don't Load Real data to save usages
 const val MOCK_GROUP = "Some Group"
 class GroupTaskViewModel:ViewModel() {
 
@@ -47,6 +48,10 @@ class GroupTaskViewModel:ViewModel() {
 
   fun loadTodos(){
         _todoDAOS.clear()
+      if(MOCK){
+          _todoDAOS.addAll(listOf(TodoDAO("Title1", "Description1"), TodoDAO("Title2", "Description2"), TodoDAO("Title3", "Description3")))
+          return
+      }
        viewModelScope.launch {
            Log.i("TodoViewModel", "Loading Todos")
            isLoading = true
@@ -58,11 +63,19 @@ class GroupTaskViewModel:ViewModel() {
     }
 
     fun addTodo(todoDAO: TodoDAO){
+        if(MOCK){
+            _todoDAOS.add(todoDAO)
+            return
+        }
         _todoDAOS.add(todoDAO)
         Firestore.addTodo(MOCK_GROUP, todoDAO)
     }
 
     fun removeTodo(index:Int){
+        if(MOCK){
+            _todoDAOS.removeAt(index)
+            return
+        }
         Firestore.removeTodo(MOCK_GROUP, todoDAOS[index])
         _todoDAOS.removeAt(index)
     }
