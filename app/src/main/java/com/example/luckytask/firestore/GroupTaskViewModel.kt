@@ -25,6 +25,14 @@ class GroupTaskViewModel:ViewModel() {
         }
     }
 
+    fun generateRandomAlphanumeric(length: Int): String {
+        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
+    }
+
+
     fun joinGroup(id:String){
         //TODO: Add Group ID to SharedPreferences
     }
