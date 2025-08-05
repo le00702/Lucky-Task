@@ -21,11 +21,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun <T> Dropdown(
     items: List<T>,
-    defaultText:String = "Select Group",
-    onValueChange: (T) -> T,
+    defaultText:String = "Select item",
+    onValueChange: (T) -> T, //load new Data
     text: (T) -> String = {it.toString()},
     type: String = "item",
-    specialFirstItem: (@Composable (var1:Any) -> Unit)? = null
+    specialFirstItem: (@Composable () -> Unit)? = null
 ){
     var expanded by remember { mutableStateOf(false) }
     var selection by remember { mutableStateOf<T?>(null) }
@@ -34,7 +34,7 @@ fun <T> Dropdown(
         Button(modifier = Modifier.width(150.dp),
             onClick = { expanded = !expanded; }) {
             Text( if(selection != null) text(selection!!) else defaultText)
-            Icon(Icons.Default.ArrowDropDown, contentDescription = "Select first Unit")
+            Icon(Icons.Default.ArrowDropDown, contentDescription = "Select first $type")
         }
         DropdownMenu(
             expanded = expanded,
