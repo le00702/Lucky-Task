@@ -11,7 +11,10 @@ abstract class TaskItem(
     open val dueDate: LocalDate? = null,
     open val isActive: Boolean = false, // true = drawn/active task, false = TODO
     open val isCompleted: Boolean = false,
-)
+){
+    /*** Make id abstract, so it does not need to be passed via constructor ***/
+    abstract val id: Int
+}
 
 /*** Extract separate data class/entity for private tasks -->
  *   pass only title to constructor as it does not have a default value
@@ -19,7 +22,7 @@ abstract class TaskItem(
 @Entity(tableName = "private_tasks")
 data class PrivateTaskItem(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    override val id: Int = 0,
     override val title: String,
     override val description: String = "",
     override val dueDate: LocalDate? = null,
@@ -33,7 +36,7 @@ data class PrivateTaskItem(
 @Entity(tableName = "group_tasks")
 data class GroupTaskItem(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    override val id: Int = 0,
     override val title: String,
     override val description: String = "",
     val assignee: String? = null, // null = unassigned, "Me" = current user, or roommate name
