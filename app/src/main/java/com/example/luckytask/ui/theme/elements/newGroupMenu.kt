@@ -17,7 +17,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -38,9 +37,11 @@ import java.util.InvalidPropertiesFormatException
 
 
 @Composable
-fun RadioButtonSelection(modifier:Modifier = Modifier, options: List<String> = listOf("Option 1", "Option 2"), selection: (Int) -> Int = {it}){
+fun RadioButtonSelection(modifier:Modifier = Modifier, options: List<String> = listOf("Option 1", "Option 2"), selected: (Int) -> Unit = {it}){
     if(options.isEmpty() || options.size > 2) throw InvalidPropertiesFormatException("Invalid number of options")
+
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(options[0]) }
+
     Row(modifier.selectableGroup(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically) {
@@ -50,7 +51,7 @@ fun RadioButtonSelection(modifier:Modifier = Modifier, options: List<String> = l
                     .height(56.dp)
                     .selectable(
                         selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text); selection(options.indexOf(text)) },
+                        onClick = { onOptionSelected(text); selected(options.indexOf(text)) },
                         role = Role.RadioButton
                     )
                     .padding(horizontal = 16.dp),
@@ -81,32 +82,37 @@ const val JOIN_GROUP = 1
 @Composable
 fun NewGroupMenu(
     modifier:Modifier = Modifier,
-    setVisibility:(vis:Boolean) -> Unit,
+    setVisibility:(Boolean) -> Unit,
     addGroup:(groupName: String) -> Unit,
     joinGroup:(groupKey:String) -> Unit
     ){
     var input by remember{mutableStateOf("")}
     var selection by remember { mutableIntStateOf(CREATE_GROUP) }
+
     val fieldText  = if (selection == CREATE_GROUP)  "Group Name" else "Group Key"
     val buttonText = if (selection == CREATE_GROUP)  "Create" else "Join"
-    Box(modifier = modifier.fillMaxWidth().fillMaxHeight(fraction = 0.4f).background(Color.DarkGray.copy(alpha = 0.8f), shape = roundedShape(10.dp)),
+    Box(modifier = modifier.fillMaxWidth().fillMaxHeight(fraction = 0.4f).background(Color.DarkGray.copy(alpha = 0.95f), shape = roundedShape(10.dp)),
         contentAlignment = Alignment.Center){
         Column(modifier = modifier.fillMaxSize().padding(8.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally){
             Text(modifier = Modifier.padding(5.dp),text = "Add Group", fontSize = 30.sp)
             Spacer(modifier.padding(15.dp))
-            RadioButtonSelection(modifier = modifier, options = listOf("Create Group", "Join Group"))
+            RadioButtonSelection(modifier = modifier, options = listOf("Create Group", "Join Group"), selected = {selection = it})
             Spacer(modifier.padding(15.dp))
 
             TextField(value = input, onValueChange = {input = it}, label ={Text(fieldText)} )
             Spacer(modifier.padding(15.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)){
                 Button(enabled = (!input.isEmpty()),onClick = {
-                    if(selection == CREATE_GROUP){
-                        addGroup(input)
-                    }else if(selection == JOIN_GROUP){
-                        joinGroup(input)
-                    }else{
-                        throw IllegalStateException("Selection Not defined")
+                    when (selection) {
+                        CREATE_GROUP -> {
+                            addGroup(input)
+                        }
+                        JOIN_GROUP -> {
+                            joinGroup(input)
+                        }
+                        else -> {
+                            throw IllegalStateException("Selection Not defined")
+                        }
                     }
                     input = ""
                     setVisibility(false)}){
