@@ -20,6 +20,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.firestore.GroupDAO
 import com.example.luckytask.sensor.ShakeListener
@@ -41,6 +43,7 @@ import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.firestore.GroupTaskViewModel
 import com.example.luckytask.ui.theme.elements.Dropdown
 import com.example.luckytask.ui.theme.elements.NewGroupMenu
+import kotlinx.coroutines.launch
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "GroupTasksActivity"
@@ -110,7 +113,10 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     val taskList = viewModel.todoDAOS
     val groupList = viewModel.groupDAOS
 
-    val loadGroup: (GroupDAO) -> Unit = {viewModel.setCurrentGroup(context,it);viewModel.loadTodos()}
+    val loadGroup: (GroupDAO) -> Unit = {
+        viewModel.setCurrentGroup(context,it)
+        viewModel.loadTodos()
+    }
 
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = listOf<String>()
@@ -125,6 +131,12 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
 
     val onInfoIconClick = { Toast.makeText(context, "Clicked info!", Toast.LENGTH_SHORT).show() }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadGroups(context)
+        viewModel.loadCurrentGroup(context)
+        viewModel.loadTodos()
+    }
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)){
 
@@ -261,7 +273,10 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     }
     if(groupMaker){
         Box(modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable{null}, contentAlignment = Alignment.TopCenter){
-            NewGroupMenu(setVisibility = setGroupMenu, addGroup = {it}, joinGroup = {viewModel.joinGroup(context = context, id = it)})
+            NewGroupMenu(setVisibility = setGroupMenu,
+                addGroup = {viewModel.createGroup(context = context, name = it)},
+                joinGroup = {viewModel.joinGroup(context = context, id = it)
+                })
         }
     }
 }
