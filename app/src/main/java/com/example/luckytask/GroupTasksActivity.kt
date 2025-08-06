@@ -35,6 +35,7 @@ import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.EditableTaskCard
 import com.example.luckytask.ui.theme.elements.Task
+import com.example.luckytask.ui.theme.elements.TaskCard
 import java.time.LocalDate
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
@@ -180,10 +181,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         } else {
             /*** If there ARE roommate tasks, display them all ***/
             items(roommateTasks) { task ->
-                Task(
-                    title = task.title,
-                    roommate = true,
-                    description =  task.description
+                TaskCard(
+                    task = task
                 )
             }
         }

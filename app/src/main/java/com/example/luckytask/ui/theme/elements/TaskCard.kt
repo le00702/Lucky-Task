@@ -184,7 +184,7 @@ fun TaskCard(
             /*** Display the detailed info of the task ***/
             if (showInfo) {
                 TaskInfoPopup(
-                    task.title, "Info icon clicked!", onDismissRequest = { showInfo = false },
+                    task.title, task.description, onDismissRequest = { showInfo = false },
                     parentColor = backgroundColor
                 )
             }
