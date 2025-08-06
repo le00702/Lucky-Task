@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Button
@@ -90,13 +91,13 @@ fun NewGroupMenu(
 
     val fieldText  = if (selection == CREATE_GROUP)  "Group Name" else "Group Key"
     val buttonText = if (selection == CREATE_GROUP)  "Create" else "Join"
-    Box(modifier = modifier.fillMaxWidth().fillMaxHeight(fraction = 0.4f).background(Color.DarkGray.copy(alpha = 0.95f), shape = roundedShape(10.dp)),
+    Box(modifier = modifier.fillMaxWidth().background(Color.DarkGray.copy(alpha = 0.97f), shape = roundedShape(10.dp)).padding(15.dp),
         contentAlignment = Alignment.Center){
-        Column(modifier = modifier.fillMaxSize().padding(8.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally){
+        Column(modifier = modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally){
             Text(modifier = Modifier.padding(5.dp),text = "Add Group", fontSize = 30.sp)
-            Spacer(modifier.padding(15.dp))
+            Spacer(modifier.padding(8.dp))
             RadioButtonSelection(modifier = modifier, options = listOf("Create Group", "Join Group"), selected = {selection = it})
-            Spacer(modifier.padding(15.dp))
+            Spacer(modifier.padding(8.dp))
 
             TextField(value = input, onValueChange = {input = it}, label ={Text(fieldText)} )
             Spacer(modifier.padding(15.dp))
@@ -117,6 +118,7 @@ fun NewGroupMenu(
                     setVisibility(false)}){
                     Text(buttonText)
                 }
+                Spacer(modifier.padding(10.dp))
                 Button(onClick = {setVisibility(false)}){
                     input = ""
                     Text("Cancel")
