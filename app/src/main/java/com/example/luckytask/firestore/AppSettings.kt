@@ -39,14 +39,17 @@ class AppSettings {
             }
         }
 
-        suspend fun getCurrentGroup(context: Context): String? {
+        suspend fun getCurrentGroup(context: Context): Pair<String, String>? {
             val data = context.dataStore.data.first()
-            return data[CURRENT_GROUP_KEY]
+            val json = data[CURRENT_GROUP_KEY] ?: return null
+            return Json.decodeFromString<Pair<String, String>>(json)
         }
 
-        suspend fun setCurrentGroup(context: Context, id: String) {
+        suspend fun setCurrentGroup(context: Context, group:GroupDAO) {
+            val data = Pair(group.id, group.name)
+            val json = Json.encodeToString(data)
             context.dataStore.edit { settings ->
-                settings[CURRENT_GROUP_KEY] = id
+                settings[CURRENT_GROUP_KEY] = json
             }
         }
 
