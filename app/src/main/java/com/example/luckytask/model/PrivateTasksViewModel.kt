@@ -51,11 +51,11 @@ class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO) : View
         }
     }
 
-    fun getTaskById(taskId: Int): PrivateTaskItem? {
-        var task: PrivateTaskItem? = null
-        viewModelScope.launch {
-            task = privateTasksDAO.getTaskById(taskId)
-        }
+    /*** As this is the only function returning something (for now)
+     *   make it suspendable, so it does not return before the result is fetched
+     *   from the local DB ***/
+    suspend fun getTaskById(taskId: Int): PrivateTaskItem? {
+        val task: PrivateTaskItem? =  privateTasksDAO.getTaskById(taskId)
         return task
     }
 }
