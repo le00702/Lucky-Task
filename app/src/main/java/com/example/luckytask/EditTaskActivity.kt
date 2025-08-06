@@ -139,25 +139,25 @@ fun EditTaskScreen(
         item {
             Button(
                 onClick = {
-                    val task = taskRepository.getTaskById(taskId)
-                    if (task != null) {
-                        val updatedTask = when (task) {
-                            is PrivateTaskItem -> task.copy(
-                                title = title.value,
-                                description = description.value
-                            )
+                    if (isGroupTask) {
+                        Toast.makeText(context, "GROUP TASK: edit", Toast.LENGTH_SHORT).show()
+                        val task = taskRepository.getTaskById(taskId)
+                        if (task != null) {
+                            val updatedTask = when (task) {
+                                is GroupTaskItem -> task.copy(
+                                    title = title.value,
+                                    description = description.value
+                                )
 
-                            is GroupTaskItem -> task.copy(
-                                title = title.value,
-                                description = description.value
-                            )
-
-                            else -> {
-                                throw IllegalArgumentException("Unsupported task type")
+                                else -> {
+                                    throw IllegalArgumentException("Unsupported task type")
+                                }
                             }
+                            taskRepository.updateTask(updatedTask)
+                            onFinish()
                         }
-                        taskRepository.updateTask(updatedTask)
-                        onFinish()
+                    } else {
+                        Toast.makeText(context, "PRIVATE TASK: edit", Toast.LENGTH_SHORT).show()
                     }
                 },
                 enabled = formIsComplete,
