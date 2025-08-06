@@ -84,7 +84,7 @@ fun TaskCard(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    if (task.description.isNotEmpty()) {
+                    /*if (task.description.isNotEmpty()) {
                         Text(
                             text = task.description,
                             fontSize = 14.sp,
@@ -93,7 +93,7 @@ fun TaskCard(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(top = 4.dp)
                         )
-                    }
+                    }*/
                 }
 
                 if (task.isActive) {
