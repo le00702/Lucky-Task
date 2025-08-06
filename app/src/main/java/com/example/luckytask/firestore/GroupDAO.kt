@@ -1,5 +1,8 @@
 package com.example.luckytask.firestore
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class GroupDAO(
     var name:String = "Group",
     var id:String? = null, //Set by Firestore
