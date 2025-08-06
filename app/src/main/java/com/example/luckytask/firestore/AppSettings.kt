@@ -24,6 +24,8 @@ class AppSettings {
         val USER_KEY = stringPreferencesKey("user_key")
         val GROUP_LIST_KEY = stringPreferencesKey("group_key")
 
+        val CURRENT_GROUP_KEY = stringPreferencesKey("current_group_key")
+
         suspend fun getUserInfo(context: Context): UserDAO? {
             val data = context.dataStore.data.first()
             val json = data[USER_KEY] ?: return null
@@ -34,6 +36,17 @@ class AppSettings {
             val json = Json.encodeToString(user)
             context.dataStore.edit { settings ->
                 settings[USER_KEY] = json
+            }
+        }
+
+        suspend fun getCurrentGroup(context: Context): String? {
+            val data = context.dataStore.data.first()
+            return data[CURRENT_GROUP_KEY]
+        }
+
+        suspend fun setCurrentGroup(context: Context, id: String) {
+            context.dataStore.edit { settings ->
+                settings[CURRENT_GROUP_KEY] = id
             }
         }
 
@@ -69,7 +82,7 @@ class AppSettings {
             setGroups(context, list)
         }
 
-        suspend fun removeGroup(context: Context, group: GroupDAO) {
+        suspend fun removeGroup(context: Context, id:String) {
             val data = context.dataStore.data.first()
             val json = data[GROUP_LIST_KEY]
             if (json == null) {
@@ -77,7 +90,7 @@ class AppSettings {
                 return
             }
             val list = Json.decodeFromString<MutableMap<String, String>>(json)
-            list.remove(group.id)
+            list.remove(id)
             setGroups(context, list)
         }
     }
