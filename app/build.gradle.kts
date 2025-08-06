@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+
 }
 
 android {
@@ -41,7 +42,8 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,6 +56,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.5.4")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation(libs.androidx.datastore.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
