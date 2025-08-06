@@ -1,5 +1,6 @@
 package com.example.luckytask
 
+import com.example.luckytask.firestore.GroupTaskViewModel
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -10,8 +11,21 @@ import org.junit.Assert.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+    fun generateRandomAlphanumeric(length: Int): String {
+        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
+    }
+
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun generateRandomAlphanumericTest(){
+        val length = 8
+        for(i in 1..100) {
+            val randomString = generateRandomAlphanumeric(length)
+            println(randomString)
+        }
+
+
     }
 }
