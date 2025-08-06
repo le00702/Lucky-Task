@@ -33,7 +33,8 @@ import java.time.format.DateTimeFormatter
 fun EditableTaskCard(
     task: TaskItem,
     modifier: Modifier = Modifier,
-    onTaskUpdated: () -> Unit = {} // Callback for UI refresh
+    onTaskUpdated: () -> Unit = {}, // Callback for UI refresh
+    isGroupTask: Boolean
 ) {
     val context = LocalContext.current
 
@@ -141,7 +142,7 @@ fun EditableTaskCard(
 
                     // Edit Button
                     IconButton(
-                        onClick = { startEditActivity(context, task.id) },
+                        onClick = { startEditActivity(context, task.id, isGroupTask) },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
@@ -171,7 +172,7 @@ fun EditableTaskCard(
                 ) {
                     // Edit Button
                     IconButton(
-                        onClick = { startEditActivity(context, task.id) },
+                        onClick = { startEditActivity(context, task.id, isGroupTask) },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
@@ -208,10 +209,12 @@ fun EditableTaskCard(
     }
 }
 
-private fun startEditActivity(context: Context, taskId: Int) {
+/*** Pass isGroupTask to choose parent activity ***/
+private fun startEditActivity(context: Context, taskId: Int, isGroupTask: Boolean) {
     val intent = Intent(context, EditTaskActivity::class.java).apply {
+        val parentActivity = if(isGroupTask) "MyGroupTasksActivity" else "MyTasksActivity"
         putExtra("taskId", taskId)
-        putExtra("parentActivity", "MyTasksActivity")
+        putExtra("parentActivity", parentActivity)
         putExtra("topBarTitle", "Edit Task")
     }
     context.startActivity(intent)

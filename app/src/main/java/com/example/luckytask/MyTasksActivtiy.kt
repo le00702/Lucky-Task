@@ -188,7 +188,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             EditableTaskCard(
                 task = taskItem,
                 modifier = Modifier,
-                onTaskUpdated = { refreshTrigger++ } // UI refresh for changes
+                onTaskUpdated = { refreshTrigger++ }, // UI refresh for changes
+                false
             )
         }
 
@@ -235,7 +236,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         items(tasks) { taskItem ->
             EditableTaskCard(
                 task = taskItem,
-                modifier = Modifier
+                modifier = Modifier,
+                isGroupTask = false
             )
         }
     }

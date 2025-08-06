@@ -44,7 +44,8 @@ class EditTaskActivity : ComponentActivity() {
                     EditTaskScreen(
                         taskId = taskId,
                         modifier = Modifier.padding(20.dp),
-                        onFinish = { finish() }
+                        onFinish = { finish() },
+                        isGroupTask = parentActivity != "MyTasksActivity"
                     )
                 }
             }
@@ -52,11 +53,13 @@ class EditTaskActivity : ComponentActivity() {
     }
 }
 
+/*** Pass isGroupTask to differentiate what to load in edit screen ***/
 @Composable
 fun EditTaskScreen(
     taskId: Int,
     modifier: Modifier = Modifier,
     onFinish: () -> Unit = {},
+    isGroupTask: Boolean,
 ) {
     val HEADER_SIZE = 30.sp
     val taskRepository = remember { TaskRepository.getInstance() }
@@ -66,10 +69,17 @@ fun EditTaskScreen(
 
     // Load Task
     LaunchedEffect(taskId) {
-        val task = taskRepository.getTaskById(taskId)
-        if (task != null) {
-            title.value = task.title
-            description.value = task.description
+        /*** For now, load group tasks from mock repo ***/
+        if (isGroupTask) {
+            val task = taskRepository.getTaskById(taskId)
+            if (task != null) {
+                title.value = task.title
+                description.value = task.description
+            }
+        }else{
+            /*** For private tasks display mock text when editing for now ***/
+            title.value = "LOCAL"
+            description.value = "local text"
         }
     }
 

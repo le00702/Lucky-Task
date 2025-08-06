@@ -211,7 +211,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             EditableTaskCard(
                 task = taskItem,
                 modifier = Modifier,
-                onTaskUpdated = { refreshTrigger++ }
+                onTaskUpdated = { refreshTrigger++ },
+                isGroupTask = true
             )
         }
     }
