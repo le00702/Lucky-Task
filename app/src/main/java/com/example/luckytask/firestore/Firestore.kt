@@ -5,7 +5,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 
 class Firestore {
-    companion object { fun loadTodos(group:String, onResult: (List<TodoDAO>) -> Unit){
+    companion object {
+        fun loadTodos(group:String, onResult: (List<TodoDAO>) -> Unit){
             val todos = mutableListOf<TodoDAO>()
             Log.i("Firestore","Loading Todos from Group $group")
             val doc = FirebaseFirestore.getInstance().collection("groups/$group/todos")
@@ -49,6 +50,25 @@ class Firestore {
                     Log.w("Firestore","Error removing Todo ${todo.id}")
                 }
             }
+        }
+
+
+        fun checkIfGroupExists(id:String):Boolean{
+            var existence = false
+            val ref = FirebaseFirestore.getInstance().collection("groups")
+            val doc = ref.document(id)
+            doc.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val document = task.result
+                    existence = document.exists()
+                    if (existence) {
+                        Log.d("Firestore", "Group $id exists")
+                    } else {
+                        Log.d("Firestore", "Group does not exist")
+                    }
+                }
+            }
+            return existence
         }
     }
 }
