@@ -96,7 +96,7 @@ fun TaskCard(
                     }*/
                 }
 
-                if (task.isActive) {
+                /*if (task.isActive) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = colorResource(R.color.add_task_color)
@@ -120,7 +120,7 @@ fun TaskCard(
                             )
                         }
                     }
-                }
+                }*/
             }
             if (task is GroupTaskItem) {
                 if (task.assignee != null || task.dueDate != null) {
