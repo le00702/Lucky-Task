@@ -53,8 +53,9 @@ class Firestore {
         }
 
 
-        fun checkIfGroupExists(id:String):Boolean{
+        fun checkIfGroupExists(id:String):Pair<Boolean, String?>{
             var existence = false
+            var name:String? = null
             val ref = FirebaseFirestore.getInstance().collection("groups")
             val doc = ref.document(id)
             doc.get().addOnCompleteListener { task ->
@@ -63,12 +64,16 @@ class Firestore {
                     existence = document.exists()
                     if (existence) {
                         Log.d("Firestore", "Group $id exists")
+                        name = document.data?.get("name").toString()
                     } else {
                         Log.d("Firestore", "Group does not exist")
                     }
+                }else{
+                    Log.w("Firestore", "Error getting documents.", task.exception)
+                    return@addOnCompleteListener
                 }
             }
-            return existence
+            return Pair(existence,name)
         }
     }
 }
