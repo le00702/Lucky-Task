@@ -91,65 +91,14 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     val taskRepository = remember { TaskRepository.getInstance() }
     val tasks by taskRepository.tasks.collectAsState()
     var refreshTrigger by remember { mutableStateOf(0) }
-    val groupTasks = tasks.filter { it is GroupTaskItem }
+    val groupTasks = tasks.filterIsInstance<GroupTaskItem>()
 
+    val activeTasks = groupTasks.filter { it.isActive && it.assignee == "Me" }
 
-    /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = listOf<GroupTaskItem>(
-        GroupTaskItem(
-            id = -1,
-            title = "Task 1",
-            description = "I am the active group task 1",
-            dueDate = LocalDate.now().plusDays(1),
-            isActive = true
-        ),
-        GroupTaskItem(
-            id = -2,
-            title = "Task 2",
-            description = "I am the active group task 2",
-            dueDate = LocalDate.now().plusDays(2),
-            isActive = true
-        ),
-        GroupTaskItem(
-            id = -3,
-            title = "Task 3",
-            description = "I am the active group task 3",
-            dueDate = LocalDate.now().plusDays(3),
-            isActive = true
-        )
-    )
+    val roommateTasks = groupTasks.filter { it.assignee != null && it.assignee != "Me" }
 
+    val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
-    /*** Use this roommate-task-list for mocking purposes for now ***/
-    val roommateTasks = listOf<GroupTaskItem>(
-        GroupTaskItem(
-            id = -1,
-            title = "RM Task 1",
-            description = "RM Description 1",
-            assignee = "John",
-            dueDate = LocalDate.now().plusDays(1),
-            isActive = false,
-            isCompleted = false
-        ),
-        GroupTaskItem(
-            id = -2,
-            title = "RM Task 2",
-            description = "RM Description 2",
-            assignee = "Josef",
-            dueDate = LocalDate.now().plusDays(2),
-            isActive = false,
-            isCompleted = false
-        ),
-        GroupTaskItem(
-            id = -3,
-            title = "RM Task 3",
-            description = "RM Description 3",
-            assignee = "Jane",
-            dueDate = LocalDate.now().plusDays(3),
-            isActive = false,
-            isCompleted = false
-        )
-    )
 
     /*** Organize elements in column ***/
     LazyColumn(
@@ -267,8 +216,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             )
         }
 
-        // Editable Group Tasks
-        items(groupTasks) { taskItem ->
+        // Editable Group Tasks --> not assigned to/drawn by anyone yet
+        items(todoTasks) { taskItem ->
             EditableTaskCard(
                 task = taskItem,
                 modifier = Modifier,
