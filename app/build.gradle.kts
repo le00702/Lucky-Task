@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.room.runtime.android)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.paging)
+    implementation(libs.androidx.media3.common.ktx)
     ksp(libs.androidx.room.compiler) // ksp is an alternative to kapt
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -25,4 +25,7 @@ interface PrivateTasksDAO {
 
     @Delete
     suspend fun deletePrivateTask(task: PrivateTaskItem)
+
+    @Query("SELECT * FROM private_tasks WHERE id = :taskId")
+    suspend fun getTaskById(taskId: Int): PrivateTaskItem
 }

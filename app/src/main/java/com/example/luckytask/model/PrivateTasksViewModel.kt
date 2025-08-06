@@ -3,6 +3,7 @@ package com.example.luckytask.model
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.PrivateTasksDAO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,6 @@ class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO) : View
                 _tasks.value = taskList
             }
         }
-
     }
 
     fun addTask(task: PrivateTaskItem) {
@@ -49,5 +49,13 @@ class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO) : View
             privateTasksDAO.updatePrivateTask(task)
             loadTasks()
         }
+    }
+
+    fun getTaskById(taskId: Int): PrivateTaskItem? {
+        var task: PrivateTaskItem? = null
+        viewModelScope.launch {
+            task = privateTasksDAO.getTaskById(taskId)
+        }
+        return task
     }
 }

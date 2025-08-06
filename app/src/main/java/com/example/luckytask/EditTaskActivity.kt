@@ -1,6 +1,8 @@
 package com.example.luckytask
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,12 +17,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.data.GroupTaskItem
 import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskRepository
+import com.example.luckytask.model.PrivateTasksViewModel
+import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskInput
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
@@ -67,6 +73,11 @@ fun EditTaskScreen(
     var title = remember { mutableStateOf("") }
     var description = remember { mutableStateOf("") }
 
+    val context = LocalContext.current
+    val app = context.applicationContext as PrivateTasksApp
+    val privateTasksViewModel: PrivateTasksViewModel =
+        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
+
     // Load Task
     LaunchedEffect(taskId) {
         /*** For now, load group tasks from mock repo ***/
@@ -76,10 +87,27 @@ fun EditTaskScreen(
                 title.value = task.title
                 description.value = task.description
             }
-        }else{
+        } else {
             /*** For private tasks display mock text when editing for now ***/
-            title.value = "LOCAL"
-            description.value = "local text"
+            val task = privateTasksViewModel.getTaskById(taskId)
+            /*** Use Toast and logging of all private tasks for debugging purposes ***/
+            Toast.makeText(context, "TASK isNull ${task == null} for id $taskId", Toast.LENGTH_LONG)
+                .show()
+            val allTasks = privateTasksViewModel.tasks
+            allTasks.collect { taskList ->
+                taskList.forEach { task ->
+                    Log.d(
+                        "DB",
+                        "Task id=${task.id}, title=${task.title}"
+                    )
+                }
+            }
+            /*title.value = "LOCAL"
+            description.value = "local text"*/
+            if (task != null) {
+                title.value = task.title
+                description.value = task.description
+            }
         }
     }
 
