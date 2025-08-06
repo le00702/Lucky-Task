@@ -43,7 +43,7 @@ fun MenuItem(modifier:Modifier = Modifier, text:String, onClick:()->Unit){
 fun <T> Dropdown(
     items: List<T>,
     defaultText:String = "Select item",
-    onValueChange: (T) -> T, //load new Data
+    onValueChange: (T) -> Unit, //load new Data
     text: (T) -> String = {it.toString()},
     type: String = "item",
     specialFirstItem:  Pair<String, (Boolean)->Unit>? = null
