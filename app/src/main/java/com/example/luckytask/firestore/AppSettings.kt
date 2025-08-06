@@ -1,6 +1,7 @@
 package com.example.luckytask.firestore
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -37,16 +38,41 @@ class AppSettings {
         }
     }
 
-    suspend fun getGroups(context: Context):List<GroupDAO>?{
+    suspend fun getGroups(context: Context): MutableSet<GroupDAO>?{
         val data = context.dataStore.data.first()
         val json = data[GROUP_LIST_KEY]?: return null
-        return Json.decodeFromString<List<GroupDAO>>(json)
+        return Json.decodeFromString<MutableSet<GroupDAO>>(json)
     }
 
-    suspend fun setGroups(context: Context, groups:List<GroupDAO>){
+    suspend fun setGroups(context: Context, groups:MutableSet<GroupDAO>){
         val json = Json.encodeToString(groups)
         context.dataStore.edit { settings ->
             settings[GROUP_LIST_KEY] = json
         }
+    }
+
+    suspend fun addGroup(context: Context, group:GroupDAO){
+        val data = context.dataStore.data.first()
+        val json = data[GROUP_LIST_KEY]
+        if(json == null){
+            Log.i("AppSettings", "Adding first group")
+            setGroups(context, mutableSetOf(group))
+            return
+        }
+        val list = Json.decodeFromString<MutableSet<GroupDAO>>(json)
+        list.add(group)
+        setGroups(context, list)
+    }
+
+    suspend fun removeGroup(context: Context, group:GroupDAO){
+        val data = context.dataStore.data.first()
+        val json = data[GROUP_LIST_KEY]
+        if(json == null){
+            Log.i("AppSettings", "No Group Found when trying to remove")
+            return
+        }
+        val list = Json.decodeFromString<MutableSet<GroupDAO>>(json)
+        list.remove(group)
+        setGroups(context, list)
     }
 }
