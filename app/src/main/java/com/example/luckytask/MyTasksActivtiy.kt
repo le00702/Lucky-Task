@@ -97,7 +97,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     val HEADER_SIZE = 30.sp
     val context = LocalContext.current
     val taskRepository = remember { TaskRepository.getInstance() }
-    val tasks by taskRepository.tasks.collectAsState()
+    //val tasks by taskRepository.tasks.collectAsState()
     var refreshTrigger by remember { mutableStateOf(0) }
 
     /*** Get viewModel for private tasks + application context + DB ***/
@@ -131,7 +131,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
 
 
     val realInactiveTasks = privateTasks.filter { !it.isActive }
-    val inactiveTasks = mockInactiveTask + realInactiveTasks
+    val tasks = mockInactiveTask + realInactiveTasks
 
 
     // Filter State
@@ -198,18 +198,6 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             Spacer(modifier = Modifier.height(30.dp))
         }
 
-        // Show editable tasks from repository
-        items(tasks) { taskItem ->
-            EditableTaskCard(
-                task = taskItem,
-                modifier = Modifier
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(30.dp))
-        }
-
         item {
             Dice(
                 modifier = modifier,
@@ -241,11 +229,15 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             )
         }
 
-        items(tasks) { task ->
-            Task(
-                title = task.title,
-                active = false,
-                description = task.description
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+
+        // Show editable tasks from DB
+        items(tasks) { taskItem ->
+            EditableTaskCard(
+                task = taskItem,
+                modifier = Modifier
             )
         }
     }
