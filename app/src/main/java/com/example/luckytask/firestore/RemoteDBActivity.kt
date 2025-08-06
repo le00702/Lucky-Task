@@ -72,7 +72,7 @@ var roundedShape:(Dp) -> Shape = { size ->
 fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = viewModel()){
 
     val pullRefreshState = rememberPullRefreshState(
-        viewModel.isLoading,
+        viewModel.isLoadingTasks,
         {viewModel.loadTodos()}
     )
 
@@ -100,7 +100,7 @@ fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = view
                 if(size == 0){
                     item{
                         Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center){
-                            Text(text = if (viewModel.isLoading) "" else "No Tasks yet")
+                            Text(text = if (viewModel.isLoadingTasks) "" else "No Tasks yet")
                         }
                     }
                 }
@@ -110,7 +110,7 @@ fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = view
                 }
             }
             PullRefreshIndicator(
-                viewModel.isLoading,
+                viewModel.isLoadingTasks,
                 pullRefreshState,
                 Modifier.align(Alignment.TopCenter)
             )

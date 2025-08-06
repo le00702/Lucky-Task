@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -97,7 +96,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
 
     val pullRefreshState = rememberPullRefreshState(
-        viewModel.isLoading,
+        viewModel.isLoadingTasks,
         {viewModel.loadTodos()}
     )
 
@@ -265,7 +264,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         }
 
         PullRefreshIndicator(
-            viewModel.isLoading,
+            viewModel.isLoadingTasks,
             pullRefreshState,
             Modifier.align(Alignment.TopCenter)
         )

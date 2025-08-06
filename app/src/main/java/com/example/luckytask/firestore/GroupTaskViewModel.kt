@@ -21,8 +21,11 @@ class GroupTaskViewModel:ViewModel() {
     private var _todoMaker by mutableStateOf(false)
     val todoMakerState:Boolean
         get() = _todoMaker
-
     val setTodoMaker: (Boolean) -> Unit = { _todoMaker = it }
+
+    private var _isLoadingTasks by mutableStateOf(false)
+    val isLoadingTasks: Boolean
+        get() = _isLoadingTasks
 
 
     private var groupMaker by mutableStateOf(false)
@@ -30,7 +33,9 @@ class GroupTaskViewModel:ViewModel() {
         get() = groupMaker
 
     val setGroupMaker: (Boolean) -> Unit = { groupMaker = it }
-    var isLoading by mutableStateOf(false)
+    private var _isLoadingGroups by mutableStateOf(false)
+    val isLoadingGroups: Boolean
+        get() = _isLoadingGroups
 
     var currentGroup by mutableStateOf<GroupDAO?>(null)
 
@@ -62,7 +67,6 @@ class GroupTaskViewModel:ViewModel() {
             viewModelScope.launch {
                 AppSettings.addGroup(context, GroupDAO(id = id, name = name?:""))
             }
-
         }
     }
 
@@ -90,11 +94,11 @@ class GroupTaskViewModel:ViewModel() {
       }
        viewModelScope.launch {
            Log.i("TodoViewModel", "Loading Todos")
-           isLoading = true
+           _isLoadingTasks = true
            Firestore.loadTodos(currentGroup!!.name){ todos ->
                _todoDAOS.addAll(todos)
            }
-           isLoading = false
+           _isLoadingTasks = false
        }
     }
 
