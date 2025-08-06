@@ -1,5 +1,6 @@
 package com.example.luckytask.firestore
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -31,6 +32,8 @@ class GroupTaskViewModel:ViewModel() {
     val setGroupMaker: (Boolean) -> Unit = { groupMaker = it }
     var isLoading by mutableStateOf(false)
 
+    var currentGroup by mutableStateOf<GroupDAO?>(null)
+
     init {
         viewModelScope.launch {
             loadTodos()
@@ -44,21 +47,43 @@ class GroupTaskViewModel:ViewModel() {
             .joinToString("")
     }
 
+    fun joinGroup(context:Context, id:String){
+        val exists:Boolean
+        val name:String?
+        if(MOCK){
+            exists = true
+            name = "Mock Group"
+        }else{
+            val result = Firestore.checkIfGroupExists(id)
+            exists = result.first
+            name = result.second
+        }
+        if(exists){
+            viewModelScope.launch {
+                AppSettings.addGroup(context, GroupDAO(id = id, name = name?:""))
+            }
 
-    fun joinGroup(id:String){
-        //TODO: Add Group ID to SharedPreferences
+        }
     }
 
-    fun exitGroup(id:String){
-        //TODO: Remove Group ID from SharedPreferences
+    fun exitGroup(context:Context, id:String){
+        viewModelScope.launch {
+            AppSettings.removeGroup(context, id)
+        }
     }
 
-    fun loadGroup(id:String){
-        //TODO: Load Task list and User list from Firestore
+    fun loadGroup(context:Context, id:String){
+        viewModelScope.launch {
+
+        }
     }
 
   fun loadTodos(){
         _todoDAOS.clear()
+      if(currentGroup == null){
+          Log.i("TodoViewModel", "No Group Selected")
+          return
+      }
       if(MOCK){
           _todoDAOS.addAll(listOf(TodoDAO("Title1", "Description1"), TodoDAO("Title2", "Description2"), TodoDAO("Title3", "Description3")))
           return
@@ -66,7 +91,7 @@ class GroupTaskViewModel:ViewModel() {
        viewModelScope.launch {
            Log.i("TodoViewModel", "Loading Todos")
            isLoading = true
-           Firestore.loadTodos(MOCK_GROUP){ todos ->
+           Firestore.loadTodos(currentGroup!!.name){ todos ->
                _todoDAOS.addAll(todos)
            }
            isLoading = false
@@ -74,20 +99,29 @@ class GroupTaskViewModel:ViewModel() {
     }
 
     fun addTodo(todoDAO: TodoDAO){
+        if(currentGroup == null){
+            Log.i("TodoViewModel", "No Group Selected")
+            return
+        }
         if(MOCK){
             _todoDAOS.add(todoDAO)
             return
         }
         _todoDAOS.add(todoDAO)
-        Firestore.addTodo(MOCK_GROUP, todoDAO)
+        Firestore.addTodo(currentGroup!!.name, todoDAO)
     }
 
     fun removeTodo(index:Int){
+        if(currentGroup == null){
+            Log.i("TodoViewModel", "No Group Selected")
+            return
+        }
+
         if(MOCK){
             _todoDAOS.removeAt(index)
             return
         }
-        Firestore.removeTodo(MOCK_GROUP, todoDAOS[index])
+        Firestore.removeTodo(currentGroup!!.name, todoDAOS[index])
         _todoDAOS.removeAt(index)
     }
 
