@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 
 const val MOCK: Boolean = true //Don't Load Real data to save usages
 const val MOCK_GROUP = "Some Group"
+
+const val KEY_LENGTH = 8
 class GroupTaskViewModel:ViewModel() {
 
     private val _todoDAOS = mutableStateListOf<TodoDAO>()
@@ -46,12 +48,6 @@ class GroupTaskViewModel:ViewModel() {
     val currentGroup: GroupDAO?
         get() = _currentGroup
 
-    init {
-        viewModelScope.launch {
-            loadTodos()
-        }
-    }
-
     fun generateRandomAlphanumeric(length: Int): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
         return (1..length)
@@ -77,7 +73,35 @@ class GroupTaskViewModel:ViewModel() {
                 _isLoadingGroups = false
             }
         }
+    }
 
+    fun createGroup(context:Context, name:String){
+        var idExists:Boolean
+        var id:String
+        var counter = 0
+        viewModelScope.launch {
+            _isLoadingGroups = true
+            try{
+                id = generateRandomAlphanumeric(KEY_LENGTH)
+                idExists = Firestore.checkIfGroupExists(id).first
+                while(idExists){
+                    Log.i("GroupTaskViewModel", "ID $id already exists. Try $counter")
+                    id = generateRandomAlphanumeric(KEY_LENGTH)
+                    idExists = Firestore.checkIfGroupExists(id).first
+                    counter++
+                }
+                assert(id.length == KEY_LENGTH)
+                Log.i("GroupTaskViewModel", "New ID $id found after $counter tries")
+                val group = GroupDAO(id = id, name = name)
+                Firestore.createGroup(group)
+                AppSettings.addGroup(context, group)
+                loadGroups(context)
+            }catch(e:Exception){
+                Log.e("GroupTaskViewModel", "Error creating group. $e")
+            }finally {
+                _isLoadingGroups = false
+            }
+        }
     }
 
     fun joinGroup(context: Context, id: String) {
@@ -105,7 +129,7 @@ class GroupTaskViewModel:ViewModel() {
         }
     }
 
-    fun exitGroup(context: Context, id: String) {
+    fun leaveGroup(context: Context, id: String) {
         viewModelScope.launch {
             _isLoadingGroups = true
             try{

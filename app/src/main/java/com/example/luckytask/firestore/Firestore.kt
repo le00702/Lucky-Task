@@ -75,5 +75,17 @@ class Firestore {
             }
             return Pair(existence,name)
         }
+
+        fun createGroup(group:GroupDAO){
+            val ref = FirebaseFirestore.getInstance().collection("groups")
+            ref.document(group.id).set(group)
+                .addOnCompleteListener { task ->
+                    if(task.isSuccessful){
+                        Log.i("Firestore","New Group ${group.name} created")
+                    }else{
+                        Log.w("Firestore","Error adding Group", task.exception)
+                    }
+                }
+        }
     }
 }
