@@ -113,7 +113,7 @@ fun NewGroupMenu(
                 value = input,
                 onValueChange = { input = it},
                 label ={Text(fieldText)},
-                placeholder = {Text("Use $sampleText")},
+                placeholder = {Text(sampleText)},
             )
             Spacer(modifier.padding(15.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)){
