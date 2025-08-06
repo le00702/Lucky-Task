@@ -27,9 +27,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskFilter
-import com.example.luckytask.data.TaskItem
 import com.example.luckytask.data.applyFilters
+import com.example.luckytask.model.PrivateTasksViewModel
+import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
@@ -94,29 +97,49 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     val HEADER_SIZE = 30.sp
     val context = LocalContext.current
     val taskRepository = remember { TaskRepository.getInstance() }
-    val tasks by taskRepository.tasks.collectAsState()
+    //val tasks by taskRepository.tasks.collectAsState()
     var refreshTrigger by remember { mutableStateOf(0) }
 
-    /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = listOf<String>()
+    /*** Get viewModel for private tasks + application context + DB ***/
+    val app = context.applicationContext as PrivateTasksApp
+    val privateTaskViewModel: PrivateTasksViewModel =
+        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
+    val privateTasks by privateTaskViewModel.tasks.collectAsState()
 
-    /*** ENABLE WHEN CHECKING FOR ACTIVE TASKS DISPLAY ***/
-    activeTasks = listOf<String>("Task 1", "Task 2", "Task 3")
-
-    // Mock-Data
-    val mockTaskItems = remember {
-        listOf(
-            TaskItem("1", "Clean Kitchen", "Wash dishes", "Me", LocalDate.now(), true),
-            TaskItem("2", "Buy Groceries", "", null, LocalDate.now().plusDays(1)),
-            TaskItem("3", "Study", "", "Me", LocalDate.now().plusDays(7)),
-            TaskItem("4", "Meeting", "", "John", LocalDate.now(), true),
+    /*** Use mock task for displaying purposes only ***/
+    val mockActiveTask = listOf(
+        PrivateTaskItem(
+            id = -1,
+            title = "Mock Active Task",
+            description = "This is an active mock task",
+            dueDate = LocalDate.now(),
+            isActive = true
         )
-    }
+    )
+
+    /*val mockInactiveTask = listOf(
+        PrivateTaskItem(
+            id = -2,
+            title = "Mock Inactive Task",
+            description = "This is an inactive mock task",
+            dueDate = LocalDate.now(),
+            isActive = false
+        )
+    )*/
+    /*** Use this active-task-list for mocking purposes for now ***/
+    var activeTasks = mockActiveTask
+
+
+    val inactiveTasks = privateTasks.filter { !it.isActive }
+    //val tasks = mockInactiveTask + realInactiveTasks
+
 
     // Filter State
     var currentFilter by remember { mutableStateOf(TaskFilter()) }
-    val filteredTasks = remember(tasks, currentFilter, refreshTrigger) {
-        tasks.applyFilters(currentFilter)
+    /*val filteredTasks = remember(inactiveTasks, currentFilter) {
+       inactiveTasks.applyFilters(currentFilter)*/
+    val filteredTasks = remember(inactiveTasks, currentFilter, refreshTrigger) {
+        inactiveTasks.applyFilters(currentFilter)
     }
 
     /*** Organize elements in column ***/
@@ -153,10 +176,9 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             }
         } else {
             /*** If there ARE active tasks, display them all ***/
-            items(activeTasks.size) { index ->
-                Task(
-                    title = activeTasks[index],
-                    active = true
+            items(activeTasks) { task ->
+                TaskCard(
+                    task = task
                 )
             }
         }
@@ -166,19 +188,8 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             EditableTaskCard(
                 task = taskItem,
                 modifier = Modifier,
-                onTaskUpdated = { refreshTrigger++ } // UI refresh for changes
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(30.dp))
-        }
-
-        // Show editable tasks from repository
-        items(tasks) { taskItem ->
-            EditableTaskCard(
-                task = taskItem,
-                modifier = Modifier
+                onTaskUpdated = { refreshTrigger++ }, // UI refresh for changes
+                false
             )
         }
 
@@ -212,13 +223,35 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                 modifier = Modifier,
                 context,
                 ACTIVITY_NAME,
-                stringResource(R.string.title_my_todos)
+                stringResource(R.string.title_my_todos),
+                isGroupTask = false
             )
         }
 
         item {
-            Task(
-                "This is a TODO item TEST LONG LINE")
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+
+        /*** If there are no inactive tasks(=TODOs), display the following message
+         *   --> ask user to add a new task they want to do ***/
+        if (inactiveTasks.isEmpty()) {
+            item {
+                Text(
+                    "You currently have no TODOs. Click the 'New Task' button to add one!",
+                    color = colorResource(R.color.task_text_color),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            // Show editable inactive tasks from local DB
+            items(inactiveTasks) { taskItem ->
+                EditableTaskCard(
+                    task = taskItem,
+                    modifier = Modifier,
+                    isGroupTask = false
+                )
+            }
         }
     }
 }

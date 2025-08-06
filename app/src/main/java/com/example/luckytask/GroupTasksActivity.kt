@@ -2,7 +2,6 @@ package com.example.luckytask
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.luckytask.data.GroupTaskItem
 import com.example.luckytask.data.TaskRepository
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
@@ -35,6 +35,8 @@ import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.EditableTaskCard
 import com.example.luckytask.ui.theme.elements.Task
+import com.example.luckytask.ui.theme.elements.TaskCard
+import java.time.LocalDate
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "GroupTasksActivity"
@@ -90,22 +92,13 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     val taskRepository = remember { TaskRepository.getInstance() }
     val tasks by taskRepository.tasks.collectAsState()
     var refreshTrigger by remember { mutableStateOf(0) }
-    val groupTasks = tasks.filter { it.isGroupTask }
+    val groupTasks = tasks.filterIsInstance<GroupTaskItem>()
 
+    val activeTasks = groupTasks.filter { it.isActive && it.assignee == "Me" }
 
-    /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = listOf<String>()
+    val roommateTasks = groupTasks.filter { it.assignee != null && it.assignee != "Me" }
 
-    /*** ENABLE WHEN CHECKING FOR ACTIVE TASKS DISPLAY ***/
-    activeTasks = listOf<String>("Task 1", "Task 2", "Task 3")
-
-    /*** Use this roommate-task-list for mocking purposes for now ***/
-    var roommateTasks = listOf<String>()
-
-    /*** ENABLE WHEN CHECKING FOR ROOMMATE TASKS DISPLAY ***/
-    roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
-
-    val onInfoIconClick = { Toast.makeText(context, "Clicked info!", Toast.LENGTH_SHORT).show() }
+    val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
 
     /*** Organize elements in column ***/
@@ -136,10 +129,9 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
         } else {
             /*** If there ARE active tasks, display them all ***/
-            items(activeTasks.size) { index ->
-                Task(
-                    title = activeTasks[index],
-                    active = true
+            items(activeTasks) { task ->
+                TaskCard(
+                    task = task
                 )
             }
         }
@@ -186,11 +178,9 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
         } else {
             /*** If there ARE roommate tasks, display them all ***/
-            items(roommateTasks.size) { index ->
-                Task(
-                    title = roommateTasks[index],
-                    active = true,
-                    roommate = true,
+            items(roommateTasks) { task ->
+                TaskCard(
+                    task = task
                 )
             }
         }
@@ -211,22 +201,18 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 modifier = Modifier,
                 context,
                 ACTIVITY_NAME,
-                stringResource(R.string.title_group_todos)
+                stringResource(R.string.title_group_todos),
+                isGroupTask = true
             )
         }
 
-        item {
-            Task(
-                "This is a TODO item TEST LONG LINE"
-            )
-        }
-
-        // Editable Group Tasks
-        items(groupTasks) { taskItem ->
+        // Editable Group Tasks --> not assigned to/drawn by anyone yet
+        items(todoTasks) { taskItem ->
             EditableTaskCard(
                 task = taskItem,
                 modifier = Modifier,
-                onTaskUpdated = { refreshTrigger++ }
+                onTaskUpdated = { refreshTrigger++ },
+                isGroupTask = true
             )
         }
     }

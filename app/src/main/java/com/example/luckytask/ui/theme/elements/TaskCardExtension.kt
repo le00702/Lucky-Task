@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.EditTaskActivity
 import com.example.luckytask.R
+import com.example.luckytask.data.GroupTaskItem
+import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskItem
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -31,12 +33,13 @@ import java.time.format.DateTimeFormatter
 fun EditableTaskCard(
     task: TaskItem,
     modifier: Modifier = Modifier,
-    onTaskUpdated: () -> Unit = {} // Callback for UI refresh
+    onTaskUpdated: () -> Unit = {}, // Callback for UI refresh
+    isGroupTask: Boolean
 ) {
     val context = LocalContext.current
 
     val backgroundColor = when {
-        task.assignee != null && task.assignee != "Me" -> colorResource(R.color.roommate_task_color)
+        task is GroupTaskItem && task.assignee != null -> colorResource(R.color.roommate_task_color)
         task.isActive -> colorResource(R.color.active_task_color)
         else -> colorResource(R.color.app_color)
     }
@@ -76,7 +79,7 @@ fun EditableTaskCard(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    if (task.description.isNotEmpty()) {
+                    /*if (task.description.isNotEmpty()) {
                         Text(
                             text = task.description,
                             fontSize = 14.sp,
@@ -85,7 +88,7 @@ fun EditableTaskCard(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(top = 4.dp)
                         )
-                    }
+                    }*/
                 }
 
                 if (task.isActive) {
@@ -108,7 +111,7 @@ fun EditableTaskCard(
                 }
             }
 
-            if (task.assignee != null || task.dueDate != null) {
+            if ((task is PrivateTaskItem || task is GroupTaskItem && task.assignee != null) || task.dueDate != null) {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
@@ -116,12 +119,14 @@ fun EditableTaskCard(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    task.assignee?.let { assignee ->
-                        TaskDetailChip(
-                            icon = Icons.Default.Person,
-                            text = assignee,
-                            isHighlighted = assignee != "Me"
-                        )
+                    if(task is GroupTaskItem) {
+                        task.assignee?.let { assignee ->
+                            TaskDetailChip(
+                                icon = Icons.Default.Person,
+                                text = assignee,
+                                isHighlighted = assignee != "Me"
+                            )
+                        }
                     }
 
                     task.dueDate?.let { dueDate ->
@@ -137,7 +142,7 @@ fun EditableTaskCard(
 
                     // Edit Button
                     IconButton(
-                        onClick = { startEditActivity(context, task.id) },
+                        onClick = { startEditActivity(context, task.id, isGroupTask) },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
@@ -167,7 +172,7 @@ fun EditableTaskCard(
                 ) {
                     // Edit Button
                     IconButton(
-                        onClick = { startEditActivity(context, task.id) },
+                        onClick = { startEditActivity(context, task.id, isGroupTask) },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
@@ -204,10 +209,12 @@ fun EditableTaskCard(
     }
 }
 
-private fun startEditActivity(context: Context, taskId: String) {
+/*** Pass isGroupTask to choose parent activity ***/
+private fun startEditActivity(context: Context, taskId: Int, isGroupTask: Boolean) {
     val intent = Intent(context, EditTaskActivity::class.java).apply {
+        val parentActivity = if(isGroupTask) "MyGroupTasksActivity" else "MyTasksActivity"
         putExtra("taskId", taskId)
-        putExtra("parentActivity", "MyTasksActivity")
+        putExtra("parentActivity", parentActivity)
         putExtra("topBarTitle", "Edit Task")
     }
     context.startActivity(intent)
