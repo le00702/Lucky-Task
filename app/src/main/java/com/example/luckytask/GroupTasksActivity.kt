@@ -268,7 +268,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     }
     if(groupMaker){
-        Box(modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable{null}, contentAlignment = Alignment.Center){
+        Box(modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable{null}, contentAlignment = Alignment.TopCenter){
             NewGroupMenu(setVisibility = setGroupMenu, addGroup = {it}, joinGroup = {it})
         }
     }
