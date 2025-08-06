@@ -76,9 +76,16 @@ fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = view
         {viewModel.loadTodos()}
     )
 
+    val groupMaker = viewModel.groupMakerState
+    val setGroupMenu = viewModel.setGroupMaker
+
+    val todoMaker = viewModel.todoMakerState
+    val setTodoMenu = viewModel.setTodoMaker
+
+
     Scaffold(floatingActionButton = {
         FloatingActionButton(onClick = {
-            viewModel.revealTodoMaker = true
+            setTodoMenu(true)
         }) {
             Icon(painter = painterResource(R.drawable.add_task_icon), contentDescription = "Add Task")
         }
@@ -110,10 +117,10 @@ fun TodoView(modifier: Modifier = Modifier, viewModel: GroupTaskViewModel = view
         }
 
 
-        if(viewModel.revealTodoMaker){
+        if(todoMaker){
             Box(modifier = Modifier.fillMaxSize().padding(top = 50.dp).clickable(onClick = {/*Absorb Click*/}), contentAlignment = Alignment.TopCenter){
                 TodoByUser(
-                    setVisibility = { vis -> viewModel.revealTodoMaker = vis },
+                    setVisibility = setTodoMenu,
                     addTodo = {todo -> viewModel.addTodo(todo) }
                 )
             }

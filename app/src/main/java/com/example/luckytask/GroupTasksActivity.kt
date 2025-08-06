@@ -6,8 +6,11 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,10 +21,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -100,6 +100,12 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         {viewModel.loadTodos()}
     )
 
+    val groupMaker = viewModel.groupMakerState
+    val setGroupMenu = viewModel.setGroupMaker
+
+    val todoMaker = viewModel.todoMakerState
+    val setTodoMenu = viewModel.setTodoMaker
+
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = listOf<String>()
 
@@ -113,10 +119,6 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
 
     val onInfoIconClick = { Toast.makeText(context, "Clicked info!", Toast.LENGTH_SHORT).show() }
-
-    var showGroupMenu by remember { mutableStateOf(false) }
-
-    val setGroupMenu: (Boolean) -> Unit = { showGroupMenu = it }
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)){
 
@@ -257,9 +259,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 )
             }
         }
-        if(showGroupMenu){
-            NewGroupMenu(setVisibility = setGroupMenu, addGroup = {it}, joinGroup = {it})
-            }
+
         PullRefreshIndicator(
             viewModel.isLoading,
             pullRefreshState,
@@ -267,5 +267,9 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         )
 
     }
-
+    if(groupMaker){
+        Box(modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable{null}, contentAlignment = Alignment.Center){
+            NewGroupMenu(setVisibility = setGroupMenu, addGroup = {it}, joinGroup = {it})
+        }
+    }
 }

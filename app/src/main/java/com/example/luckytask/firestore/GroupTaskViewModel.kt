@@ -16,8 +16,19 @@ class GroupTaskViewModel:ViewModel() {
     private val _todoDAOS =  mutableStateListOf<TodoDAO>()
     val todoDAOS:List<TodoDAO>
         get() = _todoDAOS
-    var revealTodoMaker by mutableStateOf(false)
 
+    private var _todoMaker by mutableStateOf(false)
+    val todoMakerState:Boolean
+        get() = _todoMaker
+
+    val setTodoMaker: (Boolean) -> Unit = { _todoMaker = it }
+
+
+    private var groupMaker by mutableStateOf(false)
+    val groupMakerState:Boolean
+        get() = groupMaker
+
+    val setGroupMaker: (Boolean) -> Unit = { groupMaker = it }
     var isLoading by mutableStateOf(false)
 
     init {
