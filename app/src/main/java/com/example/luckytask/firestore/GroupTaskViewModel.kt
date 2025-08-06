@@ -14,12 +14,12 @@ const val MOCK: Boolean = true //Don't Load Real data to save usages
 const val MOCK_GROUP = "Some Group"
 class GroupTaskViewModel:ViewModel() {
 
-    private val _todoDAOS =  mutableStateListOf<TodoDAO>()
-    val todoDAOS:List<TodoDAO>
+    private val _todoDAOS = mutableStateListOf<TodoDAO>()
+    val todoDAOS: List<TodoDAO>
         get() = _todoDAOS
 
     private var _todoMaker by mutableStateOf(false)
-    val todoMakerState:Boolean
+    val todoMakerState: Boolean
         get() = _todoMaker
     val setTodoMaker: (Boolean) -> Unit = { _todoMaker = it }
 
@@ -28,8 +28,12 @@ class GroupTaskViewModel:ViewModel() {
         get() = _isLoadingTasks
 
 
+    private val _groupDAOS = mutableStateListOf<GroupDAO>()
+    val groupDAOS: List<GroupDAO>
+        get() = _groupDAOS
+
     private var groupMaker by mutableStateOf(false)
-    val groupMakerState:Boolean
+    val groupMakerState: Boolean
         get() = groupMaker
 
     val setGroupMaker: (Boolean) -> Unit = { groupMaker = it }
@@ -52,62 +56,107 @@ class GroupTaskViewModel:ViewModel() {
             .joinToString("")
     }
 
-    fun joinGroup(context:Context, id:String){
-        val exists:Boolean
-        val name:String?
-        if(MOCK){
+    fun loadGroups(context: Context){
+        var data:Map<String, String>?
+        viewModelScope.launch {
+            _isLoadingGroups = true
+            try{
+                data = AppSettings.getGroups(context)
+            }catch(e:Exception){
+                Log.e("GroupTaskViewModel", "Error loading groups. $e")
+            }finally {
+                _isLoadingGroups = false
+            }
+
+
+        }
+
+    }
+
+    fun joinGroup(context: Context, id: String) {
+        val exists: Boolean
+        val name: String?
+        if (MOCK) {
             exists = true
             name = "Mock Group"
-        }else{
+        } else {
             val result = Firestore.checkIfGroupExists(id)
             exists = result.first
             name = result.second
         }
-        if(exists){
+        if (exists) {
             viewModelScope.launch {
-                AppSettings.addGroup(context, GroupDAO(id = id, name = name?:""))
+                _isLoadingGroups = true
+                try{
+                    AppSettings.addGroup(context, GroupDAO(id = id, name = name ?: "New Group"))
+                }catch(e:Exception){
+                    Log.e("GroupTaskViewModel", "Error joining group. $e")
+                }finally {
+                    _isLoadingGroups = false
+                }
             }
         }
     }
 
-    fun exitGroup(context:Context, id:String){
+    fun exitGroup(context: Context, id: String) {
         viewModelScope.launch {
-            AppSettings.removeGroup(context, id)
+            _isLoadingGroups = true
+            try{
+                AppSettings.removeGroup(context, id)
+            }catch (e:Exception){
+                Log.e("GroupTaskViewModel", "Error leaving group. $e")
+            }finally {
+                _isLoadingGroups = false
+            }
         }
     }
 
-    fun loadGroup(context:Context, id:String){
+    fun loadGroupContent(context: Context, id: String) {
         viewModelScope.launch {
-
+            _isLoadingGroups = true
+            try{
+                AppSettings.setCurrentGroup(context, id)
+            }catch (e:Exception){
+                Log.e("GroupTaskViewModel", "Error loading group content. $e")
+            }finally{
+                _isLoadingGroups = false
+                loadTodos()
+            }
         }
     }
 
-  fun loadTodos(){
+    fun loadTodos() {
         _todoDAOS.clear()
-      if(currentGroup == null){
-          Log.i("TodoViewModel", "No Group Selected")
-          return
-      }
-      if(MOCK){
-          _todoDAOS.addAll(listOf(TodoDAO("Title1", "Description1"), TodoDAO("Title2", "Description2"), TodoDAO("Title3", "Description3")))
-          return
-      }
-       viewModelScope.launch {
-           Log.i("TodoViewModel", "Loading Todos")
-           _isLoadingTasks = true
-           Firestore.loadTodos(currentGroup!!.name){ todos ->
-               _todoDAOS.addAll(todos)
-           }
-           _isLoadingTasks = false
-       }
-    }
-
-    fun addTodo(todoDAO: TodoDAO){
-        if(currentGroup == null){
+        if (currentGroup == null) {
             Log.i("TodoViewModel", "No Group Selected")
             return
         }
-        if(MOCK){
+        if (MOCK) {
+            _todoDAOS.addAll(
+                listOf(
+                    TodoDAO("Title1", "Description1"),
+                    TodoDAO("Title2", "Description2"),
+                    TodoDAO("Title3", "Description3")
+                )
+            )
+            return
+        }
+        viewModelScope.launch {
+            Log.i("TodoViewModel", "Loading Todos")
+            _isLoadingTasks = true
+            Firestore.loadTodos(currentGroup!!.name) { todos ->
+                _todoDAOS.addAll(todos)
+                _isLoadingTasks = false
+            }
+        }
+    }
+
+    fun addTodo(todoDAO: TodoDAO) {
+        if (currentGroup == null) {
+            Log.i("TodoViewModel", "No Group Selected")
+            return
+        }
+        if (MOCK) {
             _todoDAOS.add(todoDAO)
             return
         }
@@ -115,13 +164,13 @@ class GroupTaskViewModel:ViewModel() {
         Firestore.addTodo(currentGroup!!.name, todoDAO)
     }
 
-    fun removeTodo(index:Int){
-        if(currentGroup == null){
+    fun removeTodo(index: Int) {
+        if (currentGroup == null) {
             Log.i("TodoViewModel", "No Group Selected")
             return
         }
 
-        if(MOCK){
+        if (MOCK) {
             _todoDAOS.removeAt(index)
             return
         }
@@ -132,30 +181,29 @@ class GroupTaskViewModel:ViewModel() {
     /**
      * Returns List with new order on purpose (Done Tasks at the end)
      */
-    fun setTodoDone(index:Int):Int{
+    fun setTodoDone(index: Int): Int {
         val todo = _todoDAOS[index]
-        if(!todo.isCompleted){
-            _todoDAOS[index].apply{
+        if (!todo.isCompleted) {
+            _todoDAOS[index].apply {
                 isCompleted = true
                 title = todo.title + " (Done)"
             }
             return _todoDAOS.size
-        }else{
+        } else {
             return -1
         }
     }
 
-    fun setTodoUndone(index:Int):Int{
+    fun setTodoUndone(index: Int): Int {
         val todo = _todoDAOS[index]
-        if(todo.isCompleted){
-            _todoDAOS[index].apply{
+        if (todo.isCompleted) {
+            _todoDAOS[index].apply {
                 isCompleted = false
                 title.replace("(Done)", "")
             }
             return _todoDAOS.size
-        }else{
+        } else {
             return -1
         }
     }
-
 }
