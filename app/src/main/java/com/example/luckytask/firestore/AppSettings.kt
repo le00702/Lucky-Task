@@ -96,5 +96,14 @@ class AppSettings {
             list.remove(id)
             setGroups(context, list)
         }
+
+        /**
+         * Clear all local dataStore data
+         */
+        suspend fun removeAllData(context: Context) {
+            context.dataStore.edit { settings ->
+                settings.clear()
+            }
+        }
     }
 }
