@@ -130,10 +130,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         } else {
             /*** If there ARE active tasks, display them all ***/
             items(activeTasks) { task ->
-                Task(
-                    title = task.title,
-                    active = true,
-                    description = task.description
+                TaskCard(
+                    task = task
                 )
             }
         }
