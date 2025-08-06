@@ -4,7 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -21,11 +24,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import java.nio.file.Files.size
+
+@Composable
+fun MenuItem(modifier:Modifier = Modifier, text:String, onClick:()->Unit){
+    DropdownMenuItem(
+        text = {Box(modifier = modifier, contentAlignment = Alignment.Center){ Text(text) } },
+        onClick = onClick
+    )
+}
 
 @Composable
 fun <T> Dropdown(
@@ -49,7 +61,7 @@ fun <T> Dropdown(
             Icon(Icons.Default.ArrowDropDown, contentDescription = "Select first $type")
         }
 
-        val menuItemModifier = Modifier.fillMaxWidth()
+        val dropdownModifier = Modifier.fillMaxSize()
         DropdownMenu(
             modifier = Modifier.width(with(LocalDensity.current) { buttonWidth.toDp() }),
             expanded = expanded,
@@ -58,15 +70,17 @@ fun <T> Dropdown(
             if(specialFirstItem != null){
                 val text = specialFirstItem.first
                 val func = specialFirstItem.second
-                DropdownMenuItem(text = {Text(text, menuItemModifier)}, onClick = {expanded = false; func(true)})
+                MenuItem(modifier = dropdownModifier.border(2.dp, color = Color.DarkGray).padding(10.dp),
+                    text = text, onClick = {expanded = false; func(true)})
             }
 
             if(items.isEmpty()){
-                DropdownMenuItem(text = {Text("No $type found",menuItemModifier)}, onClick = {expanded})
+                MenuItem(modifier = dropdownModifier, text = "No $type found", onClick = {expanded})
             }else{
                 items.forEach{ item ->
-                    DropdownMenuItem(
-                        text = {Text(text(item),menuItemModifier)},
+                    MenuItem(
+                        modifier = dropdownModifier,
+                        text = text(item),
                         onClick = {
                             expanded = false
                             selection = item
