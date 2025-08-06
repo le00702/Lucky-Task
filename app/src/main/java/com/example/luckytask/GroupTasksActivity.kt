@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -97,7 +98,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val pullRefreshState = rememberPullRefreshState(
         viewModel.isLoadingTasks,
-        {viewModel.loadTodos()}
+        {viewModel.loadTodos(); viewModel.loadGroups(context); viewModel.loadCurrentGroup(context)}
     )
 
     val groupMaker = viewModel.groupMakerState
@@ -105,6 +106,11 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val todoMaker = viewModel.todoMakerState
     val setTodoMenu = viewModel.setTodoMaker
+
+    val taskList = viewModel.todoDAOS
+    val groupList = viewModel.groupDAOS
+
+    val loadGroup: (GroupDAO) -> Unit = {viewModel.setCurrentGroup(context,it);viewModel.loadTodos()}
 
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = listOf<String>()
@@ -137,15 +143,15 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
             item {
                  Dropdown(
-                    items = listOf(GroupDAO("Group A"), GroupDAO("Group B"), GroupDAO("Group C")),
+                    items = groupList,
                     defaultText = "Select Group",
-                    onValueChange = {it},
+                    onValueChange = {loadGroup(it)},
                     text = {it.name},
                     type = "Group",
                     specialFirstItem = Pair("Create Group",setGroupMenu)
                 )
             }
-            val size = viewModel.todoDAOS.size
+            val size = taskList.size
             if(size == 0){
                 item {
                     Text(
@@ -158,32 +164,11 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }else{
                 items(size) { index ->
                     Task(
-                        title = viewModel.todoDAOS[index].title,
+                        title = taskList[index].title,
                         active = true
                     )
                 }
             }
-//            /*** If there are no active tasks, display the following message
-//             *   --> user is asked to roll dice
-//             *   --> align text centered ***/
-//            if (activeTasks.isEmpty()) {
-//                item {
-//                    Text(
-//                        "You currently have no active tasks. Roll the dice to start a task!",
-//                        color = colorResource(R.color.task_text_color),
-//                        fontSize = 20.sp,
-//                        textAlign = TextAlign.Center
-//                    )
-//                }
-//            } else {
-//                /*** If there ARE active tasks, display them all ***/
-//                items(activeTasks.size) { index ->
-//                    Task(
-//                        title = activeTasks[index],
-//                        active = true
-//                    )
-//                }
-//            }
 
             item {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -269,10 +254,14 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             Modifier.align(Alignment.TopCenter)
         )
 
+        if(viewModel.isLoadingGroups){
+            CircularProgressIndicator()
+        }
+
     }
     if(groupMaker){
         Box(modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable{null}, contentAlignment = Alignment.TopCenter){
-            NewGroupMenu(setVisibility = setGroupMenu, addGroup = {it}, joinGroup = {it})
+            NewGroupMenu(setVisibility = setGroupMenu, addGroup = {it}, joinGroup = {viewModel.joinGroup(context = context, id = it)})
         }
     }
 }

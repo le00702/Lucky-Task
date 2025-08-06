@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -41,7 +42,9 @@ class GroupTaskViewModel:ViewModel() {
     val isLoadingGroups: Boolean
         get() = _isLoadingGroups
 
-    var currentGroup by mutableStateOf<GroupDAO?>(null)
+    private var _currentGroup by mutableStateOf<GroupDAO?>(null)
+    val currentGroup: GroupDAO?
+        get() = _currentGroup
 
     init {
         viewModelScope.launch {
@@ -62,13 +65,17 @@ class GroupTaskViewModel:ViewModel() {
             _isLoadingGroups = true
             try{
                 data = AppSettings.getGroups(context)
+                if(data != null){
+                    _groupDAOS.clear()
+                    (data as Map<out Any?, Any?>).forEach{
+                        _groupDAOS.add(GroupDAO(id = it.key as String, name = it.value as String))
+                    }
+                }
             }catch(e:Exception){
                 Log.e("GroupTaskViewModel", "Error loading groups. $e")
             }finally {
                 _isLoadingGroups = false
             }
-
-
         }
 
     }
@@ -111,11 +118,28 @@ class GroupTaskViewModel:ViewModel() {
         }
     }
 
-    fun loadGroupContent(context: Context, id: String) {
+    fun loadCurrentGroup(context:Context) {
+        var data:Pair<String, String>?
         viewModelScope.launch {
             _isLoadingGroups = true
             try{
-                AppSettings.setCurrentGroup(context, id)
+                data = AppSettings.getCurrentGroup(context)
+                data?.let { _currentGroup = GroupDAO(id = it.first, name = it.second) }
+            }catch (e:Exception){
+                Log.e("GroupTaskViewModel", "Error loading group content. $e")
+            }finally{
+                _isLoadingGroups = false
+                loadTodos()
+            }
+        }
+    }
+
+    fun setCurrentGroup(context: Context, group:GroupDAO){
+        viewModelScope.launch {
+            _isLoadingGroups = true
+            try{
+                AppSettings.setCurrentGroup(context, group)
+                _currentGroup = group
             }catch (e:Exception){
                 Log.e("GroupTaskViewModel", "Error loading group content. $e")
             }finally{
@@ -127,8 +151,10 @@ class GroupTaskViewModel:ViewModel() {
 
     fun loadTodos() {
         _todoDAOS.clear()
-        if (currentGroup == null) {
+        _isLoadingTasks = true
+        if (_currentGroup == null) {
             Log.i("TodoViewModel", "No Group Selected")
+            _isLoadingTasks = false
             return
         }
         if (MOCK) {
@@ -139,20 +165,18 @@ class GroupTaskViewModel:ViewModel() {
                     TodoDAO("Title3", "Description3")
                 )
             )
+            _isLoadingTasks = false
             return
         }
-        viewModelScope.launch {
-            Log.i("TodoViewModel", "Loading Todos")
-            _isLoadingTasks = true
-            Firestore.loadTodos(currentGroup!!.name) { todos ->
-                _todoDAOS.addAll(todos)
-                _isLoadingTasks = false
-            }
+        Log.i("TodoViewModel", "Loading Todos")
+        Firestore.loadTodos(_currentGroup!!.name) { todos ->
+            _todoDAOS.addAll(todos)
+            _isLoadingTasks = false
         }
     }
 
     fun addTodo(todoDAO: TodoDAO) {
-        if (currentGroup == null) {
+        if (_currentGroup == null) {
             Log.i("TodoViewModel", "No Group Selected")
             return
         }
@@ -161,11 +185,11 @@ class GroupTaskViewModel:ViewModel() {
             return
         }
         _todoDAOS.add(todoDAO)
-        Firestore.addTodo(currentGroup!!.name, todoDAO)
+        Firestore.addTodo(_currentGroup!!.name, todoDAO)
     }
 
     fun removeTodo(index: Int) {
-        if (currentGroup == null) {
+        if (_currentGroup == null) {
             Log.i("TodoViewModel", "No Group Selected")
             return
         }
@@ -174,7 +198,7 @@ class GroupTaskViewModel:ViewModel() {
             _todoDAOS.removeAt(index)
             return
         }
-        Firestore.removeTodo(currentGroup!!.name, todoDAOS[index])
+        Firestore.removeTodo(_currentGroup!!.name, todoDAOS[index])
         _todoDAOS.removeAt(index)
     }
 
