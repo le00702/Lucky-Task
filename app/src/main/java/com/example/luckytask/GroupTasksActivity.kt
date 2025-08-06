@@ -113,6 +113,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     val taskList = viewModel.todoDAOS
     val groupList = viewModel.groupDAOS
 
+    val currentGroup = viewModel.currentGroup
+
     val loadGroup: (GroupDAO) -> Unit = {
         viewModel.setCurrentGroup(context,it)
         viewModel.loadTodos()
@@ -156,7 +158,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             item {
                  Dropdown(
                     items = groupList,
-                    defaultText = "Select Group",
+                    defaultText = currentGroup?.name?: "Select Group",
                     onValueChange = {loadGroup(it)},
                     text = {it.name},
                     type = "Group",
