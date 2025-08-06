@@ -196,8 +196,22 @@ fun EditTaskScreen(
         item {
             Button(
                 onClick = {
-                    taskRepository.deleteTask(taskId)
-                    onFinish()
+                    if(isGroupTask) {
+                        taskRepository.deleteTask(taskId)
+                        onFinish()
+                    } else {
+                        /*** Apply same logic as for editing --> access DB only from Coroutine
+                         *   Scope --> display Toast for debugging purposes ***/
+                        coroutineScope.launch {
+                            val taskToDelete = privateTasksViewModel.getTaskById(taskId)
+                            if (taskToDelete != null) {
+                                Toast.makeText(context, "DELETE task ${taskToDelete.id} with title ${taskToDelete.title}", Toast.LENGTH_SHORT).show()
+                                privateTasksViewModel.deleteTask(taskToDelete)
+                                onFinish()
+                            }
+                        }
+                    }
+
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.error_color),
