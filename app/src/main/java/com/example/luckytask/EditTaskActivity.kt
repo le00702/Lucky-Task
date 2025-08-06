@@ -30,6 +30,7 @@ import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskInput
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
+import kotlinx.coroutines.launch
 
 class EditTaskActivity : ComponentActivity() {
 
@@ -69,6 +70,10 @@ fun EditTaskScreen(
 ) {
     val HEADER_SIZE = 30.sp
     val taskRepository = remember { TaskRepository.getInstance() }
+
+    /*** Provides a coroutine scope tied to the current Composable
+     *   --> later used for local DB access ***/
+    val coroutineScope = rememberCoroutineScope()
 
     var title = remember { mutableStateOf("") }
     var description = remember { mutableStateOf("") }
@@ -158,6 +163,18 @@ fun EditTaskScreen(
                         }
                     } else {
                         Toast.makeText(context, "PRIVATE TASK: edit", Toast.LENGTH_SHORT).show()
+                        /*** This allows to safely call suspend functions from the current context ***/
+                        coroutineScope.launch {
+                            val task = privateTasksViewModel.getTaskById(taskId)
+                            if (task != null) {
+                                val updatedTask = task.copy(
+                                    title = title.value,
+                                    description = description.value
+                                )
+                                privateTasksViewModel.updateTask(updatedTask)
+                                onFinish()
+                            }
+                        }
                     }
                 },
                 enabled = formIsComplete,
