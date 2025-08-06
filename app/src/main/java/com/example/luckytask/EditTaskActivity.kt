@@ -88,13 +88,14 @@ fun EditTaskScreen(
                 description.value = task.description
             }
         } else {
-            /*** For private tasks display mock text when editing for now ***/
+            /*** For private tasks display initial text when editing
+             *   --> display old title
+             *   --> display old description ***/
             val task = privateTasksViewModel.getTaskById(taskId)
-            /*** Log the passed id as well, to check --> It is correct! ***/
-            Log.d("TASK_ID", "is $taskId")
-            /*** Use Toast and logging of all private tasks for debugging purposes ***/
-            Toast.makeText(context, "TASK isNull ${task == null} for id $taskId", Toast.LENGTH_LONG)
-                .show()
+            if (task != null) {
+                title.value = task.title
+                description.value = task.description
+            }
             val allTasks = privateTasksViewModel.tasks
             allTasks.collect { taskList ->
                 taskList.forEach { task ->
@@ -103,12 +104,6 @@ fun EditTaskScreen(
                         "Task id=${task.id}, title=${task.title}"
                     )
                 }
-            }
-            /*title.value = "LOCAL"
-            description.value = "local text"*/
-            if (task != null) {
-                title.value = task.title
-                description.value = task.description
             }
         }
     }
