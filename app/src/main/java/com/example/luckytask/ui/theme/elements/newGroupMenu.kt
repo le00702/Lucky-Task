@@ -37,7 +37,10 @@ import java.util.InvalidPropertiesFormatException
 
 
 @Composable
-fun RadioButtonSelection(modifier:Modifier = Modifier, options: List<String> = listOf("Option 1", "Option 2"), selected: (Int) -> Unit = {it}){
+fun RadioButtonSelection(modifier:Modifier = Modifier,
+                         options: List<String> = listOf("Option 1", "Option 2"),
+                         selected: (Int) -> Unit = {it},
+                         onChange: () -> Unit  = {}){
     if(options.isEmpty() || options.size > 2) throw InvalidPropertiesFormatException("Invalid number of options")
 
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(options[0]) }
@@ -51,7 +54,7 @@ fun RadioButtonSelection(modifier:Modifier = Modifier, options: List<String> = l
                     .height(56.dp)
                     .selectable(
                         selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text); selected(options.indexOf(text)) },
+                        onClick = { onOptionSelected(text); selected(options.indexOf(text)); onChange() },
                         role = Role.RadioButton
                     )
                     .padding(horizontal = 16.dp),
@@ -86,41 +89,48 @@ fun NewGroupMenu(
     addGroup:(groupName: String) -> Unit,
     joinGroup:(groupKey:String) -> Unit
     ){
-    var input by remember{mutableStateOf("")}
+    var input by remember {mutableStateOf("")}
     var selection by remember { mutableIntStateOf(CREATE_GROUP) }
+
+    if (selection != CREATE_GROUP && selection != JOIN_GROUP) throw IllegalStateException("Selection Not defined")
+
+    val nameRegex = Regex("^[a-zA-Z0-9 _-]{2,12}$") //Alphanumeric, space, - and _
+    val keyRegex = Regex("^[a-zA-Z0-9]{8}$") //Alphanumeric
+
+    val regex = if (selection == CREATE_GROUP) nameRegex else keyRegex
+    val function = if (selection == CREATE_GROUP) addGroup else joinGroup
 
     val fieldText  = if (selection == CREATE_GROUP)  "Group Name" else "Group Key"
     val buttonText = if (selection == CREATE_GROUP)  "Create" else "Join"
+
     Box(modifier = modifier.fillMaxWidth().background(Color.DarkGray.copy(alpha = 0.97f), shape = roundedShape(10.dp)).padding(15.dp),
         contentAlignment = Alignment.Center){
         Column(modifier = modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally){
             Text(modifier = Modifier.padding(5.dp),text = "Add Group", fontSize = 30.sp)
             Spacer(modifier.padding(8.dp))
-            RadioButtonSelection(modifier = modifier, options = listOf("Create Group", "Join Group"), selected = {selection = it})
+            RadioButtonSelection(modifier = modifier, options = listOf("Create Group", "Join Group"), selected = {selection = it}, onChange = {input = ""})
             Spacer(modifier.padding(8.dp))
 
-            TextField(value = input, onValueChange = {input = it}, label ={Text(fieldText)} )
+            TextField(
+                value = input,
+                onValueChange = { input = it},
+                label ={Text(fieldText)}
+            )
             Spacer(modifier.padding(15.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)){
-                Button(enabled = (!input.isEmpty()),onClick = {
-                    when (selection) {
-                        CREATE_GROUP -> {
-                            addGroup(input)
-                        }
-                        JOIN_GROUP -> {
-                            joinGroup(input)
-                        }
-                        else -> {
-                            throw IllegalStateException("Selection Not defined")
-                        }
-                    }
+                Button(enabled = (!input.isEmpty() && input.matches(regex)),onClick = {
+                    function(input)
                     input = ""
-                    setVisibility(false)}){
+                    setVisibility(false)
+                }){
                     Text(buttonText)
                 }
                 Spacer(modifier.padding(10.dp))
-                Button(onClick = {setVisibility(false)}){
-                    input = ""
+                Button(onClick = {
+                    setVisibility(false)
+                    input = "" }
+                ){
+
                     Text("Cancel")
                 }
             }
