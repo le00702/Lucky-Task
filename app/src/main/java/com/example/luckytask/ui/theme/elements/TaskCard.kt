@@ -131,12 +131,15 @@ fun TaskCard(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        task.assignee?.let { assignee ->
-                            TaskDetailChip(
-                                icon = Icons.Default.Person,
-                                text = assignee,
-                                isHighlighted = assignee != "Me"
-                            )
+                        /*** If it is my own task/drawn by me, no need to display a 'user' ***/
+                        if (task.assignee != "Me") {
+                            task.assignee?.let { assignee ->
+                                TaskDetailChip(
+                                    icon = Icons.Default.Person,
+                                    text = assignee,
+                                    isHighlighted = true
+                                )
+                            }
                         }
 
                         task.dueDate?.let { dueDate ->
