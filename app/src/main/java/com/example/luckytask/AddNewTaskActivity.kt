@@ -1,7 +1,7 @@
 package com.example.luckytask
 
+import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,14 +23,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.luckytask.data.TaskItem
-import com.example.luckytask.data.TaskRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.luckytask.data.PrivateTaskItem
+import com.example.luckytask.model.PrivateTasksViewModel
+import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskInput
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
-import com.example.luckytask.ui.theme.elements.DatePickerField
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.UUID
+import com.example.luckytask.ui.theme.elements.DatePickerField
 
 class AddNewTaskActivity : ComponentActivity() {
 
@@ -42,6 +46,7 @@ class AddNewTaskActivity : ComponentActivity() {
             LuckyTaskTheme {
                 val parentActivity = intent.getStringExtra("parentActivity").toString()
                 val topBarTitle = intent.getStringExtra("topBarTitle").toString()
+                val isGroupTask = intent.getBooleanExtra("isGroupTask", false)
 
                 AppWithDrawer(
                     currentActivityName = parentActivity,
@@ -49,8 +54,7 @@ class AddNewTaskActivity : ComponentActivity() {
                 ) {
                     AddNewTaskScreen(
                         modifier = Modifier.padding(20.dp),
-                        parentActivity = parentActivity,
-                        onTaskSaved = { finish() }
+                        isGroupTask = isGroupTask
                     )
                 }
             }
@@ -59,32 +63,41 @@ class AddNewTaskActivity : ComponentActivity() {
 }
 
 @Composable
-fun AddNewTaskScreen(
-    modifier: Modifier = Modifier,
-    parentActivity: String,
-    onTaskSaved: () -> Unit
-) {
+fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
+
     val HEADER_SIZE = 30.sp
-    val context = LocalContext.current
-    val taskRepository = remember { TaskRepository.getInstance() }
 
     /*** Use '=' to assign as MutableState instead of String (by using 'by') ***/
     var title = remember { mutableStateOf("") }
     var description = remember { mutableStateOf("") }
     var dueDate = remember { mutableStateOf<LocalDate?>(null) }
-    var assignToMe = remember { mutableStateOf(true) }
-
-    // Determine if this is a group task based on parent activity
-    val isGroupTask = parentActivity == "GroupTasksActivity"
-
-    /*** Organize elements in column ***/
-    // Form validation
     val formIsComplete = title.value.isNotBlank() && description.value.isNotBlank()
 
-    // Error handling state
-    var isLoading = remember { mutableStateOf(false) }
-    var errorMessage = remember { mutableStateOf<String?>(null) }
+    /*** Use context + DB for inserting a new task ***/
+    val context = LocalContext.current
+    val app = context.applicationContext as PrivateTasksApp
+    val privateTasksViewModel: PrivateTasksViewModel =
+        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
 
+    /*** Extract method to differentiate between private and group tasks ***/
+    val onClick: () -> Unit = {
+        if(!isGroupTask) {
+            /*** Call this function in Coroutine scope to not block the
+             *   main thread/UI --> Also show Toast for now ***/
+            Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
+            CoroutineScope(Dispatchers.IO).launch {
+                addTask(title.value, description.value, privateTasksViewModel)
+            }
+        } else {
+            /*** For group tasks use Toast as placeholder for now ***/
+            Toast.makeText(context, "[GROUP TASK]: clicked!", Toast.LENGTH_SHORT).show()
+        }
+
+        /*** End the current activity and return to the previous one ***/
+        (context as Activity).finish()
+    }
+
+    /*** Organize elements in column ***/
     LazyColumn(
         modifier = modifier.padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -103,20 +116,11 @@ fun AddNewTaskScreen(
         }
 
         item {
-            AddTaskInput(
-                title,
-                "Task Title",
-                "Enter a task title",
-                isTitle = true
-            )
+            AddTaskInput(title, "Task Title", "Enter a task title", isTitle = true)
         }
 
         item {
-            AddTaskInput(
-                description,
-                "Task Description",
-                "Enter a task description"
-            )
+            AddTaskInput(description, "Task Description", "Enter a task description", isTitle = false)
         }
 
         item {
@@ -127,90 +131,33 @@ fun AddNewTaskScreen(
                 isRequired = false
             )
         }
-
-        errorMessage.value?.let { error ->
-            item {
-                Text(
-                    text = error,
-                    color = colorResource(R.color.error_color),
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-        }
-
         item {
             Button(
-                onClick = {
-                    // Error handling with try-catch
-                    isLoading.value = true
-                    errorMessage.value = null
-
-                    try {
-                        val newTask = TaskItem(
-                            id = UUID.randomUUID().toString(),
-                            title = title.value.trim(),
-                            description = description.value.trim(),
-                            assignee = if (isGroupTask) null else "Me",
-                            dueDate = dueDate.value,
-                            isActive = false,
-                            isCompleted = false,
-                            isGroupTask = isGroupTask
-                        )
-
-                        val success = taskRepository.addTask(newTask)
-
-                        if (success) {
-                            Toast.makeText(
-                                context,
-                                "Task '${newTask.title}' added successfully!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            Log.d("AddNewTaskActivity", "Task added: ${newTask.title}")
-                            onTaskSaved()
-                        } else {
-                            errorMessage.value = "Failed to add task. Please try again."
-                            Log.e("AddNewTaskActivity", "Failed to add task")
-                        }
-                    } catch (e: Exception) {
-                        errorMessage.value = "An error occurred: ${e.message}"
-                        Log.e("AddNewTaskActivity", "Error adding task", e)
-                    } finally {
-                        isLoading.value = false
-                    }
-                },
-                enabled = formIsComplete && !isLoading.value,
+                onClick = onClick,
+                enabled = formIsComplete,
+                /*** Set the color to the same as the 'add-task' button (if enabled)
+                 *   --> else make it grey ***/
                 colors = ButtonDefaults.buttonColors(
                     containerColor =
-                        if(formIsComplete && !isLoading.value)
-                            colorResource(R.color.add_task_color)
-                        else
-                            colorResource(R.color.task_text_color),
+                        if (formIsComplete) colorResource(R.color.add_task_color)
+                        else colorResource(R.color.task_text_color),
                     contentColor = Color.White
                 ),
             ) {
-                Text(
-                    text = if (isLoading.value) "Saving..." else "Save Task",
-                    fontSize = 25.sp
-                )
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        item {
-            Button(
-                onClick = onTaskSaved,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray,
-                    contentColor = Color.White
-                ),
-            ) {
-                Text("Cancel", fontSize = 20.sp)
+                Text("Save Task", fontSize = 25.sp)
             }
         }
     }
+}
+
+/*** Use this function for adding new tasks ***/
+private fun addTask(title: String, description: String, privateTasksViewModel: PrivateTasksViewModel) {
+    val newTask = PrivateTaskItem(
+        title = title,
+        description = description,
+        dueDate = LocalDate.now().plusDays(1),
+        isActive = false,
+        isCompleted = false
+    )
+    privateTasksViewModel.addTask(newTask)
 }

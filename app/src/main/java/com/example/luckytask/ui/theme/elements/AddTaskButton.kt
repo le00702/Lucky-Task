@@ -2,8 +2,6 @@ package com.example.luckytask.ui.theme.elements
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -29,9 +27,11 @@ fun AddTaskButton(
     context: Context,
     /*** Add these to remember which activity we came from and what to display
      *   @param: parentActivity --> which activity we came from
-     *   @param: topBarTitle --> which title to display on the top bar ***/
+     *   @param: topBarTitle --> which title to display on the top bar
+     *   @param: isGroupTask --> pass this info for the "add new task" form ***/
     parentActivity: String,
-    topBarTitle: String
+    topBarTitle: String,
+    isGroupTask: Boolean = false,
 ) {
     Surface(
         modifier = modifier
@@ -42,6 +42,7 @@ fun AddTaskButton(
             val intent = Intent(context, AddNewTaskActivity::class.java)
             intent.putExtra("parentActivity", parentActivity)
             intent.putExtra("topBarTitle", topBarTitle)
+            intent.putExtra("isGroupTask", isGroupTask)
             context.startActivity(intent)
         }
     ) {
