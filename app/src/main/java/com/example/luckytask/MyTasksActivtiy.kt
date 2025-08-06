@@ -117,7 +117,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         )
     )
 
-    val mockInactiveTask = listOf(
+    /*val mockInactiveTask = listOf(
         PrivateTaskItem(
             id = -2,
             title = "Mock Inactive Task",
@@ -125,21 +125,21 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             dueDate = LocalDate.now(),
             isActive = false
         )
-    )
+    )*/
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = mockActiveTask
 
 
-    val realInactiveTasks = privateTasks.filter { !it.isActive }
-    val tasks = mockInactiveTask + realInactiveTasks
+    val inactiveTasks = privateTasks.filter { !it.isActive }
+    //val tasks = mockInactiveTask + realInactiveTasks
 
 
     // Filter State
     var currentFilter by remember { mutableStateOf(TaskFilter()) }
     /*val filteredTasks = remember(inactiveTasks, currentFilter) {
        inactiveTasks.applyFilters(currentFilter)*/
-    val filteredTasks = remember(tasks, currentFilter, refreshTrigger) {
-        tasks.applyFilters(currentFilter)
+    val filteredTasks = remember(inactiveTasks, currentFilter, refreshTrigger) {
+        inactiveTasks.applyFilters(currentFilter)
     }
 
     /*** Organize elements in column ***/
@@ -232,13 +232,26 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             Spacer(modifier = Modifier.height(30.dp))
         }
 
-        // Show editable tasks from DB
-        items(tasks) { taskItem ->
-            EditableTaskCard(
-                task = taskItem,
-                modifier = Modifier,
-                isGroupTask = false
-            )
+        /*** If there are no inactive tasks(=TODOs), display the following message
+         *   --> ask user to add a new task they want to do ***/
+        if (inactiveTasks.isEmpty()) {
+            item {
+                Text(
+                    "You currently have no TODOs. Click the 'New Task' button to add one!",
+                    color = colorResource(R.color.task_text_color),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            // Show editable inactive tasks from local DB
+            items(inactiveTasks) { taskItem ->
+                EditableTaskCard(
+                    task = taskItem,
+                    modifier = Modifier,
+                    isGroupTask = false
+                )
+            }
         }
     }
 }
