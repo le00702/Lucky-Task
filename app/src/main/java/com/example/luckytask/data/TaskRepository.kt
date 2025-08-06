@@ -71,7 +71,7 @@ class TaskRepository {
                 8,
                 "Take Out Trash",
                 "Weekly garbage day",
-                "Sarah",
+                null,
                 LocalDate.now().minusDays(1),
                 false,
                 true

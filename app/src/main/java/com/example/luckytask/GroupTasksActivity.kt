@@ -206,13 +206,6 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             )
         }
 
-        item {
-            Task(
-                "This is a TODO item TEST LONG LINE",
-                description = "I am the test task"
-            )
-        }
-
         // Editable Group Tasks --> not assigned to/drawn by anyone yet
         items(todoTasks) { taskItem ->
             EditableTaskCard(
