@@ -90,6 +90,8 @@ fun EditTaskScreen(
         } else {
             /*** For private tasks display mock text when editing for now ***/
             val task = privateTasksViewModel.getTaskById(taskId)
+            /*** Log the passed id as well, to check --> It is correct! ***/
+            Log.d("TASK_ID", "is $taskId")
             /*** Use Toast and logging of all private tasks for debugging purposes ***/
             Toast.makeText(context, "TASK isNull ${task == null} for id $taskId", Toast.LENGTH_LONG)
                 .show()
