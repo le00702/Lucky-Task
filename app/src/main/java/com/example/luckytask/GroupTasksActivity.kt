@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.luckytask.firestore.GroupDAO
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
@@ -136,9 +137,12 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 )
             }
             item {
-                Dropdown(
-                    listOf("Group A", "Group B", "Group C"),
+                 Dropdown(
+                    items = listOf(GroupDAO("Group A"), GroupDAO("Group B"), GroupDAO("Group C")),
+                    defaultText = "Select Group",
                     onValueChange = {it},
+                    text = {it.name},
+                    type = "Group",
                     specialFirstItem = Pair("Create Group",setGroupMenu)
                 )
             }
