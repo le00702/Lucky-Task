@@ -2,90 +2,83 @@ package com.example.luckytask.firestore
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 
 class Firestore {
     companion object {
-        fun loadTodos(group:String, onResult: (List<TodoDAO>) -> Unit){
+        suspend fun loadTodos(group:String, onResult: (List<TodoDAO>) -> Unit){
             val todos = mutableListOf<TodoDAO>()
             Log.i("Firestore","Loading Todos from Group $group")
             val doc = FirebaseFirestore.getInstance().collection("groups/$group/todos")
-            doc.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.i("Firestore", "Loading Todos Success $todos")
-                    for (document in task.result) {
-                        todos.add(document.toObject(TodoDAO::class.java))
-                        todos.last().id = document.id
-                        Log.i("Firestore", "${document.id} => ${document.data}")
-                    }
-                    onResult(todos)
-                } else {
-                    Log.w("Firestore", "Error getting documents.", task.exception)
+            try{
+                val res = doc.get().await()
+                Log.i("Firestore", "Loading Todos Success $todos")
+                for (document in res) {
+                    todos.add(document.toObject(TodoDAO::class.java))
+                    todos.last().id = document.id
+                    Log.i("Firestore", "${document.id} => ${document.data}")
                 }
+                onResult(todos)
+            }catch (e:Exception){
+                Log.e("Firestore", "Error getting documents.", e)
             }
        }
 
-        fun addTodo(group:String, todo:TodoDAO){
+        suspend fun addTodo(group:String, todo:TodoDAO){
             val ref = FirebaseFirestore.getInstance().collection("groups/$group/todos")
-            ref.add(todo).addOnCompleteListener { task ->
-                if(task.isSuccessful){
-                    val id = task.result.id
-                    todo.id= id
-                    Log.i("Firestore","Todo Added to Doc $todo")
-                }else{
-                    Log.w("Firestore","Error adding Todo")
-                }
+            try {
+                val res = ref.add(todo).await()
+                val id = res.id
+                todo.id= id
+                Log.i("Firestore","Todo Added to Doc $todo")
+            }catch (e:Exception){
+                Log.e("Firestore","Error adding Todo", e)
             }
         }
 
-        fun removeTodo(group:String, todo:TodoDAO){
+        suspend fun removeTodo(group:String, todo:TodoDAO){
             val ref = FirebaseFirestore.getInstance().collection("groups/$group/todos")
             if(todo.id.isNullOrEmpty()) {
                 Log.e("Firestore","Todo has no ID")
             }
-            ref.document(todo.id!!).delete().addOnCompleteListener { task ->
-                if(task.isSuccessful){
-                    Log.i("Firestore","Todo Removed from Doc ${todo.id}")
-                }else{
-                    Log.w("Firestore","Error removing Todo ${todo.id}")
-                }
+            try{
+                ref.document(todo.id!!).delete().await()
+            }catch (e:Exception){
+                Log.e("Firestore","Error removing Todo", e)
             }
         }
 
 
-        fun checkIfGroupExists(id:String):Pair<Boolean, String?>{
+        suspend fun checkIfGroupExists(id:String):Pair<Boolean, String?>{
             var existence = false
             var name:String? = null
             val ref = FirebaseFirestore.getInstance().collection("groups")
             val doc = ref.document(id)
-            doc.get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val document = task.result
-                    existence = document.exists()
-                    if (existence) {
-                        Log.d("Firestore", "Group $id exists")
-                        name = document.data?.get("name").toString()
-                    } else {
-                        Log.d("Firestore", "Group does not exist")
-                    }
-                }else{
-                    Log.w("Firestore", "Error getting documents.", task.exception)
-                    return@addOnCompleteListener
+            try{
+                val res = doc.get().await()
+                if(res.exists()) {
+                    Log.d("Firestore", "Group $id exists")
+                    existence = true
+                    name = res.data?.get("name").toString()
+                } else {
+                    Log.d("Firestore", "Group does not exist")
                 }
+            }catch (e:Exception){
+                Log.e("Firestore", "Error getting documents.", e)
+
             }
-            return Pair(existence,name)
+            return Pair(existence, name)
         }
 
-        fun createGroup(group:GroupDAO){
+       suspend fun createGroup(group:GroupDAO){
             val ref = FirebaseFirestore.getInstance().collection("groups")
-            ref.document(group.id).set(group)
-                .addOnCompleteListener { task ->
-                    if(task.isSuccessful){
-                        Log.i("Firestore","New Group ${group.name} created")
-                    }else{
-                        Log.w("Firestore","Error adding Group", task.exception)
-                    }
-                }
-        }
+           try{
+               val res = ref.document(group.id).set(group).await()
+               Log.i("Firestore","New Group ${group.name} created")
+           }catch (e:Exception){
+               Log.e("Firestore","Error adding Group", e)
+           }
+       }
     }
 }
