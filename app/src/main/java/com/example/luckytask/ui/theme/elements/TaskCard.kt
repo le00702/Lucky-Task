@@ -1,5 +1,7 @@
 package com.example.luckytask.ui.theme.elements
 
+import android.util.Log
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +35,8 @@ fun TaskCard(
     task: TaskItem,
     modifier: Modifier = Modifier,
     isMine: Boolean = false,
+    setDone: (TaskItem) -> Unit,
+    deleteTask: (TaskItem) -> Unit,
     //onInfoClick: () -> Unit = {}
 ) {
     val backgroundColor = when {
@@ -65,95 +70,99 @@ fun TaskCard(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = task.title,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorResource(R.color.task_text_color),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+        Box (modifier = modifier.pointerInput(Unit){
+            detectTapGestures(
+                onDoubleTap = {
+                    if(!isMine){
+                        Log.i("TaskCard", "Task info clicked")
+                        return@detectTapGestures
+                    }
 
-                    /*if (task.description.isNotEmpty()) {
-                        Text(
-                            text = task.description,
-                            fontSize = 14.sp,
-                            color = colorResource(R.color.task_text_color).copy(alpha = 0.7f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }*/
+                    if(task.isActive && !task.isCompleted){
+                        setDone(task)
+                        Log.i("TaskCard", "Task marked as done")
+                        return@detectTapGestures
+                    }
+
+                    if(task.isActive && task.isCompleted){
+                        deleteTask(task)
+                        Log.i("TaskCard", "Task deleted")
+                        return@detectTapGestures
+                    }
                 }
+            )
+        }) {
 
-                /*if (task.isActive) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = colorResource(R.color.add_task_color)
-                    ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = task.title,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = colorResource(R.color.task_text_color),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+                if (task is GroupTaskItem) {
+                    if (task.assignee != null || task.dueDate != null) {
+                        Spacer(modifier = Modifier.height(12.dp))
+
                         Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Active",
-                                tint = Color.White,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "ACTIVE",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        }
-                    }
-                }*/
-            }
-            if (task is GroupTaskItem) {
-                if (task.assignee != null || task.dueDate != null) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                            /*** If it is my own task/drawn by me, no need to display a 'user' ***/
+                            if (task.assignee != "Me") {
+                                task.assignee?.let { assignee ->
+                                    TaskDetailChip(
+                                        icon = Icons.Default.Person,
+                                        text = assignee,
+                                        isHighlighted = true
+                                    )
+                                }
+                            }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        /*** If it is my own task/drawn by me, no need to display a 'user' ***/
-                        if (task.assignee != "Me") {
-                            task.assignee?.let { assignee ->
+                            task.dueDate?.let { dueDate ->
                                 TaskDetailChip(
-                                    icon = Icons.Default.Person,
-                                    text = assignee,
-                                    isHighlighted = true
+                                    icon = Icons.Default.Schedule,
+                                    text = formatDueDate(dueDate),
+                                    isHighlighted = isOverdue,
+                                    isError = isOverdue
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            IconButton(
+                                onClick = onInfoClick,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.info),
+                                    contentDescription = "Task Info",
+                                    tint = colorResource(R.color.task_text_color),
+                                    modifier = Modifier.size(20.dp)
                                 )
                             }
                         }
-
-                        task.dueDate?.let { dueDate ->
-                            TaskDetailChip(
-                                icon = Icons.Default.Schedule,
-                                text = formatDueDate(dueDate),
-                                isHighlighted = isOverdue,
-                                isError = isOverdue
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
                         IconButton(
                             onClick = onInfoClick,
                             modifier = Modifier.size(32.dp)
@@ -167,30 +176,13 @@ fun TaskCard(
                         }
                     }
                 }
-            } else {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    IconButton(
-                        onClick = onInfoClick,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.info),
-                            contentDescription = "Task Info",
-                            tint = colorResource(R.color.task_text_color),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                /*** Display the detailed info of the task ***/
+                if (showInfo) {
+                    TaskInfoPopup(
+                        task.title, task.description, onDismissRequest = { showInfo = false },
+                        parentColor = backgroundColor
+                    )
                 }
-            }
-            /*** Display the detailed info of the task ***/
-            if (showInfo) {
-                TaskInfoPopup(
-                    task.title, task.description, onDismissRequest = { showInfo = false },
-                    parentColor = backgroundColor
-                )
             }
         }
     }

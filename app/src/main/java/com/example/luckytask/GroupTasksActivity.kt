@@ -266,7 +266,9 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 items(activeTasks) { task ->
                     TaskCard(
                         task = task,
-                        isMine = true
+                        isMine = true,
+                        setDone = { viewModel.setDone(it as GroupTaskItem) },
+                        deleteTask = { viewModel.deleteTask(it as GroupTaskItem) }
                     )
                 }
             }
@@ -309,7 +311,12 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             } else {
                 /*** If there ARE roommate tasks, display them all ***/
                 items(roommateTasks) { task ->
-                    TaskCard(task = task)
+                    TaskCard(
+                        task = task,
+                        isMine = false,
+                        setDone = { },
+                        deleteTask = { }
+                    )
                 }
             }
 

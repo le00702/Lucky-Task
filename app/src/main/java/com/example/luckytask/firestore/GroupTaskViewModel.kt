@@ -255,8 +255,8 @@ class GroupTaskViewModel:ViewModel() {
             }catch (e:Exception){
                 Log.e(TAG, "Error loading group content.",e)
             }finally{
-                _isLoading = false
                 loadTasks()
+                _isLoading = false
             }
         }
     }
@@ -295,30 +295,30 @@ class GroupTaskViewModel:ViewModel() {
         return null
     }
 
-    fun addTask(task: GroupTaskItem) {
-        if (_currentGroup == null) {
-            Log.i(TAG, "No Group Selected")
-            return
+    fun setDone(task: GroupTaskItem){
+        val newTask = GroupTaskItem(
+            remoteId = task.remoteId,
+            title = task.title,
+            description = task.description,
+            dueDate = task.dueDate,
+            isActive = task.isActive,
+            isCompleted = true,
+            assignee = task.assignee
+        )
+        viewModelScope.launch {
+            _isLoading = true
+            Firestore.editTask(_currentGroup!!.id, newTask)
+            loadTasks()
+            _isLoading = false
         }
-        val currentTasks = _taskList.value.toMutableList()
-        currentTasks.add(task)
-        viewModelScope.launch{
-            Log.i(TAG, "Adding Todo to Firestore")
-            Firestore.addTask(_currentGroup!!.name, task)
-        }
-
     }
 
-    fun removeTask(index: Int) {
-        if (_currentGroup == null) {
-            Log.i(TAG, "No Group Selected")
-            return
-        }
-        val currentTasks = _taskList.value.toMutableList()
-        currentTasks.removeAt(index)
-        viewModelScope.launch{
-            Log.i(TAG, "Removing Todo from Firestore")
-            Firestore.removeTask(_currentGroup!!.name, currentTasks[index] as GroupTaskItem)
+    fun deleteTask(task: GroupTaskItem){
+        viewModelScope.launch {
+            _isLoading = true
+            Firestore.removeTask(_currentGroup!!.id, task)
+            loadTasks()
+            _isLoading = false
         }
     }
 }
