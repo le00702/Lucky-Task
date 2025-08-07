@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -43,7 +45,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.firestore.GroupDAO
 import com.example.luckytask.data.GroupTaskItem
+import com.example.luckytask.data.TaskItem
 import com.example.luckytask.data.TaskRepository
+import com.example.luckytask.firestore.Firestore
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
@@ -62,8 +66,9 @@ private const val REMOTE = true
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "GroupTasksActivity"
 
-class GroupTasksActivity : ComponentActivity() {
+class GroupTasksActivity() : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
+
     private val TAG = "[SENSOR]"
 
     /*** Use this variable to keep track of animation ***/
@@ -194,6 +199,26 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         }
     }
 
+    LaunchedEffect(triggerAnimation.value) {
+        if(triggerAnimation.value){
+            val task = viewModel.drawRandomTask() as GroupTaskItem?
+            if(task != null){
+                val newTask = GroupTaskItem(
+                    remoteId = task.remoteId,
+                    title = task.title,
+                    description = task.description,
+                    dueDate = task.dueDate,
+                    isActive = true,
+                    isCompleted = false,
+                    assignee = "Me")
+                Firestore.editTask(currentGroup!!.id,  newTask)
+                Log.i("GroupTasksScreen", "newTask: ${newTask.isActive}")
+                viewModel.loadTasks()
+            }
+        }
+
+    }
+
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
 
         /*** Organize elements in column ***/
@@ -218,6 +243,14 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                     type = "Group",
                     specialFirstItem = Pair("Create Group", setGroupMenu)
                 )
+            }
+            if(currentGroup != null){
+                item{
+                    Text(
+                        text = "Group Key: ${currentGroup.id}",
+                        fontSize = 20.sp
+                    )
+                }
             }
             if (activeTasks.isEmpty()) {
                 item {

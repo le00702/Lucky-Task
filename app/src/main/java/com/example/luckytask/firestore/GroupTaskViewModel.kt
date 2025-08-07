@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckytask.data.GroupTaskItem
+import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -281,6 +282,17 @@ class GroupTaskViewModel:ViewModel() {
                 _isLoading = false
             }
         }
+    }
+
+    fun drawRandomTask(): TaskItem? {
+        val inactiveTasks =  _taskList.value.filter { !it.isActive }
+        val size = inactiveTasks.size
+        if(size > 0 ){
+            val drawNumbers = 0..<size
+            val randomIndex = drawNumbers.random()
+            return inactiveTasks[randomIndex]
+        }
+        return null
     }
 
     fun addTask(task: GroupTaskItem) {
