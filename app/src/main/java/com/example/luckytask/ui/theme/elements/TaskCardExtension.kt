@@ -142,7 +142,7 @@ fun EditableTaskCard(
 
                     // Edit Button
                     IconButton(
-                        onClick = { startEditActivity(context, task.id, isGroupTask) },
+                        onClick = { startEditActivity(context, task, isGroupTask) },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
@@ -172,7 +172,7 @@ fun EditableTaskCard(
                 ) {
                     // Edit Button
                     IconButton(
-                        onClick = { startEditActivity(context, task.id, isGroupTask) },
+                        onClick = { startEditActivity(context, task, isGroupTask) },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
@@ -210,12 +210,13 @@ fun EditableTaskCard(
 }
 
 /*** Pass isGroupTask to choose parent activity ***/
-private fun startEditActivity(context: Context, taskId: Int, isGroupTask: Boolean) {
+private fun startEditActivity(context: Context, task:TaskItem, isGroupTask: Boolean) {
     val intent = Intent(context, EditTaskActivity::class.java).apply {
         val parentActivity = if(isGroupTask) "MyGroupTasksActivity" else "MyTasksActivity"
-        putExtra("taskId", taskId)
+        putExtra("taskId", task.id)
         putExtra("parentActivity", parentActivity)
         putExtra("topBarTitle", "Edit Task")
+        putExtra("remoteID", (task as? GroupTaskItem)?.remoteId?:"")
     }
     context.startActivity(intent)
 }
