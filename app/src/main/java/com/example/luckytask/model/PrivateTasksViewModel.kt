@@ -61,13 +61,15 @@ class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO) : View
 
     /*** Draw a random task --> do not use the ids, but rather choose
      *   a random index from the task list
-     *   --> if the list is empty, return null ***/
+     *   --> if the list is empty, return null
+     *   --> only draw from inactive tasks! ***/
     fun drawRandomTask(): PrivateTaskItem? {
-        val size = _tasks.value.size
+        val inactiveTasks =  _tasks.value.filter { !it.isActive }
+        val size = inactiveTasks.size
         if(size > 0 ){
             val drawNumbers = 0..<size
             val randomIndex = drawNumbers.random()
-            return _tasks.value[randomIndex]
+            return inactiveTasks[randomIndex]
         }
         return null
     }

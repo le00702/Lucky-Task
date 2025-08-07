@@ -51,6 +51,10 @@ class MyTasksActivity : ComponentActivity() {
     /*** Use this variable to keep track of animation ***/
     private var triggerAnimation = mutableStateOf(false)
 
+    /*** Use this variable to decide on text when drawing a task/
+     *   rolling the dice ***/
+    private var drawText = mutableStateOf("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,21 +67,25 @@ class MyTasksActivity : ComponentActivity() {
         shakeListener = ShakeListener(this) {
             Log.d(TAG, "Shake detected!")
             triggerAnimation.value = true
-            /*** Create text to display for drawn task
-             *   --> if there are no tasks (null), display alternative message ***/
-            var drawText = ""
+
+            /*** Fetch a random task from the still inactive ones/TODOs ***/
             val drawnTask = privateTaskViewModel.drawRandomTask()
+
+            /*** Assign text for task drawing based on whether
+             *   --> there are tasks to draw: then, update the drawn task and set it to active
+             *   --> or not: then, display a message stating this
+             ***/
             if(drawnTask == null ){
-                drawText = "There are no TODOs to draw from!"
+                drawText.value = "There are no TODOs to draw from!"
             }else{
-                drawText = "You have drawn the following TODO: ${drawnTask.title}"
+                drawText.value = "You have drawn the following TODO: ${drawnTask.title}"
                 val updatedTask = drawnTask.copy(
                     isActive = true
                 )
                 privateTaskViewModel.updateTask(updatedTask)
                 Log.d("ACTIVE TASK", "Task ${updatedTask.title} is active: ${updatedTask.isActive}")
             }
-            Toast.makeText(this, drawText, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, drawText.value, Toast.LENGTH_SHORT).show()
         }
 
         enableEdgeToEdge()
@@ -90,7 +98,8 @@ class MyTasksActivity : ComponentActivity() {
                     TasksScreen(
                         modifier = Modifier.padding(20.dp),
                         triggerAnimation,
-                        privateTaskViewModel
+                        privateTaskViewModel,
+                        drawText
                     )
                 }
             }
@@ -109,7 +118,7 @@ class MyTasksActivity : ComponentActivity() {
 }
 
 @Composable
-fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>, privateTasksViewModel: PrivateTasksViewModel) {
+fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>, privateTasksViewModel: PrivateTasksViewModel, drawText:  MutableState<String>) {
 
     val HEADER_SIZE = 30.sp
     val context = LocalContext.current
@@ -194,6 +203,19 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                 triggerAnimation = triggerAnimation,
                 isMock = false
             )
+        }
+
+        item {
+            /*** Use this for now to display the drawn task in the screen ***/
+            if (drawText.value.isNotEmpty()) {
+                Text(
+                    text = drawText.value,
+                    color = colorResource(R.color.task_text_color),
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
 
         item {
