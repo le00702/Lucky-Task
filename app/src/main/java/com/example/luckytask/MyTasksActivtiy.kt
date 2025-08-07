@@ -27,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskFilter
 import com.example.luckytask.data.applyFilters
 import com.example.luckytask.model.PrivateTasksViewModel
@@ -39,7 +38,6 @@ import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.TaskCard
 import com.example.luckytask.ui.theme.elements.TaskFilterBar
-import java.time.LocalDate
 import com.example.luckytask.ui.theme.elements.EditableTaskCard
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
@@ -68,11 +66,16 @@ class MyTasksActivity : ComponentActivity() {
             /*** Create text to display for drawn task
              *   --> if there are no tasks (null), display alternative message ***/
             var drawText = ""
-            val drawnTaskTitle = privateTaskViewModel.drawRandomTask()
-            if(drawnTaskTitle == null ){
+            val drawnTask = privateTaskViewModel.drawRandomTask()
+            if(drawnTask == null ){
                 drawText = "There are no TODOs to draw from!"
             }else{
-                drawText = "You have drawn the following TODO: $drawnTaskTitle"
+                drawText = "You have drawn the following TODO: ${drawnTask.title}"
+                val updatedTask = drawnTask.copy(
+                    isActive = true
+                )
+                privateTaskViewModel.updateTask(updatedTask)
+                Log.d("ACTIVE TASK", "Task ${updatedTask.title} is active: ${updatedTask.isActive}")
             }
             Toast.makeText(this, drawText, Toast.LENGTH_SHORT).show()
         }
@@ -113,21 +116,11 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
     var refreshTrigger by remember { mutableStateOf(0) }
     val privateTasks = privateTasksViewModel.tasks.collectAsState().value
 
-    /*** Use mock task for displaying purposes only ***/
-    val mockActiveTask = listOf(
-        PrivateTaskItem(
-            id = -1,
-            title = "Mock Active Task",
-            description = "This is an active mock task",
-            dueDate = LocalDate.now(),
-            isActive = true
-        )
-    )
 
-    /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = mockActiveTask
+    /*** Fetch active local tasks ***/
+    val activeTasks = privateTasks.filter { it.isActive }
 
-
+    /*** Fetch inactive local tasks ***/
     val inactiveTasks = privateTasks.filter { !it.isActive }
 
 
