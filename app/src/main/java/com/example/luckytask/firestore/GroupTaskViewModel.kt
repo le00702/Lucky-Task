@@ -6,34 +6,39 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.luckytask.data.GroupTaskItem
+import com.example.luckytask.data.TaskItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 const val MOCK: Boolean = true //Don't Load Real data to save usages
 const val MOCK_GROUP = "Some Group"
 
+const val TAG = "GroupTaskViewModel"
 const val KEY_LENGTH = 8
 class GroupTaskViewModel:ViewModel() {
 
-    private val _todoDAOS = mutableStateListOf<TodoDAO>()
-    val todoDAOS: List<TodoDAO>
-        get() = _todoDAOS
+    private val _taskList = MutableStateFlow<List<TaskItem>>(emptyList())
+    val taskList: StateFlow<List<TaskItem>>
+        get() = _taskList.asStateFlow()
 
-    private var _todoMaker by mutableStateOf(false)
-    val todoMakerState: Boolean
-        get() = _todoMaker
-    val setTodoMaker: (Boolean) -> Unit = { _todoMaker = it }
+    private var _taskMaker by mutableStateOf(false)
+    val taskMakerState: Boolean
+        get() = _taskMaker
+    val setTaskMaker: (Boolean) -> Unit = { _taskMaker = it }
 
     private var _isLoadingTasks by mutableStateOf(false)
     val isLoadingTasks: Boolean
         get() = _isLoadingTasks
 
 
-    private val _groupDAOS = mutableStateListOf<GroupDAO>()
-    val groupDAOS: List<GroupDAO>
-        get() = _groupDAOS
+    private val _groupList = mutableStateListOf<GroupDAO>()
+    val groupList: List<GroupDAO>
+        get() = _groupList
 
     private var groupMaker by mutableStateOf(false)
     val groupMakerState: Boolean
@@ -62,13 +67,13 @@ class GroupTaskViewModel:ViewModel() {
             try{
                 data = AppSettings.getGroups(context)
                 if(data != null){
-                    _groupDAOS.clear()
+                    _groupList.clear()
                     (data as Map<out Any?, Any?>).forEach{
-                        _groupDAOS.add(GroupDAO(id = it.key as String, name = it.value as String))
+                        _groupList.add(GroupDAO(id = it.key as String, name = it.value as String))
                     }
                 }
             }catch(e:Exception){
-                Log.e("GroupTaskViewModel", "Error loading groups. $e")
+                Log.e(TAG, "Error loading groups. $e")
             }finally {
                 _isLoadingGroups = false
             }
@@ -85,19 +90,19 @@ class GroupTaskViewModel:ViewModel() {
                 id = generateRandomAlphanumeric(KEY_LENGTH)
                 idExists = Firestore.checkIfGroupExists(id).first
                 while(idExists){
-                    Log.i("GroupTaskViewModel", "ID $id already exists. Try $counter")
+                    Log.i(TAG, "ID $id already exists. Try $counter")
                     id = generateRandomAlphanumeric(KEY_LENGTH)
                     idExists = Firestore.checkIfGroupExists(id).first
                     counter++
                 }
                 assert(id.length == KEY_LENGTH)
-                Log.i("GroupTaskViewModel", "New ID $id found after $counter tries")
+                Log.i(TAG, "New ID $id found after $counter tries")
                 val group = GroupDAO(id = id, name = name)
                 Firestore.createGroup(group)
                 AppSettings.addGroup(context, group)
                 loadGroups(context)
             }catch(e:Exception){
-                Log.e("GroupTaskViewModel", "Error creating group. $e")
+                Log.e(TAG, "Error creating group. $e")
             }finally {
                 _isLoadingGroups = false
             }
@@ -117,7 +122,7 @@ class GroupTaskViewModel:ViewModel() {
                     AppSettings.addGroup(context, GroupDAO(id = id, name = name ?: "New Group"))
                 }
             }catch(e:Exception){
-                Log.e("GroupTaskViewModel", "Error joining group",e)
+                Log.e(TAG, "Error joining group",e)
             }finally {
                 _isLoadingGroups = false
             }
@@ -130,7 +135,7 @@ class GroupTaskViewModel:ViewModel() {
             try{
                 AppSettings.removeGroup(context, id)
             }catch (e:Exception){
-                Log.e("GroupTaskViewModel", "Error leaving group",e)
+                Log.e(TAG, "Error leaving group",e)
             }finally {
                 _isLoadingGroups = false
             }
@@ -145,10 +150,10 @@ class GroupTaskViewModel:ViewModel() {
                 data = AppSettings.getCurrentGroup(context)
                 data?.let { _currentGroup = GroupDAO(id = it.first, name = it.second) }
             }catch (e:Exception){
-                Log.e("GroupTaskViewModel", "Error loading group content.",e)
+                Log.e(TAG, "Error loading group content.",e)
             }finally{
                 _isLoadingGroups = false
-                loadTodos()
+                loadTasks()
             }
         }
     }
@@ -160,86 +165,113 @@ class GroupTaskViewModel:ViewModel() {
                 AppSettings.setCurrentGroup(context, group)
                 _currentGroup = group
             }catch (e:Exception){
-                Log.e("GroupTaskViewModel", "Error loading group content.",e)
+                Log.e(TAG, "Error loading group content.",e)
             }finally{
                 _isLoadingGroups = false
-                loadTodos()
+                loadTasks()
             }
         }
     }
 
-    fun loadTodos() {
-        _todoDAOS.clear()
-        _isLoadingTasks = true
+    fun loadTasks() {
         if (_currentGroup == null) {
-            Log.i("TodoViewModel", "No Group Selected")
-            _isLoadingTasks = false
+            Log.i(TAG, "No Group Selected")
             return
         }
+        _taskList.value = emptyList()
+        _isLoadingTasks = true
         viewModelScope.launch {
-            Log.i("TodoViewModel", "Loading Todos")
+            Log.i(TAG, "Loading Tasks")
+            val newList = _taskList.value.toMutableList()
             try {
-                Firestore.loadTodos(_currentGroup!!.name) { todos ->
-                    _todoDAOS.addAll(todos)
+                Firestore.loadTasks(_currentGroup!!.name) { task ->
+                    newList.addAll(task)
                 }
+                _taskList.value = newList
             } catch (e: Exception) {
-                Log.e("GroupTaskViewModel", "Error loading group content.", e)
+                Log.e(TAG, "Error loading group content.", e)
             } finally {
                 _isLoadingTasks = false
             }
         }
     }
 
-    fun addTodo(todoDAO: TodoDAO) {
+    fun addTask(task: GroupTaskItem) {
         if (_currentGroup == null) {
-            Log.i("TodoViewModel", "No Group Selected")
+            Log.i(TAG, "No Group Selected")
             return
         }
-        _todoDAOS.add(todoDAO)
+        val currentTasks = _taskList.value.toMutableList()
+        currentTasks.add(task)
         viewModelScope.launch{
-            Log.i("TodoViewModel", "Adding Todo to Firestore")
-            Firestore.addTodo(_currentGroup!!.name, todoDAO)
+            Log.i(TAG, "Adding Todo to Firestore")
+            Firestore.addTask(_currentGroup!!.name, task)
         }
 
     }
 
-    fun removeTodo(index: Int) {
+    fun removeTask(index: Int) {
         if (_currentGroup == null) {
-            Log.i("TodoViewModel", "No Group Selected")
+            Log.i(TAG, "No Group Selected")
             return
         }
+        val currentTasks = _taskList.value.toMutableList()
+        currentTasks.removeAt(index)
         viewModelScope.launch{
-            Log.i("TodoViewModel", "Removing Todo from Firestore")
-            Firestore.removeTodo(_currentGroup!!.name, todoDAOS[index])
+            Log.i(TAG, "Removing Todo from Firestore")
+            Firestore.removeTask(_currentGroup!!.name, currentTasks[index] as GroupTaskItem)
         }
-        _todoDAOS.removeAt(index)
     }
+
+
 
     /**
      * Returns List with new order on purpose (Done Tasks at the end)
      */
-    fun setTodoDone(index: Int): Int {
-        val todo = _todoDAOS[index]
+    fun setTaskDone(index: Int): Int {
+        if (_currentGroup == null) {
+            Log.i(TAG, "No Group Selected")
+            return -1
+        }
+        val currentTasks = _taskList.value.toMutableList()
+        val todo = currentTasks[index]
         if (!todo.isCompleted) {
-            _todoDAOS[index].apply {
+            val newTask = GroupTaskItem(
+                id = todo.id,
+                title = todo.title + " (Done)",
+                description = todo.description,
+                dueDate = todo.dueDate,
+                isActive = todo.isActive,
                 isCompleted = true
-                title = todo.title + " (Done)"
-            }
-            return _todoDAOS.size
+            )
+            currentTasks[index] = newTask
+            _taskList.value = currentTasks
+            return currentTasks.size
         } else {
             return -1
         }
     }
 
-    fun setTodoUndone(index: Int): Int {
-        val todo = _todoDAOS[index]
-        if (todo.isCompleted) {
-            _todoDAOS[index].apply {
+    fun setTaskUndone(index: Int): Int {
+        if (_currentGroup == null) {
+            Log.i(TAG, "No Group Selected")
+            return -1
+        }
+        val currentTasks = _taskList.value.toMutableList()
+        val todo = currentTasks[index]
+        if (!todo.isCompleted) {
+            val newTask = GroupTaskItem(
+                id = todo.id,
+                title = todo.title.replace("(Done)", ""),
+                description = todo.description,
+                dueDate = todo.dueDate,
+                isActive = todo.isActive,
                 isCompleted = false
-                title.replace("(Done)", "")
-            }
-            return _todoDAOS.size
-        } else {
+            )
+            currentTasks[index] = newTask
+            _taskList.value = currentTasks
+            return currentTasks.size
+        }else {
             return -1
         }
     }

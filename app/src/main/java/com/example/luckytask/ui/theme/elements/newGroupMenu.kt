@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -29,7 +30,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.luckytask.firestore.roundedShape
 import java.util.InvalidPropertiesFormatException
 
 
@@ -101,7 +101,7 @@ fun NewGroupMenu(
     val buttonText = if (selection == CREATE_GROUP)  "Create" else "Join"
     val sampleText = if (selection == CREATE_GROUP) "ABC456cde _-" else "abcDEF78"
 
-    Box(modifier = modifier.fillMaxWidth().background(Color.DarkGray.copy(alpha = 0.97f), shape = roundedShape(10.dp)).padding(15.dp),
+    Box(modifier = modifier.fillMaxWidth().background(Color.DarkGray.copy(alpha = 0.97f), shape = RoundedCornerShape(10.dp)).padding(15.dp),
         contentAlignment = Alignment.Center){
         Column(modifier = modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally){
             Text(modifier = Modifier.padding(5.dp),text = "Add Group", fontSize = 30.sp)
