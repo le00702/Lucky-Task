@@ -15,9 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-const val MOCK: Boolean = true //Don't Load Real data to save usages
-const val MOCK_GROUP = "Some Group"
-
 const val TAG = "GroupTaskViewModel"
 const val KEY_LENGTH = 8
 class GroupTaskViewModel:ViewModel() {
@@ -25,11 +22,6 @@ class GroupTaskViewModel:ViewModel() {
     private val _taskList = MutableStateFlow<List<TaskItem>>(emptyList())
     val taskList: StateFlow<List<TaskItem>>
         get() = _taskList.asStateFlow()
-
-    private var _taskMaker by mutableStateOf(false)
-    val taskMakerState: Boolean
-        get() = _taskMaker
-    val setTaskMaker: (Boolean) -> Unit = { _taskMaker = it }
 
     private var _isLoadingTasks by mutableStateOf(false)
     val isLoadingTasks: Boolean
@@ -220,59 +212,6 @@ class GroupTaskViewModel:ViewModel() {
         viewModelScope.launch{
             Log.i(TAG, "Removing Todo from Firestore")
             Firestore.removeTask(_currentGroup!!.name, currentTasks[index] as GroupTaskItem)
-        }
-    }
-
-
-
-    /**
-     * Returns List with new order on purpose (Done Tasks at the end)
-     */
-    fun setTaskDone(index: Int): Int {
-        if (_currentGroup == null) {
-            Log.i(TAG, "No Group Selected")
-            return -1
-        }
-        val currentTasks = _taskList.value.toMutableList()
-        val todo = currentTasks[index]
-        if (!todo.isCompleted) {
-            val newTask = GroupTaskItem(
-                id = todo.id,
-                title = todo.title + " (Done)",
-                description = todo.description,
-                dueDate = todo.dueDate,
-                isActive = todo.isActive,
-                isCompleted = true
-            )
-            currentTasks[index] = newTask
-            _taskList.value = currentTasks
-            return currentTasks.size
-        } else {
-            return -1
-        }
-    }
-
-    fun setTaskUndone(index: Int): Int {
-        if (_currentGroup == null) {
-            Log.i(TAG, "No Group Selected")
-            return -1
-        }
-        val currentTasks = _taskList.value.toMutableList()
-        val todo = currentTasks[index]
-        if (!todo.isCompleted) {
-            val newTask = GroupTaskItem(
-                id = todo.id,
-                title = todo.title.replace("(Done)", ""),
-                description = todo.description,
-                dueDate = todo.dueDate,
-                isActive = todo.isActive,
-                isCompleted = false
-            )
-            currentTasks[index] = newTask
-            _taskList.value = currentTasks
-            return currentTasks.size
-        }else {
-            return -1
         }
     }
 }

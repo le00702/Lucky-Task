@@ -87,13 +87,6 @@ fun EditTaskScreen(
     val title = remember { mutableStateOf("") }
     val description = remember { mutableStateOf("") }
     val dueDate = remember { mutableStateOf<LocalDate?>(null) }
-
-    var loading by remember { mutableStateOf(false) }
-
-    var done by remember { mutableStateOf(false) }
-
-    var success by remember { mutableStateOf(false) }
-
     val context = LocalContext.current
     val app = context.applicationContext as PrivateTasksApp
     val privateTasksViewModel: PrivateTasksViewModel =

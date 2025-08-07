@@ -116,10 +116,6 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     val groupMaker = viewModel.groupMakerState
     val setGroupMenu = viewModel.setGroupMaker
 
-    val todoMaker = viewModel.taskMakerState
-    val setTodoMenu = viewModel.setTaskMaker
-
-    val taskList = viewModel.taskList
     val groupList = viewModel.groupList
 
     val currentGroup = viewModel.currentGroup
