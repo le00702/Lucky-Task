@@ -6,16 +6,20 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +28,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.luckytask.data.GroupTaskItem
 import com.example.luckytask.data.PrivateTaskItem
+import com.example.luckytask.firestore.AppSettings
+import com.example.luckytask.firestore.Firestore
 import com.example.luckytask.model.PrivateTasksViewModel
 import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
@@ -74,11 +81,18 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     /*** Use this to check whether a task is allowed to be saved ***/
     val formIsComplete = title.value.isNotBlank() && description.value.isNotBlank()
 
+    var loading by remember { mutableStateOf(false) }
+
+    var done by remember { mutableStateOf(false) }
+
+    var success by remember { mutableStateOf(false) }
+
     /*** Use context + DB for inserting a new task ***/
     val context = LocalContext.current
     val app = context.applicationContext as PrivateTasksApp
     val privateTasksViewModel: PrivateTasksViewModel =
         viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
+
 
     /*** Extract method to differentiate between private and group tasks ***/
     val onClick: () -> Unit = {
@@ -87,16 +101,49 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
              *   main thread/UI --> Also show Toast for now ***/
             Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch {
+                loading = true
                 addTask(title.value, description.value, dueDate.value, privateTasksViewModel)
+                loading = false
+                done = true
             }
         } else {
-            /*** For group tasks use Toast as placeholder for now ***/
-            Toast.makeText(context, "[GROUP TASK]: clicked!", Toast.LENGTH_SHORT).show()
+            val task = GroupTaskItem(
+                title = title.value,
+                description = description.value,
+                dueDate = dueDate.value,
+                isActive = false,
+                isCompleted = false
+            )
+
+            CoroutineScope(Dispatchers.IO).launch {
+                loading = true
+                val group = AppSettings.getCurrentGroup(context)
+                if(group == null){
+                    loading = false
+                    done = true
+                    return@launch
+                }
+                Firestore.addTask(group.id, task)
+                loading = false
+                done = true
+            }
         }
+    }
+
+    if(!done && loading){
+        Box(){
+            CircularProgressIndicator()
+        }
+    }
+    val message = if (success) "Task added successfully!" else "Error adding task."
+    if(done){
+        /*** For group tasks use Toast as placeholder for now ***/
+        Toast.makeText(context, "[GROUP TASK]: $message", Toast.LENGTH_SHORT).show()
 
         /*** End the current activity and return to the previous one ***/
         (context as Activity).finish()
     }
+
 
     /*** Organize elements in column ***/
     LazyColumn(
