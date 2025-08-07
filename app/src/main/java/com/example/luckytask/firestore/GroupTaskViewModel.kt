@@ -298,7 +298,7 @@ class GroupTaskViewModel:ViewModel() {
     fun setDone(task: GroupTaskItem){
         val newTask = GroupTaskItem(
             remoteId = task.remoteId,
-            title = task.title,
+            title = task.title + " (Done)",
             description = task.description,
             dueDate = task.dueDate,
             isActive = task.isActive,
