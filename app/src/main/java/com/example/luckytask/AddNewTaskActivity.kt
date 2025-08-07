@@ -121,9 +121,11 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
                 if(group == null){
                     loading = false
                     done = true
+                    success = false
                     return@launch
                 }
                 Firestore.addTask(group.id, task)
+                success = true
                 loading = false
                 done = true
             }
