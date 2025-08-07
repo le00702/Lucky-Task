@@ -150,7 +150,11 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
-
+    Log.i("GroupTasksScreen", "tasks: ${tasks.size}")
+    Log.i("GroupTasksScreen", "groupTasks: ${groupTasks.size}")
+    Log.i("GroupTasksScreen", "activeTasks: ${activeTasks.size}")
+    Log.i("GroupTasksScreen", "roommateTasks: ${roommateTasks.size}")
+    Log.i("GroupTasksScreen", "todoTasks: ${todoTasks.size}")
 
 
 
