@@ -12,19 +12,20 @@ class Firestore {
     companion object {
         suspend fun loadTasks(group:String, onResult: (List<TaskItem>) -> Unit){
             val tasks = mutableListOf<TaskItem>()
-            Log.i("Firestore","Loading Todos from Group $group")
+            Log.i("Firestore","Loading Tasks from Group $group")
             val doc = FirebaseFirestore.getInstance().collection("groups/$group/todos")
             try{
                 val res = doc.get().await()
-                Log.i("Firestore", "Loading Todos Success ${res.size()}")
+                Log.i("Firestore", "Loading Tasks Success ${res.size()}")
                 for (document in res) {
                     val task = GroupTaskItem(
                         remoteId = document.id,
                         title = document.data["title"].toString(),
                         description = document.data["description"].toString(),
                         dueDate = document.data["dueDate"] as LocalDate?,
-                        isActive = document.data["isActive"] as Boolean,
-                        isCompleted = document.data["isCompleted"] as Boolean
+                        isActive = document.data["active"] as Boolean,
+                        isCompleted = document.data["completed"] as Boolean,
+                        assignee = document.data["assignee"] as String?
                     )
                     tasks.add(task)
                     Log.i("Firestore", "${document.id} => ${document.data}")

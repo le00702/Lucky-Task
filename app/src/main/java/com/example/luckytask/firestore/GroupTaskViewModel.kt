@@ -184,7 +184,7 @@ class GroupTaskViewModel:ViewModel() {
             Log.i(TAG, "Loading Tasks")
             val newList = _taskList.value.toMutableList()
             try {
-                Firestore.loadTasks(_currentGroup!!.name) { task ->
+                Firestore.loadTasks(_currentGroup!!.id) { task ->
                     newList.addAll(task)
                 }
                 _taskList.value = newList
