@@ -265,7 +265,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             } else {
                 items(activeTasks) { task ->
                     TaskCard(
-                        task = task
+                        task = task,
+                        isMine = true
                     )
                 }
             }

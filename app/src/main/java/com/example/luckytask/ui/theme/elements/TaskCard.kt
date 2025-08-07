@@ -31,11 +31,12 @@ import java.time.format.DateTimeFormatter
 fun TaskCard(
     task: TaskItem,
     modifier: Modifier = Modifier,
+    isMine: Boolean = false,
     //onInfoClick: () -> Unit = {}
 ) {
     val backgroundColor = when {
         /*** If it is a group task done by a roommate, color it as such ***/
-        (task is GroupTaskItem) && task.assignee != null && task.assignee != "Me" -> colorResource(R.color.roommate_task_color)
+        (task is GroupTaskItem) && task.assignee != null && !isMine -> colorResource(R.color.roommate_task_color)
         /*** If it is done by me, mark it as active ***/
         task.isActive -> colorResource(R.color.active_task_color)
         /*** If it is still in the pool (no one has drawn it) leave it in the standard color ***/
