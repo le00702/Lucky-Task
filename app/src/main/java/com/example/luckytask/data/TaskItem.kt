@@ -13,7 +13,7 @@ abstract class TaskItem(
     open val isCompleted: Boolean = false,
 ){
     /*** Make id abstract, so it does not need to be passed via constructor ***/
-    abstract val id: Any?
+    abstract val id:Int
 }
 
 /*** Extract separate data class/entity for private tasks -->
@@ -43,4 +43,5 @@ data class GroupTaskItem(
     override val dueDate: LocalDate? = null,
     override val isActive: Boolean = false, // true = drawn/active task, false = TODO
     override val isCompleted: Boolean = false,
+    var remoteId:String = ""
 ): TaskItem(title)
