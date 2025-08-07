@@ -115,7 +115,7 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             isActive = true
         )
     )
-    
+
     /*** Use this active-task-list for mocking purposes for now ***/
     var activeTasks = mockActiveTask
 
