@@ -206,19 +206,6 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         }
 
         item {
-            /*** Use this for now to display the drawn task in the screen ***/
-            if (drawText.value.isNotEmpty()) {
-                Text(
-                    text = drawText.value,
-                    color = colorResource(R.color.task_text_color),
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-        }
-
-        item {
             Spacer(modifier = Modifier.height(50.dp))
         }
 
