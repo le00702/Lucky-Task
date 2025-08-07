@@ -1,51 +1,60 @@
 package com.example.luckytask.firestore
 
 import android.util.Log
+import com.example.luckytask.data.GroupTaskItem
+import com.example.luckytask.data.TaskItem
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 
 
 class Firestore {
     companion object {
-        suspend fun loadTodos(group:String, onResult: (List<TodoDAO>) -> Unit){
-            val todos = mutableListOf<TodoDAO>()
+        suspend fun loadTasks(group:String, onResult: (List<TaskItem>) -> Unit){
+            val tasks = mutableListOf<TaskItem>()
             Log.i("Firestore","Loading Todos from Group $group")
             val doc = FirebaseFirestore.getInstance().collection("groups/$group/todos")
             try{
                 val res = doc.get().await()
-                Log.i("Firestore", "Loading Todos Success $todos")
+                Log.i("Firestore", "Loading Todos Success ${res.size()}")
                 for (document in res) {
-                    todos.add(document.toObject(TodoDAO::class.java))
-                    todos.last().id = document.id
+                    val task = GroupTaskItem(
+                        remoteId = document.id,
+                        title = document.data["title"].toString(),
+                        description = document.data["description"].toString(),
+                        dueDate = document.data["dueDate"] as LocalDate?,
+                        isActive = document.data["isActive"] as Boolean,
+                        isCompleted = document.data["isCompleted"] as Boolean
+                    )
+                    tasks.add(task)
                     Log.i("Firestore", "${document.id} => ${document.data}")
                 }
-                onResult(todos)
+                onResult(tasks)
             }catch (e:Exception){
                 Log.e("Firestore", "Error getting documents.", e)
             }
        }
 
-        suspend fun addTodo(group:String, todo:TodoDAO){
+        suspend fun addTask(group:String, task:GroupTaskItem){
             val ref = FirebaseFirestore.getInstance().collection("groups/$group/todos")
             try {
-                val res = ref.add(todo).await()
-                val id = res.id
-                todo.id= id
-                Log.i("Firestore","Todo Added to Doc $todo")
+                val res = ref.add(task).await()
+                task.remoteId= res.id
+                Log.i("Firestore","Task Added to Doc $task")
             }catch (e:Exception){
-                Log.e("Firestore","Error adding Todo", e)
+                Log.e("Firestore","Error adding Task", e)
             }
         }
 
-        suspend fun removeTodo(group:String, todo:TodoDAO){
+        suspend fun removeTask(group:String, task:GroupTaskItem){
             val ref = FirebaseFirestore.getInstance().collection("groups/$group/todos")
-            if(todo.id.isNullOrEmpty()) {
-                Log.e("Firestore","Todo has no ID")
+            if(task.remoteId.isEmpty()) {
+                Log.e("Firestore","Task has no ID")
             }
             try{
-                ref.document(todo.id!!).delete().await()
+                ref.document(task.remoteId).delete().await()
             }catch (e:Exception){
-                Log.e("Firestore","Error removing Todo", e)
+                Log.e("Firestore","Error removing Task", e)
             }
         }
 

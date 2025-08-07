@@ -2,7 +2,6 @@ package com.example.luckytask
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.firestore.GroupDAO
 import com.example.luckytask.data.GroupTaskItem
@@ -48,13 +47,12 @@ import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.EditableTaskCard
-import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.firestore.GroupTaskViewModel
 import com.example.luckytask.ui.theme.elements.Dropdown
 import com.example.luckytask.ui.theme.elements.NewGroupMenu
-import kotlinx.coroutines.launch
 import com.example.luckytask.ui.theme.elements.TaskCard
-import java.time.LocalDate
+
+private const val REMOTE = true
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "GroupTasksActivity"
@@ -112,30 +110,38 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val pullRefreshState = rememberPullRefreshState(
         viewModel.isLoadingTasks,
-        {viewModel.loadTodos(); viewModel.loadGroups(context); viewModel.loadCurrentGroup(context)}
+        {viewModel.loadTasks(); viewModel.loadGroups(context); viewModel.loadCurrentGroup(context)}
     )
 
     val groupMaker = viewModel.groupMakerState
     val setGroupMenu = viewModel.setGroupMaker
 
-    val todoMaker = viewModel.todoMakerState
-    val setTodoMenu = viewModel.setTodoMaker
+    val todoMaker = viewModel.taskMakerState
+    val setTodoMenu = viewModel.setTaskMaker
 
-    val taskList = viewModel.todoDAOS
-    val groupList = viewModel.groupDAOS
+    val taskList = viewModel.taskList
+    val groupList = viewModel.groupList
 
     val currentGroup = viewModel.currentGroup
 
     val loadGroup: (GroupDAO) -> Unit = {
         viewModel.setCurrentGroup(context,it)
-        viewModel.loadTodos()
+        viewModel.loadTasks()
     }
 
-    /*** Use this active-task-list for mocking purposes for now ***/
-    //var activeTasks = listOf<String>()
+
+    /*** Data from Remote Repository (Firestore) ***/
+    val remoteTasks by viewModel.taskList.collectAsState()
+
+
+    /*** Data from local Repository (RoomDB) ***/
     val taskRepository = remember { TaskRepository.getInstance() }
-    val tasks by taskRepository.tasks.collectAsState()
-    var refreshTrigger by remember { mutableStateOf(0) }
+    val localTasks by taskRepository.tasks.collectAsState()
+
+
+    val tasks = if(REMOTE) remoteTasks else localTasks
+    var refreshTrigger by remember { mutableIntStateOf(0) }
+
     val groupTasks = tasks.filterIsInstance<GroupTaskItem>()
 
     val activeTasks = groupTasks.filter { it.isActive && it.assignee == "Me" }
@@ -144,10 +150,14 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
+
+
+
+
     LaunchedEffect(Unit) {
         viewModel.loadGroups(context)
         viewModel.loadCurrentGroup(context)
-        viewModel.loadTodos()
+        viewModel.loadTasks()
     }
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
@@ -240,15 +250,6 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 Text(
                     text = "Group TODO List",
                     fontSize = HEADER_SIZE
-                )
-            }
-
-            item {
-                AddTaskButton(
-                    modifier = Modifier,
-                    context,
-                    ACTIVITY_NAME,
-                    stringResource(R.string.title_group_todos)
                 )
             }
 
