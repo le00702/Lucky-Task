@@ -317,7 +317,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
         }
         val popupModifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable { null }
-        if(userMaker) {
+        if(userMaker && !viewModel.isLoading) {
             Box(
                 modifier =popupModifier,
                 contentAlignment = Alignment.TopCenter
@@ -329,7 +329,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
         }
 
-        if (groupMaker) {
+        if (groupMaker && !viewModel.isLoading) {
             Box(
                 modifier = popupModifier,
                 contentAlignment = Alignment.TopCenter
