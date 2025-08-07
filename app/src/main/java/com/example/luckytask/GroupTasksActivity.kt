@@ -138,7 +138,9 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val setAndLoadUser: (String) -> Unit = {
         viewModel.setUser(context, UserDAO(name = it))
-        if(viewModel.isNewUser)
+        if(viewModel.isNewUser){
+            viewModel.registerUserToAllGroups()
+        }
         loadAll()
 
     }

@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckytask.data.GroupTaskItem
 import com.example.luckytask.data.TaskItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,7 +52,7 @@ class GroupTaskViewModel:ViewModel() {
 
     val setUserMaker: (Boolean) -> Unit = { _userMaker = it }
 
-    val _isNewUser by mutableStateOf(false)
+    private var _isNewUser by mutableStateOf(false)
     val isNewUser: Boolean
         get() = _isNewUser
 
@@ -63,6 +65,7 @@ class GroupTaskViewModel:ViewModel() {
             .joinToString("")
     }
 
+
     fun loadUser(context: Context){
         var data:UserDAO?
         viewModelScope.launch {
@@ -72,6 +75,7 @@ class GroupTaskViewModel:ViewModel() {
                 if(data != null){
                     _currentUser = data
                 }else{
+                    _isNewUser = true
                     _userMaker = true
                 }
             }catch (e: Exception){
@@ -94,6 +98,15 @@ class GroupTaskViewModel:ViewModel() {
                 _isLoading = false
             }
 
+        }
+    }
+
+    fun registerUserToAllGroups(){
+        CoroutineScope(Dispatchers.IO).launch {
+            for(g in _groupList){
+                Firestore.registerUser(g.id, _currentUser!!)
+            }
+            _isNewUser = false
         }
     }
 
