@@ -24,7 +24,7 @@ fun DatePickerField(
     label: String,
     placeholder: String = "Select a date",
     isRequired: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
@@ -36,17 +36,22 @@ fun DatePickerField(
     }
 
     // Date picker dialog
-    val datePickerDialog = remember {
+    /*** If there was a date selected, display the selected date
+     *   --> otherwise display the current date ***/
+    val date = selectedDate.value ?: LocalDate.now()
+    val datePickerDialog =
         DatePickerDialog(
             context,
             { _, year, month, dayOfMonth ->
                 selectedDate.value = LocalDate.of(year, month + 1, dayOfMonth)
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            date.year,
+            /*** Use month -1 as the months in LocalDate are 1..12
+             *   --> however in Date Picker they start from 0! ***/
+            date.monthValue - 1,
+            date.dayOfMonth
         )
-    }
+
 
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -130,7 +135,7 @@ fun DatePickerField(
 @Composable
 private fun QuickDateChip(
     label: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     AssistChip(
         onClick = onClick,
