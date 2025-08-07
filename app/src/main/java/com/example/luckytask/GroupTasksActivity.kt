@@ -150,6 +150,10 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
+
+
+
+
     LaunchedEffect(Unit) {
         viewModel.loadGroups(context)
         viewModel.loadCurrentGroup(context)
