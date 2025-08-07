@@ -117,6 +117,9 @@ fun DatePickerField(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            QuickDateChip("None") {
+                selectedDate.value = null
+            }
             QuickDateChip("Today") {
                 selectedDate.value = LocalDate.now()
             }
