@@ -8,6 +8,6 @@ Lucky Tasks - Development Ideas
 - Local DB: RoomDB
     - Store Data localy
     - SQL structure
-  - HW Implementation
-      - Shake to assign task
-      - Visual: Dice shaking
+- HW Implementation
+    - Shake to assign task
+    - Visual: Dice shaking
