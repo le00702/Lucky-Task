@@ -176,7 +176,10 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
             /*** If there ARE active tasks, display them all ***/
             items(activeTasks) { task ->
                 TaskCard(
-                    task = task
+                    task = task,
+                    isMine = true,
+                    setDone = {},
+                    deleteTask = {}
                 )
             }
         }

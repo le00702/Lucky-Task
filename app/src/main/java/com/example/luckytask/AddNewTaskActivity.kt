@@ -99,7 +99,6 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
         if (!isGroupTask) {
             /*** Call this function in Coroutine scope to not block the
              *   main thread/UI --> Also show Toast for now ***/
-            Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch {
                 loading = true
                 addTask(title.value, description.value, dueDate.value, privateTasksViewModel)
@@ -140,7 +139,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     val message = if (success) "Task added successfully!" else "Error adding task."
     if(done){
         /*** For group tasks use Toast as placeholder for now ***/
-        Toast.makeText(context, "[GROUP TASK]: $message", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, "[GROUP TASK]: $message", Toast.LENGTH_SHORT).show()
 
         /*** End the current activity and return to the previous one ***/
         (context as Activity).finish()
