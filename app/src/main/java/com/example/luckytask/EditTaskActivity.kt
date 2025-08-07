@@ -25,12 +25,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.data.GroupTaskItem
 import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskRepository
+import com.example.luckytask.firestore.AppSettings
+import com.example.luckytask.firestore.Firestore
 import com.example.luckytask.model.PrivateTasksViewModel
 import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskInput
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.DatePickerField
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -40,6 +44,7 @@ class EditTaskActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val taskId = intent.getIntExtra("taskId", -1)
+        val remoteID = intent.getStringExtra("remoteID")?: ""
         val parentActivity = intent.getStringExtra("parentActivity") ?: "MyTasksActivity"
         val topBarTitle = intent.getStringExtra("topBarTitle") ?: "Edit Task"
 
@@ -52,6 +57,7 @@ class EditTaskActivity : ComponentActivity() {
                 ) {
                     EditTaskScreen(
                         taskId = taskId,
+                        remoteID = remoteID,
                         modifier = Modifier.padding(20.dp),
                         onFinish = { finish() },
                         isGroupTask = parentActivity != "MyTasksActivity"
@@ -66,6 +72,7 @@ class EditTaskActivity : ComponentActivity() {
 @Composable
 fun EditTaskScreen(
     taskId: Int,
+    remoteID: String,
     modifier: Modifier = Modifier,
     onFinish: () -> Unit = {},
     isGroupTask: Boolean,
@@ -81,6 +88,12 @@ fun EditTaskScreen(
     val description = remember { mutableStateOf("") }
     val dueDate = remember { mutableStateOf<LocalDate?>(null) }
 
+    var loading by remember { mutableStateOf(false) }
+
+    var done by remember { mutableStateOf(false) }
+
+    var success by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     val app = context.applicationContext as PrivateTasksApp
     val privateTasksViewModel: PrivateTasksViewModel =
@@ -90,7 +103,13 @@ fun EditTaskScreen(
     LaunchedEffect(taskId) {
         /*** For now, load group tasks from mock repo ***/
         if (isGroupTask) {
-            val task = taskRepository.getTaskById(taskId)
+            val group = AppSettings.getCurrentGroup(context)
+            if(group == null){
+                Log.e("Firestore", "Group is null")
+                return@LaunchedEffect
+            }
+            var task: GroupTaskItem? = null
+            Firestore.getTask(groupId = group.id, taskId = remoteID) { task = it }
             if (task != null) {
                 title.value = task.title
                 description.value = task.description
@@ -162,19 +181,22 @@ fun EditTaskScreen(
                 onClick = {
                     if (isGroupTask) {
                         Toast.makeText(context, "GROUP TASK: edit", Toast.LENGTH_SHORT).show()
-                        val task = taskRepository.getTaskById(taskId)
-                        if (task != null) {
-                            val updatedTask = when (task) {
-                                is GroupTaskItem -> task.copy(
-                                    title = title.value,
-                                    description = description.value
-                                )
-
-                                else -> {
-                                    throw IllegalArgumentException("Unsupported task type")
-                                }
+                        coroutineScope.launch {
+                            val group = AppSettings.getCurrentGroup(context)
+                            if(group == null){
+                                Log.e("Firestore", "Group is null")
+                                return@launch
                             }
-                            taskRepository.updateTask(updatedTask)
+                            val task = GroupTaskItem(
+                                remoteId = remoteID,
+                                title = title.value,
+                                description = description.value,
+                                dueDate = dueDate.value,
+                                isActive = false,
+                                isCompleted = false,
+                                assignee = null
+                            )
+                            Firestore.editTask(group.id, task)
                             onFinish()
                         }
                     } else {
@@ -214,8 +236,16 @@ fun EditTaskScreen(
             Button(
                 onClick = {
                     if(isGroupTask) {
-                        taskRepository.deleteTask(taskId)
-                        onFinish()
+                        coroutineScope.launch {
+                            val group = AppSettings.getCurrentGroup(context)
+                            if(group == null){
+                                Log.e("Firestore", "Group is null")
+                                return@launch
+                            }
+                            Firestore.removeTask(group.id, GroupTaskItem(title = "",remoteId = remoteID) )
+                            onFinish()
+                        }
+
                     } else {
                         /*** Apply same logic as for editing --> access DB only from Coroutine
                          *   Scope --> display Toast for debugging purposes ***/

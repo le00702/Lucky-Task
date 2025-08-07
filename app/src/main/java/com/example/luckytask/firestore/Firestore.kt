@@ -10,6 +10,13 @@ import java.time.LocalDate
 
 class Firestore {
     companion object {
+        fun convertDateMap(map: Map<*, *>?): LocalDate?{
+            map?:return null
+            val year = (map["year"] as Long).toInt()
+            val month = (map["monthValue"] as Long).toInt()
+            val day = (map["dayOfMonth"] as Long).toInt()
+            return LocalDate.of(year, month, day)
+        }
         suspend fun loadTasks(group:String, onResult: (List<TaskItem>) -> Unit){
             val tasks = mutableListOf<TaskItem>()
             Log.i("Firestore","Loading Tasks from Group $group")
@@ -22,7 +29,7 @@ class Firestore {
                         remoteId = document.id,
                         title = document.data["title"].toString(),
                         description = document.data["description"].toString(),
-                        dueDate = document.data["dueDate"] as LocalDate?,
+                        dueDate = convertDateMap(document.data["dueDate"] as Map<*,*>?),
                         isActive = document.data["active"] as Boolean,
                         isCompleted = document.data["completed"] as Boolean,
                         assignee = document.data["assignee"] as String?
@@ -35,6 +42,41 @@ class Firestore {
                 Log.e("Firestore", "Error getting documents.", e)
             }
        }
+
+        suspend fun getTask(groupId:String, taskId:String, onResult: (GroupTaskItem) -> Unit){
+            if(taskId.isEmpty()){
+                Log.e("Firestore","Task has no ID")
+                return
+            }
+            val ref = FirebaseFirestore.getInstance().collection("groups/$groupId/todos")
+            try{
+                val res = ref.document(taskId).get().await()
+                val task = GroupTaskItem(
+                    remoteId = res.id,
+                    title = res.data?.get("title").toString(),
+                    description = res.data?.get("description").toString(),
+                    dueDate = convertDateMap(res.data?.get("dueDate") as Map<*,*>?),
+                    isActive = res.data?.get("active") as Boolean,
+                    isCompleted = res.data?.get("completed") as Boolean,
+                    assignee = res.data?.get("assignee") as String?
+                )
+                onResult(task)
+            }catch (e:Exception) {
+                Log.e("Firestore", "Error getting document.", e)
+            }
+        }
+
+        suspend fun editTask(group:String, task:GroupTaskItem){
+            val ref = FirebaseFirestore.getInstance().collection("groups/$group/todos")
+            if(task.remoteId.isEmpty()) {
+                Log.e("Firestore","Task has no ID")
+            }
+            try{
+                ref.document(task.remoteId).set(task).await()
+            }catch (e:Exception){
+                Log.e("Firestore","Error editing Task", e)
+            }
+        }
 
         suspend fun addTask(group:String, task:GroupTaskItem){
             val ref = FirebaseFirestore.getInstance().collection("groups/$group/todos")
