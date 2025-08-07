@@ -117,6 +117,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         viewModel.loadGroups(context)
         viewModel.loadCurrentGroup(context)
         viewModel.loadUser(context)
+        viewModel.loadUserList()
         viewModel.loadTasks()
     }
 
@@ -135,6 +136,8 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     val userMaker = viewModel.userMakerState
 
     val currentUser = viewModel.currentUser
+
+    val userList = viewModel.userList
 
     val setAndLoadUser: (String) -> Unit = {
         viewModel.setUser(context, UserDAO(name = it))

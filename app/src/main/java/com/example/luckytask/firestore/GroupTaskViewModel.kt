@@ -56,6 +56,10 @@ class GroupTaskViewModel:ViewModel() {
     val isNewUser: Boolean
         get() = _isNewUser
 
+    private var _userList by mutableStateOf<List<UserDAO>?>(null)
+    val userList: List<UserDAO>?
+        get() = _userList
+
 
 
     fun generateRandomAlphanumeric(length: Int): String {
@@ -80,6 +84,24 @@ class GroupTaskViewModel:ViewModel() {
                 }
             }catch (e: Exception){
                 Log.e(TAG, "Error loading user. $e")
+            }finally {
+                _isLoading = false
+            }
+        }
+    }
+
+    fun loadUserList(){
+        if(_currentUser == null){
+            Log.e(TAG, "User not set")
+            _isNewUser = true
+            return
+        }
+        viewModelScope.launch {
+            _isLoading = true
+            try {
+                _userList = Firestore.loadUsers(_currentGroup!!.id)
+            }catch (e:Exception){
+                Log.e(TAG, "Error loading user list. $e")
             }finally {
                 _isLoading = false
             }
@@ -139,6 +161,7 @@ class GroupTaskViewModel:ViewModel() {
         var counter = 0
         if(_currentUser == null){
             Log.e(TAG, "User not set")
+            _isNewUser = true
             return
         }
         viewModelScope.launch {
@@ -170,6 +193,7 @@ class GroupTaskViewModel:ViewModel() {
     fun joinGroup(context: Context, id: String) {
         if(_currentUser == null){
             Log.e(TAG, "User not set")
+            _isNewUser = true
             return
         }
         viewModelScope.launch {

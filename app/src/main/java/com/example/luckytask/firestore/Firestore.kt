@@ -101,6 +101,26 @@ class Firestore {
             }
         }
 
+        suspend fun loadUsers(groupId:String):List<UserDAO>{
+            val list:List<UserDAO> = listOf()
+            val ref = FirebaseFirestore.getInstance().collection("groups/$groupId/users")
+            try{
+                val res = ref.get().await()
+                Log.i("Firestore", "Loading Userlist Success ${res.size()}")
+                for (document in res) {
+                    val user = UserDAO(
+                        id = document.id,
+                        name = document.data["name"].toString(),
+                    )
+                    list.plus(user)
+                    Log.i("Firestore", "${document.id} => ${document.data}")
+                }
+            }catch (e:Exception){
+                Log.e("Firestore", "Error getting documents.", e)
+            }
+            return list
+        }
+
         suspend fun registerUser(groupId:String, user:UserDAO){
             val ref = FirebaseFirestore.getInstance().collection("groups/$groupId/users")
             try{
