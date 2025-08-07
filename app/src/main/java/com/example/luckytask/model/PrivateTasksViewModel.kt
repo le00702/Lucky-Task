@@ -58,4 +58,10 @@ class PrivateTasksViewModel(private val privateTasksDAO: PrivateTasksDAO) : View
         val task: PrivateTaskItem? =  privateTasksDAO.getTaskById(taskId)
         return task
     }
+
+    /*** Draw a random task --> for now return list of indices  ***/
+    fun drawRandomTask(): List<Int>{
+        val drawNumbers = 1 .. _tasks.value.size
+        return drawNumbers.toList()
+    }
 }

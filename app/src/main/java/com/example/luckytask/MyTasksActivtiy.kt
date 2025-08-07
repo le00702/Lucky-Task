@@ -65,8 +65,7 @@ class MyTasksActivity : ComponentActivity() {
         shakeListener = ShakeListener(this) {
             Log.d(TAG, "Shake detected!")
             triggerAnimation.value = true
-            val tasks_length = privateTaskViewModel.tasks.value.size
-            Toast.makeText(this, "#Tasks $tasks_length", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "#Tasks ${privateTaskViewModel.drawRandomTask()}", Toast.LENGTH_SHORT).show()
         }
 
         enableEdgeToEdge()
