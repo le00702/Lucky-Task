@@ -37,7 +37,6 @@
         <activity android:name=".GroupTasksActivity" />
         <activity android:name=".AddNewTaskActivity" />
         <activity android:name=".EditTaskActivity" />
-        <activity android:name=".firestore.RemoteDBActivity" />
     </application>
 
 </manifest>

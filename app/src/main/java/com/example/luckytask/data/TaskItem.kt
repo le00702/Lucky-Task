@@ -13,7 +13,7 @@ abstract class TaskItem(
     open val isCompleted: Boolean = false,
 ){
     /*** Make id abstract, so it does not need to be passed via constructor ***/
-    abstract val id: Any
+    abstract val id: Any?
 }
 
 /*** Extract separate data class/entity for private tasks -->
