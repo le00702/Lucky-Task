@@ -13,16 +13,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,16 +40,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.firestore.GroupDAO
+import com.example.luckytask.data.GroupTaskItem
+import com.example.luckytask.data.TaskRepository
 import com.example.luckytask.sensor.ShakeListener
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
+import com.example.luckytask.ui.theme.elements.EditableTaskCard
 import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.firestore.GroupTaskViewModel
 import com.example.luckytask.ui.theme.elements.Dropdown
 import com.example.luckytask.ui.theme.elements.NewGroupMenu
 import kotlinx.coroutines.launch
+import com.example.luckytask.ui.theme.elements.TaskCard
+import java.time.LocalDate
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
 private val ACTIVITY_NAME = "GroupTasksActivity"
@@ -121,18 +132,17 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     }
 
     /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = listOf<String>()
+    //var activeTasks = listOf<String>()
+    val taskRepository = remember { TaskRepository.getInstance() }
+    val tasks by taskRepository.tasks.collectAsState()
+    var refreshTrigger by remember { mutableStateOf(0) }
+    val groupTasks = tasks.filterIsInstance<GroupTaskItem>()
 
-    /*** ENABLE WHEN CHECKING FOR ACTIVE TASKS DISPLAY ***/
-    activeTasks = listOf<String>("Task 1", "Task 2", "Task 3")
+    val activeTasks = groupTasks.filter { it.isActive && it.assignee == "Me" }
 
-    /*** Use this roommate-task-list for mocking purposes for now ***/
-    var roommateTasks = listOf<String>()
+    val roommateTasks = groupTasks.filter { it.assignee != null && it.assignee != "Me" }
 
-    /*** ENABLE WHEN CHECKING FOR ROOMMATE TASKS DISPLAY ***/
-    roommateTasks = listOf<String>("RM Task 1", "RM Task 2", "RM Task 3")
-
-    val onInfoIconClick = { Toast.makeText(context, "Clicked info!", Toast.LENGTH_SHORT).show() }
+    val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
     LaunchedEffect(Unit) {
         viewModel.loadGroups(context)
@@ -140,7 +150,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         viewModel.loadTodos()
     }
 
-    Box(modifier = Modifier.pullRefresh(pullRefreshState)){
+    Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
 
         /*** Organize elements in column ***/
         LazyColumn(
@@ -156,17 +166,16 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 )
             }
             item {
-                 Dropdown(
+                Dropdown(
                     items = groupList,
-                    defaultText = currentGroup?.name?: "Select Group",
-                    onValueChange = {loadGroup(it)},
-                    text = {it.name},
+                    defaultText = currentGroup?.name ?: "Select Group",
+                    onValueChange = { loadGroup(it) },
+                    text = { it.name },
                     type = "Group",
-                    specialFirstItem = Pair("Create Group",setGroupMenu)
+                    specialFirstItem = Pair("Create Group", setGroupMenu)
                 )
             }
-            val size = taskList.size
-            if(size == 0){
+            if (activeTasks.isEmpty()) {
                 item {
                     Text(
                         "You currently have no active tasks. Roll the dice to start a task!",
@@ -175,18 +184,14 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                         textAlign = TextAlign.Center
                     )
                 }
-            }else{
-                items(size) { index ->
-                    Task(
-                        title = taskList[index].title,
-                        active = true
+            } else {
+                items(activeTasks) { task ->
+                    TaskCard(
+                        task = task
                     )
                 }
             }
-
-            item {
-                Spacer(modifier = Modifier.height(30.dp))
-            }
+            item { Spacer(modifier = Modifier.height(30.dp)) }
 
             item {
                 Dice(
@@ -198,9 +203,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 )
             }
 
-            item {
-                Spacer(modifier = Modifier.height(50.dp))
-            }
+            item { Spacer(modifier = Modifier.height(50.dp)) }
 
             item {
                 Text(
@@ -226,18 +229,12 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                 }
             } else {
                 /*** If there ARE roommate tasks, display them all ***/
-                items(roommateTasks.size) { index ->
-                    Task(
-                        title = roommateTasks[index],
-                        active = true,
-                        roommate = true,
-                    )
+                items(roommateTasks) { task ->
+                    TaskCard(task = task)
                 }
             }
 
-            item {
-                Spacer(modifier = Modifier.height(30.dp))
-            }
+            item { Spacer(modifier = Modifier.height(30.dp)) }
 
             item {
                 Text(
@@ -256,8 +253,22 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             }
 
             item {
-                Task(
-                    "This is a TODO item TEST LONG LINE"
+                AddTaskButton(
+                    modifier = Modifier,
+                    context,
+                    ACTIVITY_NAME,
+                    stringResource(R.string.title_group_todos),
+                    isGroupTask = true
+                )
+            }
+
+            // Editable Group Tasks --> not assigned to/drawn by anyone yet
+            items(todoTasks) { taskItem ->
+                EditableTaskCard(
+                    task = taskItem,
+                    modifier = Modifier,
+                    onTaskUpdated = { refreshTrigger++ },
+                    isGroupTask = true
                 )
             }
         }
@@ -268,17 +279,22 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
             Modifier.align(Alignment.TopCenter)
         )
 
-        if(viewModel.isLoadingGroups){
+        if (viewModel.isLoadingGroups) {
             CircularProgressIndicator()
         }
 
-    }
-    if(groupMaker){
-        Box(modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable{null}, contentAlignment = Alignment.TopCenter){
-            NewGroupMenu(setVisibility = setGroupMenu,
-                addGroup = {viewModel.createGroup(context = context, name = it)},
-                joinGroup = {viewModel.joinGroup(context = context, id = it)
-                })
+        if (groupMaker) {
+            Box(
+                modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable { null },
+                contentAlignment = Alignment.TopCenter
+            ) {
+                NewGroupMenu(
+                    setVisibility = setGroupMenu,
+                    addGroup = { viewModel.createGroup(context = context, name = it) },
+                    joinGroup = {
+                        viewModel.joinGroup(context = context, id = it)
+                    })
+            }
         }
     }
 }

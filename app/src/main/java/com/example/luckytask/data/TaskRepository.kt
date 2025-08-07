@@ -14,22 +14,90 @@ class TaskRepository {
         _tasks.value = listOf(
 
             // Private Tasks
-            TaskItem("1", "Clean Kitchen", "Wash dishes and clean counters", "Me", LocalDate.now(), true, false, false),
-            TaskItem("2", "Study for Exam", "Review chapters 1-5", "Me", LocalDate.now().plusDays(7), false, false, false),
-            TaskItem("3", "Buy Groceries", "Milk, bread, eggs", null, LocalDate.now().plusDays(1), false, false, false),
-            TaskItem("4", "Workout", "30 min cardio", "Me", LocalDate.now(), true, false, false),
-            TaskItem("5", "Read Book", "Finish chapter 3", "Me", LocalDate.now().minusDays(2), false, true, false),
+            PrivateTaskItem(
+                1,
+                "Clean Kitchen",
+                "Wash dishes and clean counters",
+                LocalDate.now(),
+                true,
+                false
+            ),
+            PrivateTaskItem(
+                2,
+                "Study for Exam",
+                "Review chapters 1-5",
+                LocalDate.now().plusDays(7),
+                false,
+                false
+            ),
+            PrivateTaskItem(
+                3,
+                "Buy Groceries",
+                "Milk, bread, eggs",
+                LocalDate.now().plusDays(1),
+                false,
+                false
+            ),
+            PrivateTaskItem(4, "Workout", "30 min cardio", LocalDate.now(), true, false),
+            PrivateTaskItem(
+                5,
+                "Read Book",
+                "Finish chapter 3",
+                LocalDate.now().minusDays(2),
+                false,
+                true
+            ),
 
             // Group Tasks
-            TaskItem("6", "Clean Living Room", "Vacuum and dust", "John", LocalDate.now(), true, false, true),
-            TaskItem("7", "Buy Toilet Paper", "For shared bathroom", null, LocalDate.now().plusDays(2), false, false, true),
-            TaskItem("8", "Take Out Trash", "Weekly garbage day", "Sarah", LocalDate.now().minusDays(1), false, true, true),
-            TaskItem("9", "Pay Internet Bill", "Monthly payment", "Mike", LocalDate.now().plusDays(5), false, false, true),
-            TaskItem("10", "Organize Movie Night", "Pick movie and snacks", "Me", LocalDate.now(), true, false, true),
+            GroupTaskItem(
+                6,
+                "Clean Living Room",
+                "Vacuum and dust",
+                "John",
+                LocalDate.now(),
+                true,
+                false
+            ),
+            GroupTaskItem(
+                7,
+                "Buy Toilet Paper",
+                "For shared bathroom",
+                null,
+                LocalDate.now().plusDays(2),
+                false,
+                false
+            ),
+            GroupTaskItem(
+                8,
+                "Take Out Trash",
+                "Weekly garbage day",
+                null,
+                LocalDate.now().minusDays(1),
+                false,
+                true
+            ),
+            GroupTaskItem(
+                9,
+                "Pay Internet Bill",
+                "Monthly payment",
+                "Mike",
+                LocalDate.now().plusDays(5),
+                false,
+                false
+            ),
+            GroupTaskItem(
+                10,
+                "Organize Movie Night",
+                "Pick movie and snacks",
+                "Me",
+                LocalDate.now(),
+                true,
+                false
+            )
         )
     }
 
-    fun getTaskById(id: String): TaskItem? {
+    fun getTaskById(id: Int): TaskItem? {
         return _tasks.value.find { it.id == id }
     }
 
@@ -53,7 +121,7 @@ class TaskRepository {
         return true
     }
 
-    fun deleteTask(taskId: String): Boolean {
+    fun deleteTask(taskId: Int): Boolean {
         val currentTasks = _tasks.value.toMutableList()
         val removed = currentTasks.removeIf { it.id == taskId }
         if (removed) {
@@ -62,41 +130,42 @@ class TaskRepository {
         return removed
     }
 
-    fun toggleTaskCompletion(taskId: String): Boolean {
+    fun toggleTaskCompletion(taskId: Int): Boolean {
         val task = getTaskById(taskId)
         return if (task != null) {
-            updateTask(task.copy(isCompleted = !task.isCompleted))
+            val updatedTask = when (task) {
+                is PrivateTaskItem -> task.copy(isCompleted = !task.isCompleted)
+                is GroupTaskItem -> task.copy(isCompleted = !task.isCompleted)
+                else -> return false
+            }
+            updateTask(updatedTask)
         } else {
             false
         }
     }
 
-    fun activateTask(taskId: String): Boolean {
+    fun activateTask(taskId: Int): Boolean {
         val task = getTaskById(taskId)
         return if (task != null && !task.isActive) {
-            updateTask(task.copy(isActive = true))
-        } else {
-            false
-        }
-    }
-
-    fun deactivateTask(taskId: String): Boolean {
-        val task = getTaskById(taskId)
-        return if (task != null && task.isActive) {
-            updateTask(task.copy(isActive = false))
-        } else {
-            false
-        }
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: TaskRepository? = null
-
-        fun getInstance(): TaskRepository {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: TaskRepository().also { INSTANCE = it }
+            val updatedTask = when (task) {
+                is PrivateTaskItem -> task.copy(isActive = true)
+                is GroupTaskItem -> task.copy(isActive = true)
+                else -> return false
             }
+            updateTask(updatedTask)
+        } else {
+            false
         }
     }
+
+companion object {
+    @Volatile
+    private var INSTANCE: TaskRepository? = null
+
+    fun getInstance(): TaskRepository {
+        return INSTANCE ?: synchronized(this) {
+            INSTANCE ?: TaskRepository().also { INSTANCE = it }
+        }
+    }
+}
 }

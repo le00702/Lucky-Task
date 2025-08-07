@@ -11,6 +11,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckytask.R
+import com.example.luckytask.data.GroupTaskItem
 import com.example.luckytask.data.TaskItem
 
 @Composable
@@ -90,14 +91,14 @@ fun SimpleActiveTasksDisplay(
 object TaskStatsCalculator {
 
     fun getPrivateTaskStats(tasks: List<TaskItem>): Pair<Int, Int> {
-        val privateTasks = tasks.filter { !it.isGroupTask }
+        val privateTasks = tasks.filter { it !is GroupTaskItem }
         val completed = privateTasks.count { it.isCompleted }
         val total = privateTasks.size
         return Pair(completed, total)
     }
 
     fun getGroupTaskStats(tasks: List<TaskItem>): Pair<Int, Int> {
-        val groupTasks = tasks.filter { it.isGroupTask }
+        val groupTasks = tasks.filter { it !is GroupTaskItem}
         val completed = groupTasks.count { it.isCompleted }
         val total = groupTasks.size
         return Pair(completed, total)

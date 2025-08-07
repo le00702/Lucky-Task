@@ -53,13 +53,15 @@ fun MockApp(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         Task(
-            "This is a task"
+            "This is a task",
+            description = "I am the mock task"
         )
         AddTaskButton(
             modifier = Modifier,
             context,
             ACTIVITY_NAME,
-            stringResource(R.string.title_mock)
+            stringResource(R.string.title_mock),
+            isGroupTask = false
         )
         ProgressCircle(7, 10, colorResource(R.color.purple_500))
         Spacer(modifier = Modifier.padding(10.dp))
