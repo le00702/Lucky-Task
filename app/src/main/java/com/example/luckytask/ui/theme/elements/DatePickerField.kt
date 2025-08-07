@@ -115,11 +115,9 @@ fun DatePickerField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            /*** Put space between the chips and center them ***/
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
-            QuickDateChip("None") {
-                selectedDate.value = null
-            }
             QuickDateChip("Today") {
                 selectedDate.value = LocalDate.now()
             }
