@@ -33,13 +33,25 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
     }
 }
+java{
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+kotlin {
+    jvmToolchain(11)
+    compilerOptions{
+        optIn.add("kotlin.RequiresOptIn")
+    }
+
+}
+
+
 
 dependencies {
     implementation(libs.androidx.datastore.preferences)
