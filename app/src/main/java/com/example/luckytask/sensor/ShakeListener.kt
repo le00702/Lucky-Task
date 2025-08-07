@@ -6,13 +6,16 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
+import androidx.compose.runtime.collectAsState
+import com.example.luckytask.data.PrivateTaskItem
+import com.example.luckytask.model.PrivateTasksViewModel
 import kotlin.math.sqrt
 
 /*** Add constructor taking context and onShake function --> extend SensorEventListener
  * --> to avoid it being a separate Activity ****/
 class ShakeListener(
     context: Context,
-    private val onShake: () -> Unit,
+    private val onShake: () -> Unit
 ) : SensorEventListener {
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager?
     private val accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -56,5 +59,4 @@ class ShakeListener(
         /*** Change later maybe --> TODOs result in crash ***/
         Log.d(TAG, "Accuracy of sensor ${sensor?.name} changed to $accuracy")
     }
-
 }

@@ -2,6 +2,7 @@ package com.example.luckytask
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,15 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.luckytask.data.PrivateTaskItem
 import com.example.luckytask.data.TaskFilter
 import com.example.luckytask.data.applyFilters
 import com.example.luckytask.model.PrivateTasksViewModel
@@ -38,11 +36,8 @@ import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskButton
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
-import com.example.luckytask.ui.theme.elements.Task
 import com.example.luckytask.ui.theme.elements.TaskCard
 import com.example.luckytask.ui.theme.elements.TaskFilterBar
-import java.time.LocalDate
-import com.example.luckytask.data.TaskRepository
 import com.example.luckytask.ui.theme.elements.EditableTaskCard
 
 /*** Pass the name of the activity to display it correctly on the hamburger menu ***/
@@ -50,18 +45,47 @@ private val ACTIVITY_NAME = "MyTasksActivity"
 
 class MyTasksActivity : ComponentActivity() {
     private lateinit var shakeListener: ShakeListener
+    private lateinit var privateTaskViewModel: PrivateTasksViewModel
     private val TAG = "[SENSOR]"
 
     /*** Use this variable to keep track of animation ***/
     private var triggerAnimation = mutableStateOf(false)
 
+    /*** Use this variable to decide on text when drawing a task/
+     *   rolling the dice ***/
+    private var drawText = mutableStateOf("")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /*** Get viewModel for private tasks based on local DB ***/
+        val app = applicationContext as PrivateTasksApp
+        privateTaskViewModel =
+            PrivateTasksViewModelFactory(app.database.privateTasksDAO()).create(PrivateTasksViewModel::class.java)
 
         /*** Pass the code for onShake() for shakeListener --> trigger animation ***/
         shakeListener = ShakeListener(this) {
             Log.d(TAG, "Shake detected!")
             triggerAnimation.value = true
+
+            /*** Fetch a random task from the still inactive ones/TODOs ***/
+            val drawnTask = privateTaskViewModel.drawRandomTask()
+
+            /*** Assign text for task drawing based on whether
+             *   --> there are tasks to draw: then, update the drawn task and set it to active
+             *   --> or not: then, display a message stating this
+             ***/
+            if(drawnTask == null ){
+                drawText.value = "There are no TODOs to draw from!"
+            }else{
+                drawText.value = "You have drawn the following TODO: ${drawnTask.title}"
+                val updatedTask = drawnTask.copy(
+                    isActive = true
+                )
+                privateTaskViewModel.updateTask(updatedTask)
+                Log.d("ACTIVE TASK", "Task ${updatedTask.title} is active: ${updatedTask.isActive}")
+            }
+            Toast.makeText(this, drawText.value, Toast.LENGTH_SHORT).show()
         }
 
         enableEdgeToEdge()
@@ -73,7 +97,9 @@ class MyTasksActivity : ComponentActivity() {
                 ) {
                     TasksScreen(
                         modifier = Modifier.padding(20.dp),
-                        triggerAnimation
+                        triggerAnimation,
+                        privateTaskViewModel,
+                        drawText
                     )
                 }
             }
@@ -92,52 +118,24 @@ class MyTasksActivity : ComponentActivity() {
 }
 
 @Composable
-fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>) {
+fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Boolean>, privateTasksViewModel: PrivateTasksViewModel, drawText:  MutableState<String>) {
 
     val HEADER_SIZE = 30.sp
     val context = LocalContext.current
-    val taskRepository = remember { TaskRepository.getInstance() }
-    //val tasks by taskRepository.tasks.collectAsState()
     var refreshTrigger by remember { mutableStateOf(0) }
-
-    /*** Get viewModel for private tasks + application context + DB ***/
-    val app = context.applicationContext as PrivateTasksApp
-    val privateTaskViewModel: PrivateTasksViewModel =
-        viewModel(factory = PrivateTasksViewModelFactory(app.database.privateTasksDAO()))
-    val privateTasks by privateTaskViewModel.tasks.collectAsState()
-
-    /*** Use mock task for displaying purposes only ***/
-    val mockActiveTask = listOf(
-        PrivateTaskItem(
-            id = -1,
-            title = "Mock Active Task",
-            description = "This is an active mock task",
-            dueDate = LocalDate.now(),
-            isActive = true
-        )
-    )
-
-    /*val mockInactiveTask = listOf(
-        PrivateTaskItem(
-            id = -2,
-            title = "Mock Inactive Task",
-            description = "This is an inactive mock task",
-            dueDate = LocalDate.now(),
-            isActive = false
-        )
-    )*/
-    /*** Use this active-task-list for mocking purposes for now ***/
-    var activeTasks = mockActiveTask
+    val privateTasks = privateTasksViewModel.tasks.collectAsState().value
 
 
+    /*** Fetch active local tasks ***/
+    val activeTasks = privateTasks.filter { it.isActive }
+
+    /*** Fetch inactive local tasks ***/
     val inactiveTasks = privateTasks.filter { !it.isActive }
-    //val tasks = mockInactiveTask + realInactiveTasks
 
 
     // Filter State
     var currentFilter by remember { mutableStateOf(TaskFilter()) }
-    /*val filteredTasks = remember(inactiveTasks, currentFilter) {
-       inactiveTasks.applyFilters(currentFilter)*/
+
     val filteredTasks = remember(inactiveTasks, currentFilter, refreshTrigger) {
         inactiveTasks.applyFilters(currentFilter)
     }
