@@ -149,7 +149,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         if(viewModel.isNewUser){
             viewModel.registerUserToAllGroups()
         }
-        loadAll()
+        //loadAll()
 
     }
 
@@ -174,9 +174,9 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val groupTasks = tasks.filterIsInstance<GroupTaskItem>()
 
-    val activeTasks = groupTasks.filter { it.isActive && it.assignee == "Me" }
+    val activeTasks = groupTasks.filter { it.isActive && it.assignee == currentUser?.name }
 
-    val roommateTasks = groupTasks.filter { it.assignee != null && it.assignee != "Me" }
+    val roommateTasks = groupTasks.filter { it.assignee != null && it.assignee != currentUser?.name }
 
     val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
