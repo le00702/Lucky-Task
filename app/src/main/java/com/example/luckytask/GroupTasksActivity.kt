@@ -21,7 +21,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +37,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.luckytask.firestore.GroupDAO
 import com.example.luckytask.data.GroupTaskItem
@@ -48,8 +51,10 @@ import com.example.luckytask.ui.theme.elements.AppWithDrawer
 import com.example.luckytask.ui.theme.elements.Dice
 import com.example.luckytask.ui.theme.elements.EditableTaskCard
 import com.example.luckytask.firestore.GroupTaskViewModel
+import com.example.luckytask.firestore.UserDAO
 import com.example.luckytask.ui.theme.elements.Dropdown
 import com.example.luckytask.ui.theme.elements.NewGroupMenu
+import com.example.luckytask.ui.theme.elements.NewUserMenu
 import com.example.luckytask.ui.theme.elements.TaskCard
 
 private const val REMOTE = true
@@ -106,11 +111,18 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val HEADER_SIZE = 30.sp
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
+    val loadAll:() -> Unit = {
+        viewModel.loadGroups(context)
+        viewModel.loadCurrentGroup(context)
+        viewModel.loadUser(context)
+        viewModel.loadTasks()
+    }
 
     val pullRefreshState = rememberPullRefreshState(
-        viewModel.isLoadingTasks,
-        {viewModel.loadTasks(); viewModel.loadGroups(context); viewModel.loadCurrentGroup(context)}
+        viewModel.isLoading,
+        {loadAll()}
     )
 
     val groupMaker = viewModel.groupMakerState
@@ -120,6 +132,18 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val currentGroup = viewModel.currentGroup
 
+    val userMaker = viewModel.userMakerState
+
+    val currentUser = viewModel.currentUser
+
+    val setAndLoadUser: (String) -> Unit = {
+        viewModel.setUser(context, UserDAO(name = it))
+        if(viewModel.isNewUser)
+        loadAll()
+
+    }
+
+    //When changing groups reload taks list
     val loadGroup: (GroupDAO) -> Unit = {
         viewModel.setCurrentGroup(context,it)
         viewModel.loadTasks()
@@ -129,13 +153,13 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     /*** Data from Remote Repository (Firestore) ***/
     val remoteTasks by viewModel.taskList.collectAsState()
 
-
     /*** Data from local Repository (RoomDB) ***/
     val taskRepository = remember { TaskRepository.getInstance() }
     val localTasks by taskRepository.tasks.collectAsState()
 
 
     val tasks = if(REMOTE) remoteTasks else localTasks
+
     var refreshTrigger by remember { mutableIntStateOf(0) }
 
     val groupTasks = tasks.filterIsInstance<GroupTaskItem>()
@@ -152,12 +176,17 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
     Log.i("GroupTasksScreen", "roommateTasks: ${roommateTasks.size}")
     Log.i("GroupTasksScreen", "todoTasks: ${todoTasks.size}")
 
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                loadAll()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
 
-
-    LaunchedEffect(Unit) {
-        viewModel.loadGroups(context)
-        viewModel.loadCurrentGroup(context)
-        viewModel.loadTasks()
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
@@ -275,18 +304,32 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
         }
 
         PullRefreshIndicator(
-            viewModel.isLoadingTasks,
+            viewModel.isLoading,
             pullRefreshState,
             Modifier.align(Alignment.TopCenter)
         )
 
-        if (viewModel.isLoadingGroups) {
-            CircularProgressIndicator()
+        if (viewModel.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                CircularProgressIndicator()
+            }
+        }
+        val popupModifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable { null }
+        if(userMaker) {
+            Box(
+                modifier =popupModifier,
+                contentAlignment = Alignment.TopCenter
+            ){
+                NewUserMenu(
+                    setUser = setAndLoadUser,
+                    setVisibility = viewModel.setUserMaker
+                )
+            }
         }
 
         if (groupMaker) {
             Box(
-                modifier = modifier.fillMaxSize().padding(horizontal = 5.dp).clickable { null },
+                modifier = popupModifier,
                 contentAlignment = Alignment.TopCenter
             ) {
                 NewGroupMenu(

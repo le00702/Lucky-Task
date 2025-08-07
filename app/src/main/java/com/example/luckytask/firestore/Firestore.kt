@@ -101,7 +101,25 @@ class Firestore {
             }
         }
 
+        suspend fun registerUser(groupId:String, user:UserDAO){
+            val ref = FirebaseFirestore.getInstance().collection("groups/$groupId/users")
+            try{
+                val res = ref.add(user).await()
+                user.id = res.id
+                Log.i("Firestore","New User ${user.name} registered")
+            }catch (e:Exception){
+                Log.e("Firestore","Error adding User", e)
+            }
+        }
 
+        suspend fun unregisterUser(groupId:String, user:UserDAO){
+            val ref = FirebaseFirestore.getInstance().collection("groups/$groupId/users")
+            try {
+                ref.document(user.id).delete().await()
+            }catch (e:Exception){
+                Log.e("Firestore","Error removing User", e)
+            }
+        }
         suspend fun checkIfGroupExists(id:String):Pair<Boolean, String?>{
             var existence = false
             var name:String? = null

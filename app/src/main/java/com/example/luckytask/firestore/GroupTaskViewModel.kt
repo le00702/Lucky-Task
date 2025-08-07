@@ -23,11 +23,6 @@ class GroupTaskViewModel:ViewModel() {
     val taskList: StateFlow<List<TaskItem>>
         get() = _taskList.asStateFlow()
 
-    private var _isLoadingTasks by mutableStateOf(false)
-    val isLoadingTasks: Boolean
-        get() = _isLoadingTasks
-
-
     private val _groupList = mutableStateListOf<GroupDAO>()
     val groupList: List<GroupDAO>
         get() = _groupList
@@ -37,13 +32,29 @@ class GroupTaskViewModel:ViewModel() {
         get() = groupMaker
 
     val setGroupMaker: (Boolean) -> Unit = { groupMaker = it }
-    private var _isLoadingGroups by mutableStateOf(false)
-    val isLoadingGroups: Boolean
-        get() = _isLoadingGroups
+    private var _isLoading by mutableStateOf(false)
+    val isLoading: Boolean
+        get() = _isLoading
 
     private var _currentGroup by mutableStateOf<GroupDAO?>(null)
     val currentGroup: GroupDAO?
         get() = _currentGroup
+
+    private var _currentUser by mutableStateOf<UserDAO?>(null)
+    val currentUser: UserDAO?
+        get() = _currentUser
+
+    private var _userMaker by mutableStateOf(false)
+    val userMakerState: Boolean
+        get() = _userMaker
+
+    val setUserMaker: (Boolean) -> Unit = { _userMaker = it }
+
+    val _isNewUser by mutableStateOf(false)
+    val isNewUser: Boolean
+        get() = _isNewUser
+
+
 
     fun generateRandomAlphanumeric(length: Int): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
@@ -52,10 +63,45 @@ class GroupTaskViewModel:ViewModel() {
             .joinToString("")
     }
 
+    fun loadUser(context: Context){
+        var data:UserDAO?
+        viewModelScope.launch {
+            _isLoading = true
+            try{
+                data = AppSettings.getUserInfo(context)
+                if(data != null){
+                    _currentUser = data
+                }else{
+                    _userMaker = true
+                }
+            }catch (e: Exception){
+                Log.e(TAG, "Error loading user. $e")
+            }finally {
+                _isLoading = false
+            }
+        }
+    }
+
+    fun setUser(context:Context, user:UserDAO){
+        viewModelScope.launch {
+            _isLoading = true
+            try{
+                AppSettings.setUserInfo(context, user)
+                _currentUser = user
+            }catch (e: Exception){
+                Log.e(TAG, "Error setting user. $e")
+            }finally {
+                _isLoading = false
+            }
+
+        }
+    }
+
+
     fun loadGroups(context: Context){
         var data:Map<String, String>?
         viewModelScope.launch {
-            _isLoadingGroups = true
+            _isLoading = true
             try{
                 data = AppSettings.getGroups(context)
                 if(data != null){
@@ -67,7 +113,7 @@ class GroupTaskViewModel:ViewModel() {
             }catch(e:Exception){
                 Log.e(TAG, "Error loading groups. $e")
             }finally {
-                _isLoadingGroups = false
+                _isLoading = false
             }
         }
     }
@@ -77,7 +123,7 @@ class GroupTaskViewModel:ViewModel() {
         var id:String
         var counter = 0
         viewModelScope.launch {
-            _isLoadingGroups = true
+            _isLoading = true
             try{
                 id = generateRandomAlphanumeric(KEY_LENGTH)
                 idExists = Firestore.checkIfGroupExists(id).first
@@ -96,14 +142,14 @@ class GroupTaskViewModel:ViewModel() {
             }catch(e:Exception){
                 Log.e(TAG, "Error creating group. $e")
             }finally {
-                _isLoadingGroups = false
+                _isLoading = false
             }
         }
     }
 
     fun joinGroup(context: Context, id: String) {
         viewModelScope.launch {
-            _isLoadingGroups = true
+            _isLoading = true
             val exists: Boolean
             val name: String?
             try{
@@ -116,20 +162,20 @@ class GroupTaskViewModel:ViewModel() {
             }catch(e:Exception){
                 Log.e(TAG, "Error joining group",e)
             }finally {
-                _isLoadingGroups = false
+                _isLoading = false
             }
         }
     }
 
     fun leaveGroup(context: Context, id: String) {
         viewModelScope.launch {
-            _isLoadingGroups = true
+            _isLoading = true
             try{
                 AppSettings.removeGroup(context, id)
             }catch (e:Exception){
                 Log.e(TAG, "Error leaving group",e)
             }finally {
-                _isLoadingGroups = false
+                _isLoading = false
             }
         }
     }
@@ -137,14 +183,14 @@ class GroupTaskViewModel:ViewModel() {
     fun loadCurrentGroup(context:Context) {
         var data:GroupDAO?
         viewModelScope.launch {
-            _isLoadingGroups = true
+            _isLoading = true
             try{
                 data = AppSettings.getCurrentGroup(context)
                 data?.let { _currentGroup = GroupDAO(id = it.id, name = it.name) }
             }catch (e:Exception){
                 Log.e(TAG, "Error loading group content.",e)
             }finally{
-                _isLoadingGroups = false
+                _isLoading = false
                 loadTasks()
             }
         }
@@ -152,14 +198,14 @@ class GroupTaskViewModel:ViewModel() {
 
     fun setCurrentGroup(context: Context, group:GroupDAO){
         viewModelScope.launch {
-            _isLoadingGroups = true
+            _isLoading = true
             try{
                 AppSettings.setCurrentGroup(context, group)
                 _currentGroup = group
             }catch (e:Exception){
                 Log.e(TAG, "Error loading group content.",e)
             }finally{
-                _isLoadingGroups = false
+                _isLoading = false
                 loadTasks()
             }
         }
@@ -171,7 +217,7 @@ class GroupTaskViewModel:ViewModel() {
             return
         }
         _taskList.value = emptyList()
-        _isLoadingTasks = true
+        _isLoading = true
         viewModelScope.launch {
             Log.i(TAG, "Loading Tasks")
             val newList = _taskList.value.toMutableList()
@@ -183,7 +229,7 @@ class GroupTaskViewModel:ViewModel() {
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading group content.", e)
             } finally {
-                _isLoadingTasks = false
+                _isLoading = false
             }
         }
     }
