@@ -180,6 +180,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
 
     val todoTasks = groupTasks.filter { !it.isActive && it.assignee == null }
 
+    Log.i("GroupTasksScreen", "Current User: ${currentUser?.name}")
     Log.i("GroupTasksScreen", "tasks: ${tasks.size}")
     Log.i("GroupTasksScreen", "groupTasks: ${groupTasks.size}")
     Log.i("GroupTasksScreen", "activeTasks: ${activeTasks.size}")
@@ -210,7 +211,7 @@ fun GroupTasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableSta
                     dueDate = task.dueDate,
                     isActive = true,
                     isCompleted = false,
-                    assignee = "Me")
+                    assignee = currentUser?.name)
                 Firestore.editTask(currentGroup!!.id,  newTask)
                 Log.i("GroupTasksScreen", "newTask: ${newTask.isActive}")
                 viewModel.loadTasks()
