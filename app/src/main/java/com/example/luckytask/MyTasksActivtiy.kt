@@ -65,7 +65,16 @@ class MyTasksActivity : ComponentActivity() {
         shakeListener = ShakeListener(this) {
             Log.d(TAG, "Shake detected!")
             triggerAnimation.value = true
-            Toast.makeText(this, "#Tasks ${privateTaskViewModel.drawRandomTask()}", Toast.LENGTH_SHORT).show()
+            /*** Create text to display for drawn task
+             *   --> if there are no tasks (null), display alternative message ***/
+            var drawText = ""
+            val drawnTaskTitle = privateTaskViewModel.drawRandomTask()
+            if(drawnTaskTitle == null ){
+                drawText = "There are no TODOs to draw from!"
+            }else{
+                drawText = "You have drawn the following TODO: $drawnTaskTitle"
+            }
+            Toast.makeText(this, drawText, Toast.LENGTH_SHORT).show()
         }
 
         enableEdgeToEdge()
