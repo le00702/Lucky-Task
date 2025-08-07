@@ -143,12 +143,12 @@ class GroupTaskViewModel:ViewModel() {
     }
 
     fun loadCurrentGroup(context:Context) {
-        var data:Pair<String, String>?
+        var data:GroupDAO?
         viewModelScope.launch {
             _isLoadingGroups = true
             try{
                 data = AppSettings.getCurrentGroup(context)
-                data?.let { _currentGroup = GroupDAO(id = it.first, name = it.second) }
+                data?.let { _currentGroup = GroupDAO(id = it.id, name = it.name) }
             }catch (e:Exception){
                 Log.e(TAG, "Error loading group content.",e)
             }finally{
