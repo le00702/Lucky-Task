@@ -129,16 +129,16 @@ fun EditableTaskCard(
                         }
                     }
 
-                    task.dueDate?.let { dueDate ->
-                        TaskDetailChip(
-                            icon = Icons.Default.Schedule,
-                            text = formatDueDate(dueDate),
-                            isHighlighted = isOverdue,
-                            isError = isOverdue
-                        )
-                    }
+                        task.dueDate?.let { dueDate ->
+                            TaskDetailChip(
+                                icon = Icons.Default.Schedule,
+                                text = formatDueDate(dueDate),
+                                isHighlighted = isOverdue,
+                                isError = isOverdue
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.weight(1f))
 
                     // Edit Button
                     IconButton(
@@ -220,16 +220,16 @@ private fun startEditActivity(context: Context, taskId: Int, isGroupTask: Boolea
     context.startActivity(intent)
 }
 
-// Helper function for date
+// Helper function for date formatting
 private fun formatDueDate(dueDate: LocalDate): String {
     val today = LocalDate.now()
     return when {
         dueDate == today -> "Today"
         dueDate == today.plusDays(1) -> "Tomorrow"
         dueDate == today.minusDays(1) -> "Yesterday"
-        dueDate.isBefore(today) -> "Overdue"
+        dueDate.isBefore(today) -> "Overdue (${dueDate.format(DateTimeFormatter.ofPattern("MMM dd"))})"
         dueDate.isAfter(today) && dueDate.isBefore(today.plusDays(7)) ->
             dueDate.format(DateTimeFormatter.ofPattern("EEEE"))
-        else -> dueDate.format(DateTimeFormatter.ofPattern("MMM dd"))
+        else -> dueDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy"))
     }
 }

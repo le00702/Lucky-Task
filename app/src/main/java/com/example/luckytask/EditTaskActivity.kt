@@ -30,7 +30,9 @@ import com.example.luckytask.model.PrivateTasksViewModelFactory
 import com.example.luckytask.ui.theme.LuckyTaskTheme
 import com.example.luckytask.ui.theme.elements.AddTaskInput
 import com.example.luckytask.ui.theme.elements.AppWithDrawer
+import com.example.luckytask.ui.theme.elements.DatePickerField
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class EditTaskActivity : ComponentActivity() {
 
@@ -75,8 +77,9 @@ fun EditTaskScreen(
      *   --> later used for local DB access ***/
     val coroutineScope = rememberCoroutineScope()
 
-    var title = remember { mutableStateOf("") }
-    var description = remember { mutableStateOf("") }
+    val title = remember { mutableStateOf("") }
+    val description = remember { mutableStateOf("") }
+    val dueDate = remember { mutableStateOf<LocalDate?>(null) }
 
     val context = LocalContext.current
     val app = context.applicationContext as PrivateTasksApp
@@ -91,6 +94,7 @@ fun EditTaskScreen(
             if (task != null) {
                 title.value = task.title
                 description.value = task.description
+                dueDate.value = task.dueDate
             }
         } else {
             /*** For private tasks display initial text when editing
@@ -100,6 +104,7 @@ fun EditTaskScreen(
             if (task != null) {
                 title.value = task.title
                 description.value = task.description
+                dueDate.value = task.dueDate
             }
             val allTasks = privateTasksViewModel.tasks
             allTasks.collect { taskList ->
@@ -142,6 +147,17 @@ fun EditTaskScreen(
         }
 
         item {
+            /*** Use this for choosing the optional due date via
+             *   Date picker ***/
+            DatePickerField(
+                selectedDate = dueDate,
+                label = "Due Date (Optional)",
+                placeholder = "Select a due date",
+                isRequired = false
+            )
+        }
+
+        item {
             Button(
                 onClick = {
                     if (isGroupTask) {
@@ -169,7 +185,8 @@ fun EditTaskScreen(
                             if (task != null) {
                                 val updatedTask = task.copy(
                                     title = title.value,
-                                    description = description.value
+                                    description = description.value,
+                                    dueDate = dueDate.value
                                 )
                                 privateTasksViewModel.updateTask(updatedTask)
                                 onFinish()

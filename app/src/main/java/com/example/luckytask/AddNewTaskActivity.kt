@@ -34,6 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import com.example.luckytask.ui.theme.elements.DatePickerField
 
 class AddNewTaskActivity : ComponentActivity() {
 
@@ -69,7 +70,9 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     /*** Use '=' to assign as MutableState instead of String (by using 'by') ***/
     var title = remember { mutableStateOf("") }
     var description = remember { mutableStateOf("") }
-    var formIsComplete = title.value.isNotBlank() && description.value.isNotBlank()
+    var dueDate = remember { mutableStateOf<LocalDate?>(null) }
+    /*** Use this to check whether a task is allowed to be saved ***/
+    val formIsComplete = title.value.isNotBlank() && description.value.isNotBlank()
 
     /*** Use context + DB for inserting a new task ***/
     val context = LocalContext.current
@@ -79,12 +82,12 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
 
     /*** Extract method to differentiate between private and group tasks ***/
     val onClick: () -> Unit = {
-        if(!isGroupTask) {
+        if (!isGroupTask) {
             /*** Call this function in Coroutine scope to not block the
              *   main thread/UI --> Also show Toast for now ***/
             Toast.makeText(context, "Add Task clicked!", Toast.LENGTH_SHORT).show()
             CoroutineScope(Dispatchers.IO).launch {
-                addTask(title.value, description.value, privateTasksViewModel)
+                addTask(title.value, description.value, dueDate.value, privateTasksViewModel)
             }
         } else {
             /*** For group tasks use Toast as placeholder for now ***/
@@ -113,12 +116,30 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
             Spacer(modifier = Modifier.height(30.dp))
         }
 
+        /*** Provide the task title (mandatory) ***/
         item {
             AddTaskInput(title, "Task Title", "Enter a task title", isTitle = true)
         }
 
+        /*** Provide the task description (mandatory) ***/
         item {
-            AddTaskInput(description, "Task Description", "Enter a task description")
+            AddTaskInput(
+                description,
+                "Task Description",
+                "Enter a task description",
+                isTitle = false
+            )
+        }
+
+        item {
+            /*** Use this for choosing the optional due date via
+             *   Date picker ***/
+            DatePickerField(
+                selectedDate = dueDate,
+                label = "Due Date (Optional)",
+                placeholder = "Select a due date",
+                isRequired = false
+            )
         }
         item {
             Button(
@@ -139,12 +160,21 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     }
 }
 
-/*** Use this function for adding new tasks ***/
-private fun addTask(title: String, description: String, privateTasksViewModel: PrivateTasksViewModel) {
+/*** Use this function for adding new tasks
+ *   @param title: title of the task --> short description
+ *   @param description: long description of the task --> display only when info icon is clicked
+ *   @param dueDate: an optional limit for TODOs
+ *   @param privateTasksViewModel: use this to access the local DB ***/
+private fun addTask(
+    title: String,
+    description: String,
+    dueDate: LocalDate?,
+    privateTasksViewModel: PrivateTasksViewModel,
+) {
     val newTask = PrivateTaskItem(
         title = title,
         description = description,
-        dueDate = LocalDate.now().plusDays(1),
+        dueDate = dueDate,
         isActive = false,
         isCompleted = false
     )
