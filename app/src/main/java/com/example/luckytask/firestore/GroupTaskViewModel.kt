@@ -103,10 +103,12 @@ class GroupTaskViewModel:ViewModel() {
 
     fun registerUserToAllGroups(){
         CoroutineScope(Dispatchers.IO).launch {
+            _isLoading = true
             for(g in _groupList){
                 Firestore.registerUser(g.id, _currentUser!!)
             }
             _isNewUser = false
+            _isLoading = false
         }
     }
 
@@ -135,6 +137,10 @@ class GroupTaskViewModel:ViewModel() {
         var idExists:Boolean
         var id:String
         var counter = 0
+        if(_currentUser == null){
+            Log.e(TAG, "User not set")
+            return
+        }
         viewModelScope.launch {
             _isLoading = true
             try{
@@ -151,9 +157,10 @@ class GroupTaskViewModel:ViewModel() {
                 val group = GroupDAO(id = id, name = name)
                 Firestore.createGroup(group)
                 AppSettings.addGroup(context, group)
+                Firestore.registerUser(group.id, _currentUser!!)
                 loadGroups(context)
             }catch(e:Exception){
-                Log.e(TAG, "Error creating group. $e")
+                Log.e(TAG, "Error creating group.",e)
             }finally {
                 _isLoading = false
             }
@@ -161,6 +168,10 @@ class GroupTaskViewModel:ViewModel() {
     }
 
     fun joinGroup(context: Context, id: String) {
+        if(_currentUser == null){
+            Log.e(TAG, "User not set")
+            return
+        }
         viewModelScope.launch {
             _isLoading = true
             val exists: Boolean
@@ -172,6 +183,7 @@ class GroupTaskViewModel:ViewModel() {
                 if (exists) {
                     AppSettings.addGroup(context, GroupDAO(id = id, name = name ?: "New Group"))
                 }
+                Firestore.registerUser(id, _currentUser!!)
             }catch(e:Exception){
                 Log.e(TAG, "Error joining group",e)
             }finally {
