@@ -153,12 +153,12 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
         }
 
         // Filter Bar
-        item {
+        /*item {
             TaskFilterBar(
                 currentFilter = currentFilter,
                 onFilterChange = { currentFilter = it }
             )
-        }
+        }*/
 
         /*** If there are no active tasks, display the following message
          *   --> user is asked to roll dice
