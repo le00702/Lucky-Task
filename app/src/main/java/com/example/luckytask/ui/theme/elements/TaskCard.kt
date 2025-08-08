@@ -78,16 +78,14 @@ fun TaskCard(
                         return@detectTapGestures
                     }
 
-                    if(task.isActive && !task.isCompleted){
-                        setDone(task)
-                        Log.i("TaskCard", "Task marked as done")
-                        return@detectTapGestures
-                    }
-
-                    if(task.isActive && task.isCompleted){
-                        deleteTask(task)
-                        Log.i("TaskCard", "Task deleted")
-                        return@detectTapGestures
+                    when {
+                        /*** Upon double click mark task as completed and remove it ***/
+                        task.isActive && !task.isCompleted -> {
+                            Log.i("TaskCard", "Task marked as done")
+                            setDone(task)
+                            Log.i("TaskCard", "Task deleted")
+                            deleteTask(task)
+                        }
                     }
                 }
             )

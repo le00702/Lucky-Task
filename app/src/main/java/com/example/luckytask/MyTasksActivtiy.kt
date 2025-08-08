@@ -173,13 +173,20 @@ fun TasksScreen(modifier: Modifier = Modifier, triggerAnimation: MutableState<Bo
                 )
             }
         } else {
-            /*** If there ARE active tasks, display them all ***/
+            /*** If there ARE active tasks, display them all
+             *   --> when double clicked mark as completed***/
             items(activeTasks) { task ->
                 TaskCard(
                     task = task,
                     isMine = true,
-                    setDone = {},
-                    deleteTask = {}
+                    setDone = {
+                        val updatedTask = task.copy(
+                            isCompleted = true
+                        )
+                        privateTasksViewModel.updateTask(updatedTask)
+                    },
+                    deleteTask = {
+                        privateTasksViewModel.deleteTask(task)                    }
                 )
             }
         }
