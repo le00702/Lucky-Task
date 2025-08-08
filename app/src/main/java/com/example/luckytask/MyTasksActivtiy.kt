@@ -85,7 +85,6 @@ class MyTasksActivity : ComponentActivity() {
                 privateTaskViewModel.updateTask(updatedTask)
                 Log.d("ACTIVE TASK", "Task ${updatedTask.title} is active: ${updatedTask.isActive}")
             }
-            Toast.makeText(this, drawText.value, Toast.LENGTH_SHORT).show()
         }
 
         enableEdgeToEdge()
