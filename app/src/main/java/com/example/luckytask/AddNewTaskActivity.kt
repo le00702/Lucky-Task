@@ -2,7 +2,6 @@ package com.example.luckytask
 
 import android.app.Activity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -84,9 +83,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     var loading by remember { mutableStateOf(false) }
 
     var done by remember { mutableStateOf(false) }
-
-    var success by remember { mutableStateOf(false) }
-
+    
     /*** Use context + DB for inserting a new task ***/
     val context = LocalContext.current
     val app = context.applicationContext as PrivateTasksApp
@@ -98,7 +95,7 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
     val onClick: () -> Unit = {
         if (!isGroupTask) {
             /*** Call this function in Coroutine scope to not block the
-             *   main thread/UI --> Also show Toast for now ***/
+             *   main thread/UI ***/
             CoroutineScope(Dispatchers.IO).launch {
                 loading = true
                 addTask(title.value, description.value, dueDate.value, privateTasksViewModel)
@@ -120,11 +117,9 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
                 if(group == null){
                     loading = false
                     done = true
-                    success = false
                     return@launch
                 }
                 Firestore.addTask(group.id, task)
-                success = true
                 loading = false
                 done = true
             }
@@ -136,11 +131,8 @@ fun AddNewTaskScreen(modifier: Modifier = Modifier, isGroupTask: Boolean) {
             CircularProgressIndicator()
         }
     }
-    val message = if (success) "Task added successfully!" else "Error adding task."
-    if(done){
-        /*** For group tasks use Toast as placeholder for now ***/
-        //Toast.makeText(context, "[GROUP TASK]: $message", Toast.LENGTH_SHORT).show()
 
+    if(done){
         /*** End the current activity and return to the previous one ***/
         (context as Activity).finish()
     }
