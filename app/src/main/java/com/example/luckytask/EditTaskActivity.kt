@@ -2,7 +2,6 @@ package com.example.luckytask
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -173,7 +172,6 @@ fun EditTaskScreen(
             Button(
                 onClick = {
                     if (isGroupTask) {
-                        Toast.makeText(context, "GROUP TASK: edit", Toast.LENGTH_SHORT).show()
                         coroutineScope.launch {
                             val group = AppSettings.getCurrentGroup(context)
                             if(group == null){
@@ -193,7 +191,6 @@ fun EditTaskScreen(
                             onFinish()
                         }
                     } else {
-                        Toast.makeText(context, "PRIVATE TASK: edit", Toast.LENGTH_SHORT).show()
                         /*** This allows to safely call suspend functions from the current context ***/
                         coroutineScope.launch {
                             val task = privateTasksViewModel.getTaskById(taskId)
@@ -240,12 +237,10 @@ fun EditTaskScreen(
                         }
 
                     } else {
-                        /*** Apply same logic as for editing --> access DB only from Coroutine
-                         *   Scope --> display Toast for debugging purposes ***/
+                        /*** Apply same logic as for editing --> access DB only from Coroutine Scope ***/
                         coroutineScope.launch {
                             val taskToDelete = privateTasksViewModel.getTaskById(taskId)
                             if (taskToDelete != null) {
-                                Toast.makeText(context, "DELETE task ${taskToDelete.id} with title ${taskToDelete.title}", Toast.LENGTH_SHORT).show()
                                 privateTasksViewModel.deleteTask(taskToDelete)
                                 onFinish()
                             }
